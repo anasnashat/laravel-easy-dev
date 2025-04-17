@@ -35,8 +35,10 @@
         "laravel": {
             "providers": [
                 "Anas\\EasyDev\\EasyDevServiceProvider"
-
             ]
+        },
+        "branch-alias": {
+            "dev-main": "1.0.x-dev"
         }
     },
     "require": {

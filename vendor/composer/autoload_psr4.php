@@ -6,5 +6,5 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
-    'PackgeTest\\' => array($baseDir . '/src'),
+    'Anas\\EasyDev\\' => array($baseDir . '/src'),
 );

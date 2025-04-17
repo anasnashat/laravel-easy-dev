@@ -28,13 +28,14 @@
     ],
     "autoload": {
         "psr-4": {
-            "PackgeTest\\": "src/"
+            "Anas\\EasyDev\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "PackgeTest\\PackgeTestServiceProvider"
+                "Anas\\EasyDev\\EasyDevServiceProvider"
+
             ]
         }
     },

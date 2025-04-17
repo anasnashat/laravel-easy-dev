@@ -1,6 +1,6 @@
 # Laravel CRUD & Model Relations Generator
 
-A Laravel package that provides powerful artisan commands to generate CRUD operations and manage model relationships.
+A Laravel package that provides powerful artisan commands to generate CRUD operations and manage model relationships with minimal effort.
 
 ## Installation
 
@@ -15,6 +15,8 @@ composer require anas/easy-dev
 - **CRUD Generation**: Generate models, controllers, repositories, and form requests with a single command
 - **Model Relations**: Easily add relationships to existing models
 - **Database Sync**: Scan database structure to automatically detect and add model relationships
+- **Field Detection**: Automatically detect fields from migrations and generate appropriate validation rules
+- **Repository Pattern**: Option to implement the repository pattern with dependency injection
 
 ## Usage
 
@@ -52,7 +54,7 @@ php artisan model:sync-relations Post --morph-targets="User,Comment"
 
 ## Documentation
 
-For detailed documentation, see the [Laravel CRUD Auto - Artisan Commands](#) guide.
+For detailed documentation, see the [Laravel Easy Dev Commands](docs/commands.md) guide.
 
 ### make:crud
 
@@ -108,10 +110,10 @@ Automatically detect and set up Eloquent relationships between your models based
 You can publish the configuration file with:
 
 ```bash
-php artisan vendor:publish --tag=packge-test-config
+php artisan vendor:publish --tag=easy-dev-config
 ```
 
-This will publish a `packge-test.php` file in your config directory where you can customize the default behavior.
+This will publish a `easy-dev.php` file in your config directory where you can customize the default behavior.
 
 ## License
 

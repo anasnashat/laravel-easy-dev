@@ -1,0 +1,47 @@
+{
+    "name": "anas/easy-dev",
+    "description": "A Laravel package for generating CRUD operations and managing model relationships",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anas Nashat",
+            "email": "anas.nashat.ahmed@gmail.com"
+        }
+    ],
+    "keywords": [
+        "laravel",
+        "crud",
+        "generator",
+        "model",
+        "relationships",
+        "package",
+        "easy-dev",
+        "easy",
+        "dev",
+        "development",
+        "development tools",
+        "development package",
+        "development tools package",
+        "development tools for laravel",
+        "development package for laravel"
+    ],
+    "autoload": {
+        "psr-4": {
+            "PackgeTest\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "PackgeTest\\PackgeTestServiceProvider"
+            ]
+        }
+    },
+    "require": {
+        "php": ">=8.0",
+        "laravel/framework": "*"
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

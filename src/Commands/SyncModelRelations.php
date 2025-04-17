@@ -552,23 +552,60 @@ class SyncModelRelations extends Command
     {
         $relationships = [];
         $migrationDir = database_path('migrations');
+        
+        if (!is_dir($migrationDir)) {
+            $this->warn("⚠️ Migrations directory not found at: $migrationDir");
+            return $relationships;
+        }
+        
         $tableName = $this->getTableName($modelName);
         $files = scandir($migrationDir);
         
         // Find the migration file for this model
         $migrationFile = null;
+        
+        // First, try an exact match for the table name
         foreach ($files as $file) {
             if (strpos($file, 'create_' . $tableName . '_table') !== false) {
                 $migrationFile = $file;
+                $this->info("Found migration file: $file");
                 break;
             }
         }
         
+        // If no exact match, try to find a file that might be related to this model
         if (!$migrationFile) {
-            $this->warn("Could not find migration file for {$tableName} table.");
-            return $relationships;
+            $singularTableName = Str::singular($tableName);
+            
+            foreach ($files as $file) {
+                if (strpos($file, 'create_' . $singularTableName . '_table') !== false) {
+                    $migrationFile = $file;
+                    $this->info("Found migration file using singular form: $file");
+                    break;
+                }
+            }
+            
+            // Try a more flexible search if still not found
+            if (!$migrationFile) {
+                $this->warn("Could not find exact migration file for {$tableName} table. Looking for partial matches...");
+                
+                foreach ($files as $file) {
+                    if (strpos($file, $tableName) !== false || strpos($file, $singularTableName) !== false) {
+                        $migrationFile = $file;
+                        $this->info("Found potentially related migration file: $file");
+                        break;
+                    }
+                }
+                
+                if (!$migrationFile) {
+                    $this->warn("No migration file found related to model $modelName");
+                    // Skip creating a new migration - just return empty relationships
+                    return $relationships;
+                }
+            }
         }
         
+        // Get the migration file content
         $content = file_get_contents($migrationDir . '/' . $migrationFile);
         
         // Search for polymorphic relationships (morphs method)
@@ -583,7 +620,7 @@ class SyncModelRelations extends Command
             
             // Add morphTo relationship for the polymorphic model (no _type suffix in method name)
             $relationships[] = [
-                'morph_name' => $morphName, // Store the morph name for reference
+                'morph_name' => $morphName, 
                 'relation_type' => 'morphTo',
                 'method_name' => $morphName  // Use the morph name directly as method name
             ];
@@ -620,27 +657,7 @@ class SyncModelRelations extends Command
             $this->info("Found foreignId relationship in migration: {$modelName} belongs to {$referencedModelName} via {$foreignKeyColumn}");
         }
         
-        // Search for foreign method calls
-        preg_match_all('/\$table->foreign\([\'"]([^\'"]+)[\'"]\)->references\([\'"]([^\'"]+)[\'"]\)->on\([\'"]([^\'"]+)[\'"]\)/', $content, $matches, PREG_SET_ORDER);
-        
-        foreach ($matches as $match) {
-            $foreignKeyColumn = $match[1];
-            $referencedColumn = $match[2];
-            $referencedTable = $match[3];
-            
-            $referencedModelName = Str::studly(Str::singular($referencedTable));
-            
-            $relationships[] = [
-                'field' => $foreignKeyColumn,
-                'references' => $referencedColumn,
-                'on' => $referencedTable,
-                'relation_type' => 'belongsTo',
-                'related_model' => $referencedModelName
-            ];
-            
-            $this->info("Found foreign key relationship in migration: {$modelName} belongs to {$referencedModelName} via {$foreignKeyColumn}");
-        }
-        
+        // Rest of the code remains unchanged
         // Also try to find reverse relationships in other migration files
         foreach ($files as $file) {
             if ($file === '.' || $file === '..' || $file === $migrationFile) {

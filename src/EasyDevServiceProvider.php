@@ -14,9 +14,9 @@ class EasyDevServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        // Merge config
+        // Merge config - UPDATED FILE NAME
         $this->mergeConfigFrom(
-            __DIR__.'/../config/packge-test.php', 'easy-dev'
+            __DIR__.'/../config/easy-dev.php', 'easy-dev'
         );
     }
 
@@ -25,9 +25,9 @@ class EasyDevServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Publish config
+        // Publish config - UPDATED FILE NAME
         $this->publishes([
-            __DIR__.'/../config/packge-test.php' => config_path('easy-dev.php'),
+            __DIR__.'/../config/easy-dev.php' => config_path('easy-dev.php'),
         ], 'easy-dev-config');
 
         // Register commands

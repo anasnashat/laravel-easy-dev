@@ -1,6 +1,6 @@
 # Laravel Easy Dev - Artisan Commands
 
-This documentation provides details on the custom artisan commands available in the Laravel CRUD Easy Dev package.
+This documentation provides details on the custom artisan commands available in the Laravel Easy Dev package.
 
 ## Table of Contents
 
@@ -211,8 +211,8 @@ php artisan model:sync-relations Category
 ```
 
 Will add:
-1. A `category()` or `parent()` method to access the parent category
-2. A `categories()` or `children()` method to access child categories
+1. A `parent()` method to access the parent category
+2. A `children()` method to access child categories
 
 ### Examples
 
@@ -276,7 +276,7 @@ php artisan model:sync-relations Comment --morph-targets="Post,Video"
 ```
 
 Results:
-- Adds `commentable()` method to Comment model
+- Adds `commentable()` method to Comment model (correctly named without _type suffix)
 - Adds `comments()` method to Post model
 - Adds `comments()` method to Video model
 

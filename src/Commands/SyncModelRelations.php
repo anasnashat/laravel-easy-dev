@@ -751,12 +751,14 @@ class SyncModelRelations extends Command
                 
                 // This is a potential polymorphic relationship
                 // We'll suggest it in the model updates
+                $pluralModelName = Str::camel(Str::plural(strtolower($modelName)));
+                
                 $relationships[] = [
-                    'morph_name' => $morphName,
+                    'morph_name' => $morphName, // Keep morphName as the correct polymorphic relation key
                     'relation_type' => 'suggested_morph',
                     'related_model' => $potentialModel,
-                    'method_name' => Str::camel(Str::plural(strtolower($modelName))),
-                    'suggested_code' => "public function " . Str::camel(Str::plural(strtolower($modelName))) . "()\n    {\n        return \$this->morphMany(" . $modelName . "::class, '" . $morphName . "');\n    }"
+                    'method_name' => $pluralModelName,
+                    'suggested_code' => "public function {$pluralModelName}()\n    {\n        return \$this->morphMany({$modelName}::class, '{$morphName}');\n    }"
                 ];
             }
         }

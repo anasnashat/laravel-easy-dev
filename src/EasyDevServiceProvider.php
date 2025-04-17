@@ -1,13 +1,13 @@
 <?php
 
-namespace PackgeTest;
+namespace Anas\EasyDev;
 
 use Illuminate\Support\ServiceProvider;
-use PackgeTest\Commands\MakeCrud;
-use PackgeTest\Commands\MakeModelRelation;
-use PackgeTest\Commands\SyncModelRelations;
+use Anas\EasyDev\Commands\MakeCrud;
+use Anas\EasyDev\Commands\MakeModelRelation;
+use Anas\EasyDev\Commands\SyncModelRelations;
 
-class PackgeTestServiceProvider extends ServiceProvider
+class EasyDevServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
@@ -16,7 +16,7 @@ class PackgeTestServiceProvider extends ServiceProvider
     {
         // Merge config
         $this->mergeConfigFrom(
-            __DIR__.'/../config/packge-test.php', 'packge-test'
+            __DIR__.'/../config/packge-test.php', 'easy-dev'
         );
     }
 
@@ -27,8 +27,8 @@ class PackgeTestServiceProvider extends ServiceProvider
     {
         // Publish config
         $this->publishes([
-            __DIR__.'/../config/packge-test.php' => config_path('packge-test.php'),
-        ], 'packge-test-config');
+            __DIR__.'/../config/packge-test.php' => config_path('easy-dev.php'),
+        ], 'easy-dev-config');
 
         // Register commands
         if ($this->app->runningInConsole()) {

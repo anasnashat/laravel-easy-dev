@@ -576,12 +576,16 @@ class SyncModelRelations extends Command
         
         foreach ($morphMatches as $match) {
             $morphName = $match[1];
+            $morphName = str_replace('_type', '', $morphName);
             
-            // Add morphTo relationship for the polymorphic model
+            // IMPORTANT FIX: Ensure we use the base morph name WITHOUT the _type suffix
+            // The morph name is used directly for both morphTo() and morphMany()
+            
+            // Add morphTo relationship for the polymorphic model (no _type suffix in method name)
             $relationships[] = [
-                'morph_name' => $morphName,
+                'morph_name' => $morphName, // Store the morph name for reference
                 'relation_type' => 'morphTo',
-                'method_name' => $morphName
+                'method_name' => $morphName  // Use the morph name directly as method name
             ];
             
             $this->info("Found polymorphic relationship: {$modelName} morphTo via {$morphName}");

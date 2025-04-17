@@ -740,27 +740,18 @@ class SyncModelRelations extends Command
                 continue;
             }
             
-            // Common naming patterns for polymorphic relations
-            $commonMorphNames = [
-                strtolower($modelName) . 'able',  // imageable, commentable, etc.
-                $morphName,                      // direct match with the morph name
+            // This is a potential polymorphic relationship
+            // We'll suggest it in the model updates
+            $relationships[] = [
+                'morph_name' => $morphName,
+                'relation_type' => 'suggested_morph',
+                'related_model' => $potentialModel,
+                'method_name' => Str::camel(Str::plural(strtolower($modelName))),
+                // Important fix: use morphName as the second parameter, not morphName + '_type'
+                'suggested_code' => "public function " . Str::camel(Str::plural(strtolower($modelName))) . "()\n    {\n        return \$this->morphMany(" . $modelName . "::class, '" . $morphName . "');\n    }"
             ];
             
-            foreach ($commonMorphNames as $checkMorphName) {
-                $this->info("Checking if {$potentialModel} has a polymorphic relation '{$checkMorphName}' to {$modelName}");
-                
-                // This is a potential polymorphic relationship
-                // We'll suggest it in the model updates
-                $pluralModelName = Str::camel(Str::plural(strtolower($modelName)));
-                
-                $relationships[] = [
-                    'morph_name' => $morphName, // Keep morphName as the correct polymorphic relation key
-                    'relation_type' => 'suggested_morph',
-                    'related_model' => $potentialModel,
-                    'method_name' => $pluralModelName,
-                    'suggested_code' => "public function {$pluralModelName}()\n    {\n        return \$this->morphMany({$modelName}::class, '{$morphName}');\n    }"
-                ];
-            }
+            $this->info("Suggested polymorphic relationship: {$potentialModel} morphMany {$modelName} via {$morphName}");
         }
     }
     

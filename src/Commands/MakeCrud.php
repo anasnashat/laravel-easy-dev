@@ -20,7 +20,11 @@ class MakeCrud extends Command
         $this->info("🚀 Creating CRUD for: $name");
 
         // Step 1: Create model and migration
-        if (!$this->option('force') && class_exists("App\\Models\\$name")) {
+        $modelClass = "App\\Models\\$name";
+        $modelFile = app_path("Models/{$name}.php");
+        $modelExists = class_exists($modelClass) || file_exists($modelFile);
+        
+        if (!$this->option('force') && $modelExists) {
             if (!$this->confirm("Model $name already exists. Do you want to overwrite it?", false)) {
                 $this->info("✅ Skipping model creation.");
             } else {
@@ -30,20 +34,32 @@ class MakeCrud extends Command
         } else {
             Artisan::call("make:model $name -m");
             $this->info("✅ Model and migration created.");
+            
+            // Since we just created the model, let's give the filesystem a moment to catch up
+            if (!file_exists($modelFile)) {
+                $this->warn("Waiting for filesystem to register the new model file...");
+                sleep(1); // Small delay to let filesystem catch up
+            }
+        }
+        
+        // Clear any existing autoloader cache that might prevent including the new model
+        if (function_exists('opcache_reset')) {
+            opcache_reset();
         }
 
         // Step 2: Load model & get fillable
-        $modelClass = "App\\Models\\$name";
-        $modelFile = app_path("Models/{$name}.php");
-        if (!class_exists($modelClass) && file_exists($modelFile)) {
-            require_once $modelFile;
-        }
+        $fillable = [];
+        try {
+            // Try to infer fillable fields from the migration if model doesn't have them
+            $fillable = $this->getModelFillableFields($name);
 
-        // Try to infer fillable fields from the migration if model doesn't have them
-        $fillable = $this->getModelFillableFields($name);
-
-        if (empty($fillable)) {
-            $this->warn("⚠️ No fillable fields found. Looking for migrations to infer fields...");
+            if (empty($fillable)) {
+                $this->warn("⚠️ No fillable fields found. Looking for migrations to infer fields...");
+                $fillable = $this->inferFieldsFromMigration($name);
+            }
+        } catch (\Throwable $e) {
+            $this->warn("⚠️ Could not load model class: " . $e->getMessage());
+            $this->info("Attempting to infer fields from migration files instead...");
             $fillable = $this->inferFieldsFromMigration($name);
         }
 
@@ -55,10 +71,15 @@ class MakeCrud extends Command
         }
 
         // Detect relationships from database schema
-        $relationships = $this->detectRelationships($name);
-        if (!empty($relationships)) {
-            $this->info("🔄 Detected relationships: " . count($relationships));
-            $this->updateModelWithRelationships($name, $relationships);
+        $relationships = [];
+        try {
+            $relationships = $this->detectRelationships($name);
+            if (!empty($relationships)) {
+                $this->info("🔄 Detected relationships: " . count($relationships));
+                $this->updateModelWithRelationships($name, $relationships);
+            }
+        } catch (\Throwable $e) {
+            $this->warn("⚠️ Could not detect relationships: " . $e->getMessage());
         }
 
         // Step 3: Generate request files with smart validation
@@ -71,13 +92,25 @@ class MakeCrud extends Command
         }
 
         // Step 5: Generate controller with dependency injection
-        $controllerPath = app_path("Http/Controllers/{$name}Controller.php");
-        file_put_contents($controllerPath, $this->generateController($name, $modelVar, $relationships));
-        $this->info("✅ Controller created at: $controllerPath");
+        try {
+            $controllersDir = app_path("Http/Controllers");
+            
+            // Create Controllers directory if it doesn't exist
+            if (!File::exists($controllersDir)) {
+                File::makeDirectory($controllersDir, 0755, true);
+                $this->info("📁 Created Controllers directory: $controllersDir");
+            }
+            
+            $controllerPath = $controllersDir . "/{$name}Controller.php";
+            file_put_contents($controllerPath, $this->generateController($name, $modelVar, $relationships));
+            $this->info("✅ Controller created at: $controllerPath");
 
-        // Step 6: Generate routes if requested
-        if ($this->option('routes')) {
-            $this->addRoutes($name, $pluralName);
+            // Step 6: Generate routes if requested
+            if ($this->option('routes')) {
+                $this->addRoutes($name, $pluralName);
+            }
+        } catch (\Exception $e) {
+            $this->error("❌ Error generating controller: " . $e->getMessage());
         }
 
         $this->info("🎉 Done! Your CRUD for '$name' is ready.");

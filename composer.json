@@ -5,7 +5,7 @@
     "license": "MIT",
     "keywords": [
         "laravel",
-        "artisan",
+        "artisan", 
         "crud",
         "generator",
         "repository",
@@ -39,14 +39,10 @@
         {
             "type": "github",
             "url": "https://github.com/sponsors/anasnashat"
-        },
-        {
-            "type": "paypal",
-            "url": "https://www.paypal.me/anasnashat"
         }
     ],
     "require": {
-        "php": "^8.1|^8.2|^8.3|^8.4",
+        "php": "^8.1",
         "illuminate/contracts": "^9.0|^10.0|^11.0|^12.0",
         "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
         "illuminate/console": "^9.0|^10.0|^11.0|^12.0",
@@ -55,8 +51,7 @@
     },
     "require-dev": {
         "orchestra/testbench": "^7.0|^8.0|^9.0|^10.0|^11.0",
-        "phpunit/phpunit": "^9.5|^10.0|^11.0",
-        "mockery/mockery": "^1.4|^1.5|^1.6"
+        "phpunit/phpunit": "^9.5|^10.0|^11.0"
     },
     "autoload": {
         "psr-4": {
@@ -80,23 +75,12 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit",
-        "test-coverage": "vendor/bin/phpunit --coverage-html coverage",
-        "format": "vendor/bin/php-cs-fixer fix --allow-risky=yes",
-        "analyse": "vendor/bin/phpstan analyse"
-    },
-    "scripts-descriptions": {
-        "test": "Run the PHPUnit tests",
-        "test-coverage": "Run tests with coverage report", 
-        "format": "Format code using PHP CS Fixer",
-        "analyse": "Run PHPStan static analysis"
+        "test-coverage": "vendor/bin/phpunit --coverage-html coverage"
     },
     "config": {
         "sort-packages": true,
         "optimize-autoloader": true,
-        "preferred-install": "dist",
-        "allow-plugins": {
-            "composer/package-versions-deprecated": true
-        }
+        "preferred-install": "dist"
     },
     "minimum-stability": "stable",
     "prefer-stable": true

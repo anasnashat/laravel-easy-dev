@@ -204,9 +204,9 @@ class BeautifulHelpCommand extends Command
     {
         $this->line('╭─────────────────────────────────────────────────────────────╮');
         $this->line('│                                                             │');
-        $this->line('│   📖 <fg=green>Documentation:</> github.com/your-repo/wiki             │');
-        $this->line('│   🐛 <fg=red>Issues:</> github.com/your-repo/issues                 │');
-        $this->line('│   ⭐ <fg=yellow>Star us:</> github.com/your-repo                       │');
+        $this->line('│   📖 <fg=green>Documentation:</> github.com/laravel-easy-dev/wiki             │');
+        $this->line('│   🐛 <fg=red>Issues:</> github.com/laravel-easy-dev/issues                 │');
+        $this->line('│   ⭐ <fg=yellow>Star us:</> github.com/laravel-easy-dev                       │');
         $this->line('│                                                             │');
         $this->line('╰─────────────────────────────────────────────────────────────╯');
         $this->newLine();

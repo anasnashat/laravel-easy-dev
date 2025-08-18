@@ -1,0 +1,7 @@
+/**
+ * Get the {{ relatedModel }} that owns this model.
+ */
+public function {{ methodName }}()
+{
+    return $this->belongsTo({{ relatedModelClass }}::class);
+}

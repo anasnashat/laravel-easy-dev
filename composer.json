@@ -1,0 +1,48 @@
+{
+    "name": "anasnashat/laravel-easy-dev",
+    "description": "A set of powerful Artisan commands to speed up Laravel development with enhanced UI and interactive features.",
+    "version": "2.0.0",
+    "type": "laravel-package",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Anas Nashaat",
+            "email": "anas.nashat.ahmed@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/contracts": "^9.0|^10.0|^11.0|^12.0",
+        "illuminate/support": "^9.0|^10.0|^11.0|^12.0",
+        "illuminate/console": "^9.0|^10.0|^11.0|^12.0",
+        "illuminate/database": "^9.0|^10.0|^11.0|^12.0",
+        "illuminate/filesystem": "^9.0|^10.0|^11.0|^12.0"
+    },
+    "require-dev": {
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
+        "phpunit/phpunit": "^10.0|^11.0",
+        "mockery/mockery": "^1.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "AnasNashat\\EasyDev\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AnasNashat\\EasyDev\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "AnasNashat\\EasyDev\\Providers\\EasyDevServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

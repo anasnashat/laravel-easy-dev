@@ -1,0 +1,34 @@
+<?php
+
+namespace App\Services\Contracts;
+
+use App\Models\{{ ModelName }};
+use Illuminate\Database\Eloquent\Collection;
+
+interface {{ ServiceInterfaceName }}
+{
+    /**
+     * Get all {{ modelName }} records with optional filters.
+     */
+    public function getAll{{ ModelName }}s(array $filters = []): Collection;
+
+    /**
+     * Find a {{ modelName }} by ID.
+     */
+    public function find{{ ModelName }}ById(int $id): ?{{ ModelName }};
+
+    /**
+     * Create a new {{ modelName }}.
+     */
+    public function create{{ ModelName }}(array $data): {{ ModelName }};
+
+    /**
+     * Update an existing {{ modelName }}.
+     */
+    public function update{{ ModelName }}({{ ModelName }} ${{ modelName }}, array $data): {{ ModelName }};
+
+    /**
+     * Delete a {{ modelName }}.
+     */
+    public function delete{{ ModelName }}({{ ModelName }} ${{ modelName }}): bool;
+}

@@ -1,0 +1,21 @@
+Easy Dev Help Command (AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommand)
+ [x] Help command displays banner
+ [x] Help command lists all commands
+ [x] Help command shows usage examples
+ [x] Help command shows tips section
+ [x] Help command shows github link
+ [x] Help command shows command descriptions
+ [x] Help command shows command options
+
+Model Sync Relations Command (AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommand)
+ [x] Sync relations for specific model
+ [x] Sync relations with all flag
+ [x] Sync relations handles nonexistent model
+ [x] Sync relations shows progress for each model
+ [x] Sync relations detects foreign key relationships
+ [x] Sync relations handles models with no relations
+ [x] Sync relations skips existing relations
+ [x] Sync relations processes self referencing models
+ [x] Sync relations provides helpful output
+ [x] Sync relations handles database errors gracefully
+

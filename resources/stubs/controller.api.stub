@@ -1,0 +1,74 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ modelClass }};
+use App\Http\Controllers\Controller;
+use App\Http\Requests\{{ storeRequest }};
+use App\Http\Requests\{{ updateRequest }};
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+
+class {{ class }} extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        ${{ modelVariablePlural }} = {{ model }}::query()
+            ->when($request->search, function ($query, $search) {
+                $query->where('name', 'like', "%{$search}%");
+            })
+            ->latest()
+            ->paginate(15);
+
+        return response()->json(${{ modelVariablePlural }});
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store({{ storeRequest }} $request): JsonResponse
+    {
+        ${{ modelVariable }} = {{ model }}::create($request->validated());
+
+        return response()->json([
+            'message' => '{{ model }} created successfully.',
+            'data' => ${{ modelVariable }}
+        ], 201);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show({{ model }} ${{ modelVariable }}): JsonResponse
+    {
+        return response()->json(${{ modelVariable }});
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update({{ updateRequest }} $request, {{ model }} ${{ modelVariable }}): JsonResponse
+    {
+        ${{ modelVariable }}->update($request->validated());
+
+        return response()->json([
+            'message' => '{{ model }} updated successfully.',
+            'data' => ${{ modelVariable }}
+        ]);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy({{ model }} ${{ modelVariable }}): JsonResponse
+    {
+        ${{ modelVariable }}->delete();
+
+        return response()->json([
+            'message' => '{{ model }} deleted successfully.'
+        ]);
+    }
+}

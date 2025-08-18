@@ -1,0 +1,90 @@
+<?php
+
+namespace App\Repositories;
+
+use App\Models\{{ ModelName }};
+{{ InterfaceUse }}use Illuminate\Database\Eloquent\Collection;
+
+class {{ RepositoryName }}{{ InterfaceImplements }}
+{
+    /**
+     * Create a new repository instance.
+     */
+    public function __construct(protected {{ ModelName }} $model)
+    {
+    }
+
+    /**
+     * Get all {{ modelName }} records.
+     */
+    public function all(): Collection
+    {
+        return $this->model->all();
+    }
+
+    /**
+     * Find a {{ modelName }} by ID.
+     */
+    public function find(int $id): ?{{ ModelName }}
+    {
+        return $this->model->find($id);
+    }
+
+    /**
+     * Create a new {{ modelName }}.
+     */
+    public function create(array $data): {{ ModelName }}
+    {
+        return $this->model->create($data);
+    }
+
+    /**
+     * Update a {{ modelName }}.
+     */
+    public function update(int $id, array $data): bool
+    {
+        ${{ modelName }} = $this->model->find($id);
+        
+        if (!${{ modelName }}) {
+            return false;
+        }
+
+        return ${{ modelName }}->update($data);
+    }
+
+    /**
+     * Delete a {{ modelName }}.
+     */
+    public function delete(int $id): bool
+    {
+        ${{ modelName }} = $this->model->find($id);
+        
+        if (!${{ modelName }}) {
+            return false;
+        }
+
+        return ${{ modelName }}->delete();
+    }
+
+    /**
+     * Get paginated {{ modelName }} records.
+     */
+    public function paginate(int $perPage = 15): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        return $this->model->paginate($perPage);
+    }
+
+    /**
+     * Find {{ modelName }} records by specific criteria.
+     */
+    public function findWhere(array $criteria): Collection
+    {
+        $query = $this->model->newQuery();
+
+        foreach ($criteria as $field => $value) {
+            $query->where($field, $value);
+        }
+
+        return $query->get();
+    }
+}

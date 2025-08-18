@@ -1,0 +1,7 @@
+/**
+ * Get all of the {{ relatedModel }} for this model.
+ */
+public function {{ methodName }}()
+{
+    return $this->morphMany({{ relatedModelClass }}::class, '{{ methodName }}');
+}

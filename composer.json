@@ -1,5 +1,5 @@
 {
-    "name": "anasnashat/laravel-easy-dev",
+    "name": "anas/easy-dev",
     "description": "🚀 A powerful Laravel package that supercharges development with beautiful UI, interactive CRUD generation, Repository & Service patterns, and intelligent relationship detection.",
     "type": "laravel-package",
     "license": "MIT",

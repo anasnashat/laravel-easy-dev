@@ -211,7 +211,7 @@ protected function displayFooter(): void
     $this->line('│  ⭐ <fg=yellow;options=bold>Give us a Star</> │ <fg=white>github.com/anasnashat/laravel-easy-dev</>                  │');
     $this->line('│  💬 <fg=cyan;options=bold>Discussions</>     │ <fg=cyan>Join our community discussions</>                         │');
     $this->line('│                                                                              │');
-    $this->line('│                 Built with ❤️  for the Laravel community                      │');
+    $this->line('│                 Built with ❤️  for the Laravel community                     │');
     $this->line('│                                                                              │');
     $this->line('╰──────────────────────────────────────────────────────────────────────────────╯');
 

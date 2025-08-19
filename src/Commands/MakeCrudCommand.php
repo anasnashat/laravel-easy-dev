@@ -73,6 +73,11 @@ class MakeCrudCommand extends Command
             // Generate controllers
             $this->generateControllers($modelName, $apiOnly, $webOnly, $withService, $migrationData);
 
+            // Generate API resources for API controllers
+            if (!$webOnly) {
+                $this->generateApiResources($modelName);
+            }
+
             // Generate form requests
             $this->generateFormRequests($modelName, $migrationData);
 
@@ -289,6 +294,39 @@ class MakeCrudCommand extends Command
 
         $this->generator->generateFile($controllerPath, $stub, $replacements);
         $this->line("  ✓ Created web controller: {$controllerName}");
+    }
+
+    /**
+     * Generate API resources for the model.
+     */
+    protected function generateApiResources(string $modelName): void
+    {
+        // Generate resource
+        $resourceName = "{$modelName}Resource";
+        $resourcePath = app_path("Http/Resources/{$resourceName}.php");
+        
+        $replacements = [
+            'ModelName' => $modelName,
+            'ResourceName' => $resourceName,
+            'modelName' => Str::camel($modelName),
+        ];
+
+        $this->generator->generateFile($resourcePath, 'api.resource', $replacements);
+        $this->line("  ✓ Created API resource: {$resourceName}");
+
+        // Generate collection
+        $collectionName = "{$modelName}Collection";
+        $collectionPath = app_path("Http/Resources/{$collectionName}.php");
+        
+        $collectionReplacements = [
+            'ModelName' => $modelName,
+            'CollectionName' => $collectionName,
+            'ResourceName' => $resourceName,
+            'modelName' => Str::camel($modelName),
+        ];
+
+        $this->generator->generateFile($collectionPath, 'api.collection', $collectionReplacements);
+        $this->line("  ✓ Created API collection: {$collectionName}");
     }
 
     /**

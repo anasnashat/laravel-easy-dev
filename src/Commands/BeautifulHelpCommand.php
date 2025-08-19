@@ -199,16 +199,27 @@ class BeautifulHelpCommand extends Command
         $this->line('• Use <fg=yellow>--api-only</> for headless applications');
         $this->newLine();
     }
-
     protected function displayFooter(): void
     {
-        $this->line('╭─────────────────────────────────────────────────────────────╮');
-        $this->line('│                                                             │');
-        $this->line('│   📖 <fg=green>Documentation:</> github.com/laravel-easy-dev/wiki             │');
-        $this->line('│   🐛 <fg=red>Issues:</> github.com/laravel-easy-dev/issues                 │');
-        $this->line('│   ⭐ <fg=yellow>Star us:</> github.com/laravel-easy-dev                       │');
-        $this->line('│                                                             │');
-        $this->line('╰─────────────────────────────────────────────────────────────╯');
+        $this->newLine();
+        $this->line('╭─────────────────────────────────────────────────────────────────╮');
+        $this->line('│                                                                 │');
+        $this->line('│                    <fg=cyan;options=bold>🌟 Get Involved 🌟</>                     │');
+        $this->line('│                                                                 │');
+        $this->line('│  📖 <fg=green;options=bold>Documentation</> │ <fg=blue>github.com/anasnashat/laravel-easy-dev/wiki</>  │');
+        $this->line('│  🐛 <fg=red;options=bold>Report Issues</> │ <fg=magenta>github.com/anasnashat/laravel-easy-dev/issues</> │');
+        $this->line('│  ⭐ <fg=yellow;options=bold>Give us a Star</> │ <fg=white>github.com/anasnashat/laravel-easy-dev</>       │');
+        $this->line('│  💬 <fg=cyan;options=bold>Discussions</> │ <fg=cyan>Join our community discussions</>           │');
+        $this->line('│                                                                 │');
+        $this->line('│           <fg=gray>Built with ❤️ for the Laravel community</>            │');
+        $this->line('│                                                                 │');
+        $this->line('╰─────────────────────────────────────────────────────────────────╯');
+        
+        $this->newLine();
+        $this->line('<fg=yellow>Thank you for using Laravel Easy Dev! 🚀</>');
         $this->newLine();
     }
-}
+
+
+    }
+

@@ -167,14 +167,6 @@ Automatically detects and generates:
 - **Polymorphic Relationships** - `morphTo`, `morphOne`, `morphMany`
 - **Self-Referencing Relationships** - Parent/child hierarchies
 
-## 🧪 Testing
-
-Run the package tests:
-
-```bash
-cd packages/laravel-easy-dev
-composer test
-```
 
 ## 📋 Requirements
 

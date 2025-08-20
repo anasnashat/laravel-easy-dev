@@ -4,8 +4,8 @@ namespace AnasNashat\EasyDev\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Str;
 
 class ModelSyncRelationsCommand extends Command
 {
@@ -32,29 +32,31 @@ class ModelSyncRelationsCommand extends Command
     {
         if ($this->option('all')) {
             $this->syncAllModels();
+
             return 0;
         }
 
         $modelName = $this->argument('model');
-        if (!$modelName) {
+        if (! $modelName) {
             $this->error('Not enough arguments (missing: "model"). Use --all option to sync all models or provide a specific model name.');
+
             return 1;
         }
 
         $modelName = Str::studly($modelName);
         $bidirectionalRelationships = $this->syncModelRelations($modelName, true);
-        
+
         // Process relationships for related models
-        if (!empty($bidirectionalRelationships)) {
-            $this->info("🔄 Adding reverse relationships to related models...");
+        if (! empty($bidirectionalRelationships)) {
+            $this->info('🔄 Adding reverse relationships to related models...');
             foreach ($bidirectionalRelationships as $relationData) {
                 $relatedModelName = $relationData['related_model'];
-                
+
                 // Only add reverse relationship if model exists
                 $relatedModelPath = app_path("Models/{$relatedModelName}.php");
                 if (file_exists($relatedModelPath)) {
                     $reverseRelationship = [
-                        $relationData['reverse_relationship']
+                        $relationData['reverse_relationship'],
                     ];
                     $this->updateModelWithRelationships($relatedModelName, $reverseRelationship);
                 } else {
@@ -62,7 +64,7 @@ class ModelSyncRelationsCommand extends Command
                 }
             }
         }
-        
+
         return 0;
     }
 
@@ -80,28 +82,28 @@ class ModelSyncRelationsCommand extends Command
             if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
                 $modelName = pathinfo($file, PATHINFO_FILENAME);
                 $bidirectionalRelationships = $this->syncModelRelations($modelName, true);
-                
-                if (!empty($bidirectionalRelationships)) {
+
+                if (! empty($bidirectionalRelationships)) {
                     $bidirectionalRelationshipsByModel[$modelName] = $bidirectionalRelationships;
                 }
-                
+
                 $count++;
             }
         }
 
         // After all models have been processed, add reverse relationships
-        if (!empty($bidirectionalRelationshipsByModel)) {
-            $this->info("🔄 Adding reverse relationships to related models...");
-            
+        if (! empty($bidirectionalRelationshipsByModel)) {
+            $this->info('🔄 Adding reverse relationships to related models...');
+
             foreach ($bidirectionalRelationshipsByModel as $sourceModel => $relationships) {
                 foreach ($relationships as $relationData) {
                     $relatedModelName = $relationData['related_model'];
-                    
+
                     // Only add reverse relationship if model exists
                     $relatedModelPath = app_path("Models/{$relatedModelName}.php");
                     if (file_exists($relatedModelPath)) {
                         $reverseRelationship = [
-                            $relationData['reverse_relationship']
+                            $relationData['reverse_relationship'],
                         ];
                         $this->updateModelWithRelationships($relatedModelName, $reverseRelationship);
                     }
@@ -127,6 +129,7 @@ class ModelSyncRelationsCommand extends Command
 
             if (empty($relationships)) {
                 $this->line("  No new relations found for {$modelName}.");
+
                 return self::SUCCESS;
             }
 
@@ -134,13 +137,16 @@ class ModelSyncRelationsCommand extends Command
             $this->updateModelWithRelationships($modelName, $relationships);
 
             $this->info("  Successfully processed relationships for {$modelName}!");
+
             return self::SUCCESS;
 
         } catch (ModelNotFoundException $e) {
             $this->error("  Model not found: {$e->getMessage()}");
+
             return self::FAILURE;
         } catch (\Exception $e) {
             $this->error("  Error processing {$modelName}: {$e->getMessage()}");
+
             return self::FAILURE;
         }
     }
@@ -152,20 +158,20 @@ class ModelSyncRelationsCommand extends Command
     {
         $relationships = [];
         $tableName = $this->getTableName($modelName);
-        
+
         $this->info("  Checking table: {$tableName}");
-        
+
         // First try database detection
         if (Schema::hasTable($tableName)) {
             $relationships = $this->detectDatabaseRelationships($modelName, $tableName);
         }
-        
+
         // If no relationships found in database, try migration files
         if (empty($relationships)) {
-            $this->info("  No database relationships found. Checking migration files...");
+            $this->info('  No database relationships found. Checking migration files...');
             $relationships = $this->detectRelationshipsFromMigrations($modelName, $tableName);
         }
-        
+
         return $relationships;
     }
 
@@ -175,31 +181,31 @@ class ModelSyncRelationsCommand extends Command
     protected function detectDatabaseRelationships(string $modelName, string $tableName): array
     {
         $relationships = [];
-        
+
         try {
             // For SQLite, check foreign keys using PRAGMA
             $foreignKeys = DB::select("PRAGMA foreign_key_list({$tableName})");
-            
+
             foreach ($foreignKeys as $fk) {
                 $referencedTable = $fk->table;
                 $referencedModelName = Str::studly(Str::singular($referencedTable));
                 $methodName = Str::camel(Str::singular($referencedTable));
-                
+
                 $relationships[] = [
                     'field' => $fk->from,
                     'references' => $fk->to,
                     'on' => $referencedTable,
                     'relation_type' => 'belongsTo',
                     'method_name' => $methodName,
-                    'related_model' => $referencedModelName
+                    'related_model' => $referencedModelName,
                 ];
-                
+
                 $this->info("  Found belongsTo relationship: {$modelName} belongs to {$referencedModelName} via {$fk->from}");
             }
         } catch (\Exception $e) {
-            $this->warn("  Error detecting database relationships: " . $e->getMessage());
+            $this->warn('  Error detecting database relationships: '.$e->getMessage());
         }
-        
+
         return $relationships;
     }
 
@@ -210,152 +216,193 @@ class ModelSyncRelationsCommand extends Command
     {
         $relationships = [];
         $migrationDir = database_path('migrations');
-        
-        if (!is_dir($migrationDir)) {
-            $this->warn("  Migrations directory not found");
+
+        if (! is_dir($migrationDir)) {
+            $this->warn('  Migrations directory not found');
+
             return $relationships;
         }
-        
+
         $files = scandir($migrationDir);
         $migrationFile = null;
-        
+
         // Find migration file for this table
         foreach ($files as $file) {
-            if (strpos($file, 'create_' . $tableName . '_table') !== false) {
+            if (strpos($file, 'create_'.$tableName.'_table') !== false) {
                 $migrationFile = $file;
                 $this->info("  Found migration file: {$file}");
                 break;
             }
         }
-        
+
         if ($migrationFile) {
             // Parse this model's own migration for belongsTo and morphTo relationships
-            $content = file_get_contents($migrationDir . '/' . $migrationFile);
-            
+            $content = file_get_contents($migrationDir.'/'.$migrationFile);
+
             // Search for foreignId columns
             preg_match_all('/\$table->foreignId\([\'"]([^\'"]+)[\'"]\)(?:->constrained\((?:[\'"]([^\'"]+)[\'"]\))?)/', $content, $matches, PREG_SET_ORDER);
-            
+
             foreach ($matches as $match) {
                 $foreignKeyColumn = $match[1];
                 $referencedTable = isset($match[2]) ? $match[2] : null;
-                
+
                 // If no explicit table specified, guess from column name
-                if (!$referencedTable) {
+                if (! $referencedTable) {
                     $referencedTable = Str::plural(str_replace('_id', '', $foreignKeyColumn));
                 }
-                
+
                 $referencedModelName = Str::studly(Str::singular($referencedTable));
                 $methodName = Str::camel(Str::singular($referencedTable));
-                
+
                 $relationships[] = [
                     'field' => $foreignKeyColumn,
                     'references' => 'id',
                     'on' => $referencedTable,
                     'relation_type' => 'belongsTo',
                     'method_name' => $methodName,
-                    'related_model' => $referencedModelName
+                    'related_model' => $referencedModelName,
                 ];
-                
+
                 $this->info("  Found belongsTo relationship: {$modelName} belongs to {$referencedModelName} via {$foreignKeyColumn}");
             }
-            
+
             // Search for morphs
             preg_match_all('/\$table->morphs\([\'"]([^\'"]+)[\'"]\)/', $content, $morphMatches, PREG_SET_ORDER);
-            
+
             foreach ($morphMatches as $match) {
                 $morphName = $match[1];
-                
+
                 $relationships[] = [
                     'morph_name' => $morphName,
                     'relation_type' => 'morphTo',
-                    'method_name' => $morphName
+                    'method_name' => $morphName,
                 ];
-                
+
                 $this->info("  Found morphTo relationship: {$modelName} morphTo via {$morphName}");
             }
         }
-        
+
         // Now look for reverse relationships in other migration files
-        $this->info("  Looking for reverse relationships in other migrations...");
+        $this->info('  Looking for reverse relationships in other migrations...');
         $singularTableName = Str::singular($tableName);
-        
+
         foreach ($files as $file) {
             if ($file === '.' || $file === '..' || $file === $migrationFile) {
                 continue;
             }
-            
-            if (!str_contains($file, '_create_') || !str_contains($file, '_table.php')) {
+
+            if (! str_contains($file, '_create_') || ! str_contains($file, '_table.php')) {
                 continue;
             }
-            
-            $content = file_get_contents($migrationDir . '/' . $file);
-            
+
+            $content = file_get_contents($migrationDir.'/'.$file);
+
             // Extract the table name this migration creates
             preg_match('/create_([a-z0-9_]+)_table/', $file, $tableMatches);
             if (empty($tableMatches)) {
                 continue;
             }
-            
+
             $otherTableName = $tableMatches[1];
             $otherModelName = Str::studly(Str::singular($otherTableName));
-            
+
             // Look for foreign keys that reference our table
+            $expectedForeignKey = $singularTableName.'_id';
+
             // Pattern 1: foreignId with explicit constrained table
-            preg_match_all('/\$table->foreignId\([\'"]([^\'"]+)[\'"]\)->constrained\([\'"]' . $tableName . '[\'"]\)/', $content, $matches, PREG_SET_ORDER);
-            
-            foreach ($matches as $match) {
+            preg_match_all('/\$table->foreignId\([\'"]([^\'"]+)[\'"]\)->constrained\([\'"]'.$tableName.'[\'"]\)/', $content, $explicitMatches, PREG_SET_ORDER);
+
+            // Pattern 2: foreignId with implicit constrained (Laravel convention)
+            preg_match_all('/\$table->foreignId\([\'"]'.$expectedForeignKey.'[\'"]\)->constrained\(\)/', $content, $implicitMatches, PREG_SET_ORDER);
+
+            // Pattern 3: foreignId without constrained() call at all
+            $hasExplicitConstrained = ! empty($explicitMatches);
+            $hasImplicitConstrained = ! empty($implicitMatches);
+            $hasForeignIdWithoutConstrained = strpos($content, "foreignId('{$expectedForeignKey}')") !== false && ! $hasExplicitConstrained && ! $hasImplicitConstrained;
+
+            // Process explicit constrained relationships
+            foreach ($explicitMatches as $match) {
                 $foreignKeyColumn = $match[1];
                 $methodName = Str::camel(Str::plural($otherTableName));
-                
+
                 $relationships[] = [
                     'field' => 'id',
                     'references' => $foreignKeyColumn,
                     'on' => $otherTableName,
                     'relation_type' => 'hasMany',
                     'method_name' => $methodName,
-                    'related_model' => $otherModelName
+                    'related_model' => $otherModelName,
                 ];
-                
-                $this->info("  Found hasMany relationship: {$modelName} hasMany {$otherModelName} via {$foreignKeyColumn}");
+
+                $this->info("  Found hasMany relationship: {$modelName} hasMany {$otherModelName} via {$foreignKeyColumn} (explicit)");
             }
-            
-            // Pattern 2: foreignId without explicit table (Laravel convention)
-            $expectedForeignKey = $singularTableName . '_id';
-            if (strpos($content, "foreignId('{$expectedForeignKey}')") !== false) {
+
+            // Process implicit constrained relationships
+            foreach ($implicitMatches as $match) {
                 $methodName = Str::camel(Str::plural($otherTableName));
-                
+
                 $relationships[] = [
                     'field' => 'id',
                     'references' => $expectedForeignKey,
                     'on' => $otherTableName,
                     'relation_type' => 'hasMany',
                     'method_name' => $methodName,
-                    'related_model' => $otherModelName
+                    'related_model' => $otherModelName,
                 ];
-                
-                $this->info("  Found hasMany relationship: {$modelName} hasMany {$otherModelName} via {$expectedForeignKey}");
+
+                $this->info("  Found hasMany relationship: {$modelName} hasMany {$otherModelName} via {$expectedForeignKey} (implicit)");
             }
-            
+
+            // Process foreign keys without constrained() calls
+            if ($hasForeignIdWithoutConstrained) {
+                $methodName = Str::camel(Str::plural($otherTableName));
+
+                $relationships[] = [
+                    'field' => 'id',
+                    'references' => $expectedForeignKey,
+                    'on' => $otherTableName,
+                    'relation_type' => 'hasMany',
+                    'method_name' => $methodName,
+                    'related_model' => $otherModelName,
+                ];
+
+                $this->info("  Found hasMany relationship: {$modelName} hasMany {$otherModelName} via {$expectedForeignKey} (unconstrained)");
+            }
+
             // Pattern 3: Check for morphs that could reference this model polymorphically
             preg_match_all('/\$table->morphs\([\'"]([^\'"]+)[\'"]\)/', $content, $morphMatches, PREG_SET_ORDER);
-            
+
             foreach ($morphMatches as $match) {
                 $morphName = $match[1];
                 $methodName = Str::camel(Str::plural($otherTableName));
-                
+
                 $relationships[] = [
                     'morph_name' => $morphName,
                     'relation_type' => 'morphMany',
                     'method_name' => $methodName,
                     'related_model' => $otherModelName,
-                    'suggested' => true // Mark as suggested since we can't be 100% sure
+                    'suggested' => true, // Mark as suggested since we can't be 100% sure
                 ];
-                
+
                 $this->info("  Found potential morphMany relationship: {$modelName} morphMany {$otherModelName} via {$morphName}");
             }
         }
-        
-        return $relationships;
+
+        // Deduplicate relationships by method name to prevent duplicates
+        $uniqueRelationships = [];
+        $seenMethods = [];
+
+        foreach ($relationships as $relationship) {
+            $methodName = $relationship['method_name'] ?? '';
+            if (! in_array($methodName, $seenMethods)) {
+                $uniqueRelationships[] = $relationship;
+                $seenMethods[] = $methodName;
+            } else {
+                $this->warn("  Skipped duplicate relationship: {$methodName}()");
+            }
+        }
+
+        return $uniqueRelationships;
     }
 
     /**
@@ -374,7 +421,7 @@ class ModelSyncRelationsCommand extends Command
         } catch (\Exception $e) {
             // Use convention
         }
-        
+
         return Str::snake(Str::plural($modelName));
     }
 
@@ -384,72 +431,75 @@ class ModelSyncRelationsCommand extends Command
     protected function updateModelWithRelationships(string $modelName, array $relationships): void
     {
         $modelPath = app_path("Models/{$modelName}.php");
-        
-        if (!file_exists($modelPath)) {
+
+        if (! file_exists($modelPath)) {
             $this->error("  Model file not found: {$modelPath}");
+
             return;
         }
-        
+
         $content = file_get_contents($modelPath);
-        $relationsCode = "";
+        $relationsCode = '';
         $addedCount = 0;
         $suggestedCount = 0;
-        
+
         foreach ($relationships as $relationship) {
             $relationType = $relationship['relation_type'] ?? 'belongsTo';
             $methodName = $relationship['method_name'] ?? null;
             $isSuggested = $relationship['suggested'] ?? false;
-            
+
             // Skip if method already exists
             if (strpos($content, "public function {$methodName}()") !== false) {
                 $this->line("    - Skipped '{$methodName}()' (already exists)");
+
                 continue;
             }
-            
+
             if ($relationType === 'belongsTo') {
                 $relatedModel = $relationship['related_model'];
-                
+
                 $relationMethod = "\n    /**\n     * Get the {$methodName} that owns this {$modelName}.\n     */\n    public function {$methodName}()\n    {\n        return \$this->belongsTo({$relatedModel}::class, '{$relationship['field']}');\n    }\n";
-                
+
             } elseif ($relationType === 'hasMany') {
                 $relatedModel = $relationship['related_model'];
-                
+
                 $relationMethod = "\n    /**\n     * Get the {$methodName} for this {$modelName}.\n     */\n    public function {$methodName}()\n    {\n        return \$this->hasMany({$relatedModel}::class, '{$relationship['references']}');\n    }\n";
-                
+
             } elseif ($relationType === 'morphTo') {
                 $relationMethod = "\n    /**\n     * Get the parent {$methodName} model (polymorphic).\n     */\n    public function {$methodName}()\n    {\n        return \$this->morphTo();\n    }\n";
-                
+
             } elseif ($relationType === 'morphMany') {
                 if ($isSuggested) {
                     // For suggested polymorphic relationships, ask user or show as suggestion
                     $this->line("    ? Suggested morphMany: {$methodName}() - {$modelName} morphMany {$relationship['related_model']} (polymorphic)");
                     $suggestedCount++;
+
                     continue;
                 }
-                
+
                 $relatedModel = $relationship['related_model'];
                 $morphName = $relationship['morph_name'];
-                
+
                 $relationMethod = "\n    /**\n     * Get the {$methodName} for this {$modelName} (polymorphic).\n     */\n    public function {$methodName}()\n    {\n        return \$this->morphMany({$relatedModel}::class, '{$morphName}');\n    }\n";
-                
+
             } else {
                 continue;
             }
-            
+
             $relationsCode .= $relationMethod;
             $addedCount++;
             $this->line("    ✓ Added '{$methodName}()' relationship");
         }
-        
+
         // Add relationships before closing bracket
-        if (!empty($relationsCode)) {
-            $content = preg_replace('/}(\s*)$/', $relationsCode . "}$1", $content);
+        if (! empty($relationsCode)) {
+            $content = preg_replace('/}(\s*)$/', $relationsCode.'}$1', $content);
             file_put_contents($modelPath, $content);
             $this->info("  ✅ Added {$addedCount} relationships to {$modelName} model");
         } else {
-            $this->info("  No new relationships to add");
+            $this->info('  No new relationships to add');
         }
-        
+
         if ($suggestedCount > 0) {
             $this->line("  💡 {$suggestedCount} polymorphic relationships suggested (review manually)");
         }
@@ -467,18 +517,21 @@ class ModelSyncRelationsCommand extends Command
                 $relation['type'],
                 $relation['related_model_class'] ?? ''
             );
-            
+
             $modelClass = class_basename($relation['model_class']);
             $this->line("    ✓ Added '{$relation['method_name']}()' to {$modelClass}");
+
             return true;
-            
+
         } catch (\AnasNashat\EasyDev\Exceptions\RelationAlreadyExistsException $e) {
             $modelClass = class_basename($relation['model_class']);
             $this->line("    - Skipped '{$relation['method_name']}()' in {$modelClass} (already exists)");
+
             return false;
         } catch (\Exception $e) {
             $modelClass = class_basename($relation['model_class']);
             $this->error("    ✗ Failed to add '{$relation['method_name']}()' to {$modelClass}: {$e->getMessage()}");
+
             return false;
         }
     }

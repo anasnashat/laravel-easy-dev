@@ -1,0 +1,79 @@
+
+╭─────────────────────────────────────────────────────────────╮
+│                                                             │
+│   📚 Laravel Easy Dev - Help Guide 📚                │
+│                                                             │
+│   Supercharge your Laravel development workflow            │
+│                                                             │
+╰─────────────────────────────────────────────────────────────╯
+
+🚀 Available Commands:
+══════════════════════
+
+Primary Commands:
+────────────────────
+  🎯 easy-dev:make {model}
+     Enhanced CRUD generator with interactive UI
+
+  🏗️ easy-dev:crud {model}
+     Classic CRUD generator with Repository and Service patterns
+
+
+Utilities Commands:
+────────────────────
+  🗄️ easy-dev:repository {model}
+     Generate repository pattern for existing model
+
+  🔄 easy-dev:sync-relations {model?}
+     Auto-detect and add relationships to models
+
+
+Help Commands:
+────────────────────
+  ❓ easy-dev:help
+     Show this beautiful help guide
+
+⚙️  Command Options:
+═══════════════════
+
+  🗄️ --with-repository
+     Generate repository pattern with interface
+     → Adds Repository and RepositoryInterface
+
+  🔧 --with-service
+     Generate service layer with business logic
+     → Adds Service and ServiceInterface
+
+  ⚡ --without-interface
+     Skip interface generation (use with above options)
+     → Only concrete classes, no interfaces
+
+  🌐 --api-only
+     Generate API controller only
+     → Creates API routes and controller
+
+  🖥️ --web-only
+     Generate web controller only
+     → Creates web routes and controller
+
+  🎮 --interactive
+     Run in interactive mode with guided setup
+     → Step-by-step configuration wizard
+
+💡 Use --examples flag to see usage examples!
+
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│                          🌟 Get Involved 🌟                                  │
+│                                                                              │
+│  📖 Documentation  │ github.com/anasnashat/laravel-easy-dev/wiki             │
+│  🐛 Report Issues    │ github.com/anasnashat/laravel-easy-dev/issues         │
+│  ⭐ Give us a Star │ github.com/anasnashat/laravel-easy-dev                  │
+│  💬 Discussions     │ Join our community discussions                         │
+│                                                                              │
+│                 Built with ❤️  for the Laravel community                     │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+Thank you for using Laravel Easy Dev! 🚀
+

@@ -80,8 +80,7 @@ class EnhancedCrudCommand extends Command
             return self::SUCCESS;
         }
 
-        $this->displayProgressDemo($modelName, $choices);
-        return self::SUCCESS;
+        return $this->executeRealCrudGeneration($modelName, $choices);
     }
 
     /**
@@ -92,8 +91,8 @@ class EnhancedCrudCommand extends Command
         $modelName = $this->argument('model');
         $choices = $this->getOptionsFromArguments();
         
-        $this->displayProgressDemo($modelName, $choices);
-        return self::SUCCESS;
+        // Show progress with real generation
+        return $this->executeRealCrudGeneration($modelName, $choices);
     }
 
     /**
@@ -187,6 +186,99 @@ class EnhancedCrudCommand extends Command
         $this->newLine();
         
         return $this->confirm('🚀 Proceed with generation?', true);
+    }
+
+    /**
+     * Execute real CRUD generation with beautiful UI
+     */
+    protected function executeRealCrudGeneration(string $modelName, array $choices): int
+    {
+        // Start the progress bar
+        $this->info("🎬 Starting CRUD generation for {$modelName}");
+        $this->newLine();
+        
+        $progressBar = $this->output->createProgressBar($this->totalSteps);
+        $progressBar->setFormat(' %current%/%max% [%bar%] %percent:3s%% %message%');
+        $progressBar->setMessage('Starting...');
+        $progressBar->start();
+
+        // Build the actual command arguments
+        $arguments = ['model' => $modelName];
+        $options = [];
+        
+        // Repository pattern
+        if ($choices['repository'] !== 'No') {
+            $options['--with-repository'] = true;
+        }
+        
+        // Service pattern
+        if ($choices['service'] !== 'No') {
+            $options['--with-service'] = true;
+        }
+        
+        // Interface handling
+        if (isset($choices['repository']) && $choices['repository'] === 'Yes, without interface' ||
+            isset($choices['service']) && $choices['service'] === 'Yes, without interface') {
+            $options['--without-interface'] = true;
+        }
+        
+        // Controller type
+        if (isset($choices['controller'])) {
+            if ($choices['controller'] === 'API Only') {
+                $options['--api-only'] = true;
+            } elseif ($choices['controller'] === 'Web Only') {
+                $options['--web-only'] = true;
+            }
+        }
+
+        // Simulate progress while calling the real command
+        foreach ($this->steps as $step => $message) {
+            $progressBar->setMessage($message);
+            usleep(300000); // 0.3 seconds
+            $progressBar->advance();
+        }
+
+        try {
+            // Call the real CRUD command
+            $exitCode = $this->call('easy-dev:crud', array_merge($arguments, $options));
+            
+            $progressBar->finish();
+            $this->newLine(2);
+            
+            if ($exitCode === self::SUCCESS) {
+                $this->displayEnhancedSuccessMessage($modelName, $choices);
+                return self::SUCCESS;
+            } else {
+                $this->error('❌ CRUD generation failed!');
+                return self::FAILURE;
+            }
+        } catch (\Exception $e) {
+            $progressBar->finish();
+            $this->newLine(2);
+            $this->error("❌ Error during generation: {$e->getMessage()}");
+            return self::FAILURE;
+        }
+    }
+
+    /**
+     * Display enhanced success message after real generation
+     */
+    protected function displayEnhancedSuccessMessage(string $modelName, array $choices): void
+    {
+        $this->newLine();
+        $this->line('╭─────────────────────────────────────────────────────────────╮');
+        $this->line('│                                                             │');
+        $this->line('│   🎉 <fg=green;options=bold>CRUD Generation Completed Successfully!</> 🎉        │');
+        $this->line('│                                                             │');
+        $this->line('╰─────────────────────────────────────────────────────────────╯');
+        $this->newLine();
+
+        $this->info("📦 Generated files for <fg=cyan>{$modelName}</>");
+        $this->line('─────────────────────────────────');
+        $this->newLine();
+
+        // Show next steps
+        $this->displayNextSteps($modelName, $choices);
     }
 
     /**

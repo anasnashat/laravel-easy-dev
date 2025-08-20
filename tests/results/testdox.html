@@ -51,28 +51,62 @@
         </style>
     </head>
     <body>
+        <h2>Code Writer (AnasNashat\EasyDev\Tests\Unit\Services\CodeWriter)</h2>
+        <ul>
+            <li class="defect">Add relation successfully</li>
+            <li class="success">Add relation throws exception for existing method</li>
+            <li class="success">Add relation throws exception for missing file</li>
+            <li class="defect">Add use statement</li>
+            <li class="defect">Add use statement skips if already exists</li>
+            <li class="defect">Method exists</li>
+        </ul>
+        <h2>Debug Help Command (AnasNashat\EasyDev\Tests\Feature\Commands\DebugHelpCommand)</h2>
+        <ul>
+            <li class="defect">Debug help output</li>
+        </ul>
+        <h2>Debug Help Output (AnasNashat\EasyDev\Tests\Feature\Commands\DebugHelpOutput)</h2>
+        <ul>
+            <li class="defect">Debug actual output</li>
+        </ul>
         <h2>Easy Dev Help Command (AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommand)</h2>
         <ul>
-            <li class="success">Help command displays banner</li>
-            <li class="success">Help command lists all commands</li>
-            <li class="success">Help command shows usage examples</li>
-            <li class="success">Help command shows tips section</li>
-            <li class="success">Help command shows github link</li>
-            <li class="success">Help command shows command descriptions</li>
-            <li class="success">Help command shows command options</li>
+            <li class="defect">Help command displays banner</li>
+            <li class="defect">Help command lists all commands</li>
+            <li class="defect">Help command shows usage examples</li>
+            <li class="defect">Help command shows tips section</li>
+            <li class="defect">Help command shows github link</li>
+            <li class="defect">Help command shows command descriptions</li>
+            <li class="defect">Help command shows command options</li>
+        </ul>
+        <h2>File Generator (AnasNashat\EasyDev\Tests\Unit\Services\FileGenerator)</h2>
+        <ul>
+            <li class="defect">Get stub content with replacements</li>
+            <li class="defect">Generate file creates directory if not exists</li>
+            <li class="success">Get model name from table</li>
+            <li class="success">Get controller name from model</li>
+            <li class="success">Get request names from model</li>
+            <li class="success">Get stub content throws exception for missing stub</li>
         </ul>
         <h2>Model Sync Relations Command (AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommand)</h2>
         <ul>
             <li class="success">Sync relations for specific model</li>
             <li class="success">Sync relations with all flag</li>
-            <li class="success">Sync relations handles nonexistent model</li>
-            <li class="success">Sync relations shows progress for each model</li>
+            <li class="defect">Sync relations handles nonexistent model</li>
+            <li class="defect">Sync relations shows progress for each model</li>
             <li class="success">Sync relations detects foreign key relationships</li>
             <li class="success">Sync relations handles models with no relations</li>
             <li class="success">Sync relations skips existing relations</li>
             <li class="success">Sync relations processes self referencing models</li>
             <li class="success">Sync relations provides helpful output</li>
             <li class="success">Sync relations handles database errors gracefully</li>
+        </ul>
+        <h2>Sqlite Schema Parser (AnasNashat\EasyDev\Tests\Unit\Parsers\SqliteSchemaParser)</h2>
+        <ul>
+            <li class="success">Get foreign keys for table</li>
+            <li class="success">Get all tables</li>
+            <li class="success">Get table columns</li>
+            <li class="success">Get polymorphic columns for table</li>
+            <li class="success">Find pivot tables for table</li>
         </ul>
     </body>
 </html>

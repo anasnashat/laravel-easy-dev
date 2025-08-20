@@ -25,7 +25,7 @@
 Install the package via Composer:
 
 ```bash
-composer require anas/easy-dev
+composer require anas/easy-dev --dev
 ```
 
 The package will automatically register itself via Laravel's package discovery.

@@ -1,0 +1,75 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\{{ ModelName }};
+{{ ServiceInterfaceUse }}{{ RepositoryInterfaceUse }}use Illuminate\Database\Eloquent\Collection;
+
+class {{ ServiceName }}{{ ServiceInterfaceImplements }}
+{
+    /**
+     * Create a new service instance.
+     */
+    public function __construct({{ RepositoryDependency }})
+    {
+    }
+
+    /**
+     * Get all {{ modelName }} records with optional filters.
+     */
+    public function getAll{{ ModelName }}s(array $filters = []): Collection
+    {
+        // Apply business logic here if needed
+        return $this->repository->getAll($filters);
+    }
+
+    /**
+     * Find a {{ modelName }} by ID.
+     */
+    public function find{{ ModelName }}ById(int $id): ?{{ ModelName }}
+    {
+        return $this->repository->findById($id);
+    }
+
+    /**
+     * Create a new {{ modelName }}.
+     */
+    public function create{{ ModelName }}(array $data): {{ ModelName }}
+    {
+        // Add business logic validation here
+        $validatedData = $this->validateBusinessRules($data);
+        
+        return $this->repository->create($validatedData);
+    }
+
+    /**
+     * Update an existing {{ modelName }}.
+     */
+    public function update{{ ModelName }}({{ ModelName }} ${{ modelName }}, array $data): {{ ModelName }}
+    {
+        // Add business logic validation here
+        $validatedData = $this->validateBusinessRules($data);
+        
+        return $this->repository->update(${{ modelName }}, $validatedData);
+    }
+
+    /**
+     * Delete a {{ modelName }}.
+     */
+    public function delete{{ ModelName }}({{ ModelName }} ${{ modelName }}): bool
+    {
+        // Add any business logic before deletion
+        return $this->repository->delete(${{ modelName }});
+    }
+
+    /**
+     * Validate business rules.
+     */
+    protected function validateBusinessRules(array $data): array
+    {
+        // Add custom business logic validation here
+        // For example: check permissions, validate relationships, etc.
+        
+        return $data;
+    }
+}

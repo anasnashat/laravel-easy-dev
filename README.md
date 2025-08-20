@@ -1,120 +1,206 @@
-# Laravel CRUD & Model Relations Generator
+# 🚀 Laravel Easy Dev v2
 
-A Laravel package that provides powerful artisan commands to generate CRUD operations and manage model relationships with minimal effort.
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/anas/easy-dev.svg?style=flat-square)](https://packagist.org/packages/anas/easy-dev)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/anasnashat/laravel-easy-dev/tests.yml?branch=v2-development&label=tests&style=flat-square)](https://github.com/anasnashat/laravel-easy-dev/actions)
+[![GitHub Code Style Action Status](https://img.shields.io/github/actions/workflow/status/anasnashat/laravel-easy-dev/pint.yml?branch=v2-development&label=code%20style&style=flat-square)](https://github.com/anasnashat/laravel-easy-dev/actions)
+[![Total Downloads](https://img.shields.io/packagist/dt/anas/easy-dev.svg?style=flat-square)](https://packagist.org/packages/anas/easy-dev)
 
-## Installation
+**Laravel Easy Dev v2** is a powerful package that supercharges your Laravel development workflow with beautiful UI, interactive CRUD generation, Repository & Service patterns, and intelligent relationship detection.
 
-You can install the package via composer:
+## ✨ Features
 
-```bash
-composer require anas/easy-dev
-```
 
-## Features
+- 🚀 **Enhanced CRUD Generation** - Interactive CRUD with Repository and Service patterns
+- 🎯 **Beautiful UI** - Stunning command-line interface with progress bars and colors
+- 🔄 **Auto Relationship Detection** - Intelligent schema analysis and relationship generation
+- 🏗️ **Clean Architecture** - Repository and Service layer with interfaces
+- 📝 **Smart Form Requests** - Intelligent validation rules with custom error messages
+- 🌐 **API & Web Support** - Generate controllers for both API and web routes
+- 🎨 **Customizable Templates** - Flexible stub templates for all generated files
+- 🧪 **Test Generation** - Generate comprehensive feature and unit tests
+- 📚 **Comprehensive Documentation** - Built-in help system with examples
+- 🎮 **Interactive Mode** - Step-by-step guided setup wizard
 
-- **CRUD Generation**: Generate models, controllers, repositories, and form requests with a single command
-- **Model Relations**: Easily add relationships to existing models
-- **Database Sync**: Scan database structure to automatically detect and add model relationships
-- **Field Detection**: Automatically detect fields from migrations and generate appropriate validation rules
-- **Repository Pattern**: Option to implement the repository pattern with dependency injection
+## 📦 Installation
 
-## Usage
-
-### Generate CRUD 
-
-```bash
-# Basic usage
-php artisan make:crud Post
-
-# With API controller
-php artisan make:crud Post --api
-
-# With routes and predefined relationships
-php artisan make:crud Post --routes --relations="user:belongsTo,comment:hasMany"
-```
-
-### Add Relationships to Models
+Install the package via Composer:
 
 ```bash
-php artisan make:model-relation Post --relations="user:belongsTo,tag:belongsToMany,comment:hasMany"
+composer require anas/easy-dev --dev
 ```
 
-### Sync Database Relationships
+The package will automatically register itself via Laravel's package discovery.
 
-```bash
-# For a specific model
-php artisan model:sync-relations Post
+## ⚙️ Configuration
 
-# For all models
-php artisan model:sync-relations --all
-
-# For polymorphic relationships
-php artisan model:sync-relations Post --morph-targets="User,Comment"
-```
-
-## Documentation
-
-For detailed documentation, see the [Laravel Easy Dev Commands](docs/commands.md) guide.
-
-### make:crud
-
-The `make:crud` command generates a complete set of files for CRUD operations including a model, migration, controller, form requests, and optionally a repository pattern implementation.
-
-#### Features
-
-- Intelligent field detection for validation rules
-- Repository pattern support with dependency injection
-- Smart relationship detection from database structure
-- Optional API controller support
-- Automatic route registration
-
-#### Options
-
-| Option | Description |
-|--------|-------------|
-| `--api` | Generate an API controller that returns JSON responses |
-| `--routes` | Automatically add resource routes to the routes file |
-| `--force` | Overwrite existing files without prompting |
-| `--relations` | Define relationships for the model (format: "model:type,model:type") |
-
-### make:model-relation
-
-Add relationships to existing models with proper methods and naming conventions.
-
-#### Options
-
-| Option | Description |
-|--------|-------------|
-| `--relations` | Define relationships for the model (format: "model:type,model:type") |
-
-#### Supported Relationship Types
-
-- `belongsTo` - Creates a relationship where this model "belongs to" another model
-- `hasMany` - Creates a one-to-many relationship
-- `hasOne` - Creates a one-to-one relationship
-- `belongsToMany` - Creates a many-to-many relationship through a pivot table
-
-### model:sync-relations
-
-Automatically detect and set up Eloquent relationships between your models based on database schema and migration files.
-
-#### Options
-
-| Option | Description |
-|--------|-------------|
-| `--all` | Sync relationships for all models in your application |
-| `--morph-targets` | Comma-separated list of models to apply polymorphic relationships to |
-
-## Configuration
-
-You can publish the configuration file with:
+Publish the configuration file:
 
 ```bash
 php artisan vendor:publish --tag=easy-dev-config
 ```
 
-This will publish a `easy-dev.php` file in your config directory where you can customize the default behavior.
+Publish the stub files (optional):
 
-## License
+```bash
+php artisan vendor:publish --tag=easy-dev-stubs
+```
+
+## 🚀 Quick Start
+
+Get started in seconds with the interactive mode:
+
+```bash
+# Interactive CRUD generation
+php artisan easy-dev:make Product --interactive
+
+# Quick CRUD with Repository and Service
+php artisan easy-dev:crud Order --with-repository --with-service
+
+# Auto-detect all relationships
+php artisan easy-dev:sync-relations --all
+```
+
+## 📖 Documentation
+
+- **[📚 Complete Documentation](docs/COMPLETE_DOCUMENTATION.md)** - Full guide with examples
+- **[⚡ Quick Start Guide](docs/QUICK_START.md)** - Get up and running fast
+- **[🔧 Command Reference](docs/COMMAND_REFERENCE.md)** - All commands and options
+- **[🔗 Relationship Detection](docs/RELATIONSHIP_DETECTION.md)** - Auto-relationship system
+- **[⚙️ Configuration Guide](docs/CONFIGURATION.md)** - Customize everything
+- **[🌐 API Development](docs/API_DEVELOPMENT.md)** - API-first development
+- **[💡 Examples & Use Cases](docs/EXAMPLES_USE_CASES.md)** - Real-world examples
+
+## 🎯 Core Commands
+
+### Enhanced CRUD Generation
+
+```bash
+# Interactive mode with guided setup
+php artisan easy-dev:make Product --interactive
+
+# Generate with Repository and Service patterns
+php artisan easy-dev:crud Order --with-repository --with-service
+
+# API-only generation
+php artisan easy-dev:make User --api-only --with-service
+```
+
+### Relationship Management
+
+```bash
+# Auto-detect all relationships
+php artisan easy-dev:sync-relations --all
+
+# Sync specific model
+php artisan easy-dev:sync-relations User
+
+# Add custom relationship
+php artisan easy-dev:add-relation User hasMany Post
+```
+
+### Utility Commands
+
+```bash
+# Generate API resources
+php artisan easy-dev:api-resource Product
+
+# Generate repository pattern
+php artisan easy-dev:repository Order
+
+# Beautiful help guide
+php artisan easy-dev:help
+
+# UI demonstration
+php artisan easy-dev:demo-ui
+```
+
+## 🎨 Beautiful UI
+
+Experience the stunning command-line interface:
+
+```bash
+╭─────────────────────────────────────────────────────────────╮
+│                                                             │
+│   🚀 Laravel Easy Dev CRUD Generator 🚀                │
+│                                                             │
+│   Generate complete CRUD with Repository & Service patterns   │
+│                                                             │
+╰─────────────────────────────────────────────────────────────╯
+
+ 10/10 [============================] 100% ✨ Finalizing...
+```
+
+## 🏗️ Generated Architecture
+
+Laravel Easy Dev v2 creates a clean, maintainable architecture:
+
+```
+app/
+├── Http/
+│   ├── Controllers/
+│   │   ├── ProductController.php         # Web controller
+│   │   └── Api/
+│   │       └── ProductApiController.php  # API controller
+│   ├── Requests/
+│   │   ├── StoreProductRequest.php       # Validation
+│   │   └── UpdateProductRequest.php      # Validation
+│   └── Resources/
+│       ├── ProductResource.php           # API resource
+│       └── ProductCollection.php         # API collection
+├── Models/
+│   └── Product.php                       # Enhanced model
+├── Repositories/
+│   ├── ProductRepository.php             # Implementation
+│   └── Contracts/
+│       └── ProductRepositoryInterface.php # Interface
+└── Services/
+    ├── ProductService.php                # Implementation
+    └── Contracts/
+        └── ProductServiceInterface.php   # Interface
+```
+
+## 🔄 Intelligent Relationship Detection
+
+Automatically detects and generates:
+
+- **Foreign Key Relationships** - `belongsTo` and `hasMany`
+- **Pivot Table Relationships** - `belongsToMany`
+- **Polymorphic Relationships** - `morphTo`, `morphOne`, `morphMany`
+- **Self-Referencing Relationships** - Parent/child hierarchies
+
+
+## 📋 Requirements
+
+- **PHP**: 8.1+
+- **Laravel**: 9.0+ | 10.0+ | 11.0+ | 12.0+
+- **Database**: MySQL, PostgreSQL, or SQLite
+
+## 🤝 Contributing
+
+We welcome contributions! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+
+## 📄 License
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
+
+## 👨‍💻 Credits
+
+- [Anas Nashaat](https://github.com/anasnashat)
+- [All Contributors](https://github.com/anasnashat/laravel-easy-dev/contributors)
+
+## 💬 Support & Community
+
+- **📖 Documentation**: [GitHub Wiki](https://github.com/anasnashat/laravel-easy-dev/wiki)
+- **🐛 Issues**: [GitHub Issues](https://github.com/anasnashat/laravel-easy-dev/issues)
+- **💬 Discussions**: [GitHub Discussions](https://github.com/anasnashat/laravel-easy-dev/discussions)
+- **⭐ Star us**: [GitHub Repository](https://github.com/anasnashat/laravel-easy-dev)
+
+---
+
+<div align="center">
+
+**Made with ❤️ for the Laravel community**
+
+[⭐ Star us on GitHub](https://github.com/anasnashat/laravel-easy-dev) • [📖 Read the Docs](https://github.com/anasnashat/laravel-easy-dev/wiki) • [🐛 Report Issues](https://github.com/anasnashat/laravel-easy-dev/issues)
+
+</div>

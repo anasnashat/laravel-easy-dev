@@ -1,0 +1,99 @@
+<?php
+
+namespace App\Repositories;
+
+use App\Models\{{ ModelName }};
+{{ InterfaceUse }}use Illuminate\Database\Eloquent\Collection;
+
+class {{ RepositoryName }}{{ InterfaceImplements }}
+{
+    /**
+     * Create a new repository instance.
+     */
+    public function __construct(protected {{ ModelName }} $model)
+    {
+    }
+
+    /**
+     * Get all {{ modelName }} records with optional filters.
+     */
+    public function getAll(array $filters = []): Collection
+    {
+        $query = $this->model->query();
+
+        // Eager load relationships to prevent N+1 queries
+        $query->with([{{ eagerLoadRelationships }}]);
+
+        // Apply filters
+        {{ filterLogic }}
+
+        return $query->get();
+    }
+
+    /**
+     * Find a {{ modelName }} by ID.
+     */
+    public function findById(int $id): ?{{ ModelName }}
+    {
+        return $this->model->with([{{ eagerLoadRelationships }}])->find($id);
+    }
+
+    /**
+     * Create a new {{ modelName }}.
+     */
+    public function create(array $data): {{ ModelName }}
+    {
+        return $this->model->create($data);
+    }
+
+    /**
+     * Update an existing {{ modelName }}.
+     */
+    public function update({{ ModelName }} ${{ modelName }}, array $data): {{ ModelName }}
+    {
+        ${{ modelName }}->update($data);
+        return ${{ modelName }}->fresh([{{ eagerLoadRelationships }}]);
+    }
+
+    /**
+     * Delete a {{ modelName }}.
+     */
+    public function delete({{ ModelName }} ${{ modelName }}): bool
+    {
+        return ${{ modelName }}->delete();
+    }
+
+    /**
+     * Get paginated {{ modelName }} records.
+     */
+    public function paginate(int $perPage = 15, array $filters = []): \Illuminate\Contracts\Pagination\LengthAwarePaginator
+    {
+        $query = $this->model->query();
+
+        // Eager load relationships
+        $query->with([{{ eagerLoadRelationships }}]);
+
+        // Apply filters
+        {{ filterLogic }}
+
+        return $query->paginate($perPage);
+    }
+
+    /**
+     * Find {{ modelName }} records by specific criteria.
+     */
+    public function findBy(array $criteria): Collection
+    {
+        $query = $this->model->query();
+
+        foreach ($criteria as $field => $value) {
+            if (is_array($value)) {
+                $query->whereIn($field, $value);
+            } else {
+                $query->where($field, $value);
+            }
+        }
+
+        return $query->with([{{ eagerLoadRelationships }}])->get();
+    }
+}

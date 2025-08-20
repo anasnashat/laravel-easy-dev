@@ -1,0 +1,69 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ modelClass }};
+use App\Http\Controllers\Controller;
+use App\Http\Requests\{{ storeRequest }};
+use App\Http\Requests\{{ updateRequest }};
+{{ ServiceInterfaceUse }}use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+
+class {{ class }} extends Controller
+{
+    /**
+     * Create a new controller instance.
+     */
+    public function __construct({{ ServiceDependency }})
+    {
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): JsonResponse
+    {
+        $filters = $request->only([{{ filterableFields }}]);
+        ${{ modelVariablePlural }} = $this->service->getAll{{ ModelName }}s($filters);
+
+        return response()->json(${{ modelVariablePlural }});
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store({{ storeRequest }} $request): JsonResponse
+    {
+        ${{ modelVariable }} = $this->service->create{{ ModelName }}($request->validated());
+
+        return response()->json(${{ modelVariable }}, 201);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show({{ model }} ${{ modelVariable }}): JsonResponse
+    {
+        return response()->json(${{ modelVariable }}{{ withRelationships }});
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update({{ updateRequest }} $request, {{ model }} ${{ modelVariable }}): JsonResponse
+    {
+        $updated{{ ModelName }} = $this->service->update{{ ModelName }}(${{ modelVariable }}, $request->validated());
+
+        return response()->json($updated{{ ModelName }});
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy({{ model }} ${{ modelVariable }}): JsonResponse
+    {
+        $this->service->delete{{ ModelName }}(${{ modelVariable }});
+
+        return response()->json(null, 204);
+    }
+}

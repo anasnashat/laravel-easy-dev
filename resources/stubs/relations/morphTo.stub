@@ -1,0 +1,7 @@
+/**
+ * Get the owning {{ methodName }} model.
+ */
+public function {{ methodName }}()
+{
+    return $this->morphTo();
+}

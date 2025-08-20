@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Repositories\Contracts;
+
+use App\Models\{{ ModelName }};
+use Illuminate\Database\Eloquent\Collection;
+
+interface {{ InterfaceName }}
+{
+    /**
+     * Get all {{ modelName }} records.
+     */
+    public function all(): Collection;
+
+    /**
+     * Find a {{ modelName }} by ID.
+     */
+    public function find(int $id): ?{{ ModelName }};
+
+    /**
+     * Create a new {{ modelName }}.
+     */
+    public function create(array $data): {{ ModelName }};
+
+    /**
+     * Update a {{ modelName }}.
+     */
+    public function update(int $id, array $data): bool;
+
+    /**
+     * Delete a {{ modelName }}.
+     */
+    public function delete(int $id): bool;
+
+    /**
+     * Get paginated {{ modelName }} records.
+     */
+    public function paginate(int $perPage = 15): \Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
+    /**
+     * Find {{ modelName }} records by specific criteria.
+     */
+    public function findWhere(array $criteria): Collection;
+}

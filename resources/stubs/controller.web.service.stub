@@ -1,0 +1,89 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ modelClass }};
+use App\Http\Controllers\Controller;
+use App\Http\Requests\{{ storeRequest }};
+use App\Http\Requests\{{ updateRequest }};
+{{ ServiceInterfaceUse }}use Illuminate\Http\Request;
+use Illuminate\View\View;
+use Illuminate\Http\RedirectResponse;
+
+class {{ class }} extends Controller
+{
+    /**
+     * Create a new controller instance.
+     */
+    public function __construct({{ ServiceDependency }})
+    {
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): View
+    {
+        $filters = $request->only([{{ filterableFields }}]);
+        ${{ modelVariablePlural }} = $this->service->getAll{{ ModelName }}s($filters);
+
+        return view('{{ modelVariable }}.index', compact('{{ modelVariablePlural }}'));
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
+    {
+        return view('{{ modelVariable }}.create');
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store({{ storeRequest }} $request): RedirectResponse
+    {
+        ${{ modelVariable }} = $this->service->create{{ ModelName }}($request->validated());
+
+        return redirect()->route('{{ resourceName }}.show', ${{ modelVariable }})
+            ->with('success', '{{ ModelName }} created successfully.');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show({{ model }} ${{ modelVariable }}): View
+    {
+        return view('{{ modelVariable }}.show', compact('{{ modelVariable }}'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit({{ model }} ${{ modelVariable }}): View
+    {
+        return view('{{ modelVariable }}.edit', compact('{{ modelVariable }}'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update({{ updateRequest }} $request, {{ model }} ${{ modelVariable }}): RedirectResponse
+    {
+        $updated{{ ModelName }} = $this->service->update{{ ModelName }}(${{ modelVariable }}, $request->validated());
+
+        return redirect()->route('{{ resourceName }}.show', $updated{{ ModelName }})
+            ->with('success', '{{ ModelName }} updated successfully.');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy({{ model }} ${{ modelVariable }}): RedirectResponse
+    {
+        $this->service->delete{{ ModelName }}(${{ modelVariable }});
+
+        return redirect()->route('{{ resourceName }}.index')
+            ->with('success', '{{ ModelName }} deleted successfully.');
+    }
+}

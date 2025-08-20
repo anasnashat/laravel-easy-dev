@@ -1,0 +1,7 @@
+/**
+ * Get the {{ relatedModel }} associated with this model.
+ */
+public function {{ methodName }}()
+{
+    return $this->morphOne({{ relatedModelClass }}::class, '{{ methodName }}');
+}

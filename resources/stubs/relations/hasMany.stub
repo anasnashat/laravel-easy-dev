@@ -1,0 +1,7 @@
+/**
+ * Get the {{ relatedModel }} for this model.
+ */
+public function {{ methodName }}()
+{
+    return $this->hasMany({{ relatedModelClass }}::class);
+}

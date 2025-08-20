@@ -9,6 +9,7 @@
 
 ## ✨ Features
 
+
 - 🚀 **Enhanced CRUD Generation** - Interactive CRUD with Repository and Service patterns
 - 🎯 **Beautiful UI** - Stunning command-line interface with progress bars and colors
 - 🔄 **Auto Relationship Detection** - Intelligent schema analysis and relationship generation

@@ -87,6 +87,52 @@
             <li class="success">Get request names from model</li>
             <li class="success">Get stub content throws exception for missing stub</li>
         </ul>
+        <h2>Generation Context (AnasNashat\EasyDev\Tests\Unit\Services\GenerationContext)</h2>
+        <ul>
+            <li class="success">Dry run mode defaults to false</li>
+            <li class="success">Set dry run mode</li>
+            <li class="success">Record created file</li>
+            <li class="success">Record modified file creates backup</li>
+            <li class="success">Dry run does not create backup</li>
+            <li class="success">Rollback deletes created files</li>
+            <li class="success">Rollback restores modified files</li>
+            <li class="success">Get dry run summary</li>
+            <li class="success">Get summary counts</li>
+            <li class="success">Reset clears all state</li>
+            <li class="success">Cleanup backups removes backup files</li>
+        </ul>
+        <h2>Make Crud Command (AnasNashat\EasyDev\Tests\Feature\Commands\MakeCrudCommand)</h2>
+        <ul>
+            <li class="success">Crud command requires model argument</li>
+            <li class="success">Crud command rejects conflicting options</li>
+            <li class="success">Dry run does not create files</li>
+            <li class="success">Dry run shows repository files when flag set</li>
+            <li class="success">Dry run shows service files when flag set</li>
+            <li class="success">Dry run shows policy file when flag set</li>
+            <li class="success">Dry run shows dto file when flag set</li>
+            <li class="success">Dry run shows observer file when flag set</li>
+            <li class="success">Dry run api only does not show web controller</li>
+            <li class="success">Dry run web only does not show api controller</li>
+        </ul>
+        <h2>Make Dto Command (AnasNashat\EasyDev\Tests\Feature\Commands\MakeDtoCommand)</h2>
+        <ul>
+            <li class="success">Dto command requires model argument</li>
+            <li class="success">Dto command generates file</li>
+        </ul>
+        <h2>Make Policy Command (AnasNashat\EasyDev\Tests\Feature\Commands\MakePolicyCommand)</h2>
+        <ul>
+            <li class="success">Policy command requires model argument</li>
+            <li class="success">Policy command generates file</li>
+        </ul>
+        <h2>Migration Parser (AnasNashat\EasyDev\Tests\Unit\Services\MigrationParser)</h2>
+        <ul>
+            <li class="success">Parse migration extracts columns</li>
+            <li class="success">Generate validation rules for string columns</li>
+            <li class="success">Generate validation rules for integer columns</li>
+            <li class="success">Generate validation rules for boolean columns</li>
+            <li class="success">Generate validation rules for nullable columns</li>
+            <li class="success">Migration exists returns false for nonexistent</li>
+        </ul>
         <h2>Model Sync Relations Command (AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommand)</h2>
         <ul>
             <li class="success">Sync relations for specific model</li>

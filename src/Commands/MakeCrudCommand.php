@@ -4,6 +4,7 @@ namespace AnasNashat\EasyDev\Commands;
 
 use Illuminate\Console\Command;
 use AnasNashat\EasyDev\Services\FileGenerator;
+use AnasNashat\EasyDev\Services\GenerationContext;
 use AnasNashat\EasyDev\Services\RouteWriter;
 use AnasNashat\EasyDev\Services\MigrationParser;
 use AnasNashat\EasyDev\Services\ModelEnhancer;
@@ -19,6 +20,7 @@ class MakeCrudCommand extends Command
 
     public function __construct(
         protected FileGenerator $generator,
+        protected GenerationContext $context,
         protected RouteWriter $routeWriter,
         protected MigrationParser $migrationParser,
         protected ModelEnhancer $modelEnhancer,
@@ -32,9 +34,13 @@ class MakeCrudCommand extends Command
         $modelName = $this->argument('model');
         $withRepository = $this->option('with-repository');
         $withService = $this->option('with-service');
+        $withPolicy = $this->option('with-policy');
+        $withDto = $this->option('with-dto');
+        $withObserver = $this->option('with-observer');
         $apiOnly = $this->option('api-only');
         $webOnly = $this->option('web-only');
         $withoutInterface = $this->option('without-interface');
+        $dryRun = $this->option('dry-run');
         
         // Validate options
         if ($apiOnly && $webOnly) {
@@ -43,60 +49,158 @@ class MakeCrudCommand extends Command
         }
 
         $isApi = $apiOnly || (!$webOnly && $this->option('api'));
+
+        // Configure generation context
+        $this->context->reset();
+        $this->context->setDryRun($dryRun);
         
         try {
-            $this->info("Generating enhanced CRUD files for {$modelName}...");
+            if ($dryRun) {
+                $this->info("🔍 DRY RUN — Previewing CRUD generation for {$modelName}...");
+                $this->newLine();
+            } else {
+                $this->info("Generating enhanced CRUD files for {$modelName}...");
+            }
 
             // Check and parse migration
             $migrationData = $this->parseMigrationData($modelName);
 
-            // Generate or enhance model
-            $this->generateOrEnhanceModel($modelName, $migrationData);
+            if (!$dryRun) {
+                // Generate or enhance model
+                $this->generateOrEnhanceModel($modelName, $migrationData);
 
-            // Generate migration if not exists
-            if (!$this->migrationParser->migrationExists($modelName)) {
-                $this->generateMigration($modelName);
+                // Generate migration if not exists
+                if (!$this->migrationParser->migrationExists($modelName)) {
+                    $this->generateMigration($modelName);
+                } else {
+                    $this->line("  • Migration for {$modelName} already exists, skipping...");
+                }
+
+                // Generate repository if requested
+                if ($withRepository) {
+                    $this->generateRepository($modelName, !$withoutInterface, $migrationData);
+                }
+
+                // Generate service if requested
+                if ($withService) {
+                    $this->generateService($modelName, $withRepository, !$withoutInterface);
+                }
+
+                // Generate controllers
+                $this->generateControllers($modelName, $apiOnly, $webOnly, $withService, $migrationData);
+
+                // Generate API resources for API controllers
+                if (!$webOnly) {
+                    $this->generateApiResources($modelName);
+                }
+
+                // Generate form requests
+                $this->generateFormRequests($modelName, $migrationData);
+
+                // Generate routes
+                $this->generateRoutes($modelName, $apiOnly, $webOnly);
+
+                // Generate policy if requested
+                if ($withPolicy) {
+                    $this->call('easy-dev:policy', ['model' => $modelName]);
+                }
+
+                // Generate DTO if requested
+                if ($withDto) {
+                    $this->call('easy-dev:dto', ['model' => $modelName]);
+                }
+
+                // Generate observer if requested
+                if ($withObserver) {
+                    $this->call('easy-dev:observer', ['model' => $modelName]);
+                }
+
+                // Update service provider bindings
+                if ($withRepository || $withService) {
+                    $this->updateServiceProviderBindings($modelName, $withRepository, $withService, !$withoutInterface);
+                }
+
+                // Clean up backups on success
+                $this->context->cleanupBackups();
+
+                $this->showSuccessMessage($modelName, $withRepository, $withService, $apiOnly, $webOnly, $migrationData);
             } else {
-                $this->line("  • Migration for {$modelName} already exists, skipping...");
+                // Dry-run: show what would be generated
+                $this->showDryRunSummary($modelName, $withRepository, $withService, $withPolicy, $withDto, $withObserver, $apiOnly, $webOnly);
             }
-
-            // Generate repository if requested
-            if ($withRepository) {
-                $this->generateRepository($modelName, !$withoutInterface, $migrationData);
-            }
-
-            // Generate service if requested
-            if ($withService) {
-                $this->generateService($modelName, $withRepository, !$withoutInterface);
-            }
-
-            // Generate controllers
-            $this->generateControllers($modelName, $apiOnly, $webOnly, $withService, $migrationData);
-
-            // Generate API resources for API controllers
-            if (!$webOnly) {
-                $this->generateApiResources($modelName);
-            }
-
-            // Generate form requests
-            $this->generateFormRequests($modelName, $migrationData);
-
-            // Generate routes
-            $this->generateRoutes($modelName, $apiOnly, $webOnly);
-
-            // Update service provider bindings
-            if ($withRepository || $withService) {
-                $this->updateServiceProviderBindings($modelName, $withRepository, $withService, !$withoutInterface);
-            }
-
-            $this->showSuccessMessage($modelName, $withRepository, $withService, $apiOnly, $webOnly, $migrationData);
 
         } catch (\Exception $e) {
+            // Rollback all generated files on failure
+            if (!$dryRun) {
+                $this->context->rollback();
+                $this->warn('⚠️  Generation failed — all changes have been rolled back.');
+            }
             $this->error($e->getMessage());
             return self::FAILURE;
         }
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Show dry-run summary of what would be generated.
+     */
+    protected function showDryRunSummary(string $modelName, bool $withRepository, bool $withService, bool $withPolicy, bool $withDto, bool $withObserver, bool $apiOnly, bool $webOnly): void
+    {
+        $this->line('<info>Files that would be created:</info>');
+        $this->newLine();
+
+        $this->line("  📄 app/Models/{$modelName}.php");
+
+        $tableName = Str::snake(Str::plural($modelName));
+        $this->line("  📄 database/migrations/*_create_{$tableName}_table.php");
+
+        if ($withRepository) {
+            $this->line("  📄 app/Repositories/{$modelName}Repository.php");
+            $this->line("  📄 app/Repositories/Contracts/{$modelName}RepositoryInterface.php");
+        }
+
+        if ($withService) {
+            $this->line("  📄 app/Services/{$modelName}Service.php");
+            $this->line("  📄 app/Services/Contracts/{$modelName}ServiceInterface.php");
+        }
+
+        if (!$webOnly) {
+            $this->line("  📄 app/Http/Controllers/Api/{$modelName}ApiController.php");
+            $this->line("  📄 app/Http/Resources/{$modelName}Resource.php");
+            $this->line("  📄 app/Http/Resources/{$modelName}Collection.php");
+        }
+        if (!$apiOnly) {
+            $this->line("  📄 app/Http/Controllers/{$modelName}Controller.php");
+        }
+
+        $this->line("  📄 app/Http/Requests/Store{$modelName}Request.php");
+        $this->line("  📄 app/Http/Requests/Update{$modelName}Request.php");
+
+        if ($withPolicy) {
+            $this->line("  📄 app/Policies/{$modelName}Policy.php");
+        }
+        if ($withDto) {
+            $this->line("  📄 app/DTOs/{$modelName}Data.php");
+        }
+        if ($withObserver) {
+            $this->line("  📄 app/Observers/{$modelName}Observer.php");
+        }
+
+        $this->newLine();
+        $this->line('<info>Files that would be modified:</info>');
+        if (!$webOnly) {
+            $this->line('  ✏️  routes/api.php');
+        }
+        if (!$apiOnly) {
+            $this->line('  ✏️  routes/web.php');
+        }
+        if ($withRepository || $withService) {
+            $this->line('  ✏️  app/Providers/RepositoryServiceProvider.php');
+        }
+
+        $this->newLine();
+        $this->info('No files were created or modified (dry-run mode).');
     }
 
     /**
@@ -783,9 +887,13 @@ class MakeCrudCommand extends Command
             ['api', null, InputOption::VALUE_NONE, 'Generate API controller instead of web controller.'],
             ['with-repository', null, InputOption::VALUE_NONE, 'Generate repository pattern with interfaces.'],
             ['with-service', null, InputOption::VALUE_NONE, 'Generate service layer with business logic.'],
+            ['with-policy', null, InputOption::VALUE_NONE, 'Generate authorization policy for the model.'],
+            ['with-dto', null, InputOption::VALUE_NONE, 'Generate Data Transfer Object for the model.'],
+            ['with-observer', null, InputOption::VALUE_NONE, 'Generate model observer.'],
             ['api-only', null, InputOption::VALUE_NONE, 'Generate only API controllers.'],
             ['web-only', null, InputOption::VALUE_NONE, 'Generate only web controllers.'],
             ['without-interface', null, InputOption::VALUE_NONE, 'Skip interface generation for repositories and services.'],
+            ['dry-run', null, InputOption::VALUE_NONE, 'Preview what files would be generated without creating them.'],
         ];
     }
 }

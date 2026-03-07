@@ -1,9 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <testsuites>
-  <testsuite name="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\phpunit.xml" tests="36" assertions="106" errors="3" failures="12" skipped="0" time="16.130783">
-    <testsuite name="Feature" tests="19" assertions="67" errors="0" failures="11" skipped="0" time="15.648871">
-      <testsuite name="AnasNashat\EasyDev\Tests\Feature\Commands\DebugHelpOutputTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\DebugHelpOutputTest.php" tests="1" assertions="2" errors="0" failures="1" skipped="0" time="13.873390">
-        <testcase name="test_debug_actual_output" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\DebugHelpOutputTest.php" line="10" class="AnasNashat\EasyDev\Tests\Feature\Commands\DebugHelpOutputTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.DebugHelpOutputTest" assertions="2" time="13.873390">
+  <testsuite name="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\phpunit.xml" tests="67" assertions="188" errors="3" failures="12" skipped="0" time="1.996943">
+    <testsuite name="Feature" tests="33" assertions="111" errors="0" failures="11" skipped="0" time="1.522508">
+      <testsuite name="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" tests="7" assertions="45" errors="0" failures="7" skipped="0" time="0.669318">
+        <testcase name="test_help_command_shows_tips_section" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" line="41" class="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.EasyDevHelpCommandTest" assertions="8" time="0.447871">
+          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest::test_help_command_shows_tips_section&#13;
+Output does not contain "💡 Tips:".
+&#13;
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:531
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:474
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:675
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php:50</failure>
+        </testcase>
+        <testcase name="test_help_command_shows_command_options" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" line="71" class="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.EasyDevHelpCommandTest" assertions="7" time="0.035609">
+          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest::test_help_command_shows_command_options&#13;
+Output does not contain "--api, --without-routes".
+&#13;
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:531
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:474
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:675
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php:79</failure>
+        </testcase>
+        <testcase name="test_help_command_displays_banner" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" line="9" class="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.EasyDevHelpCommandTest" assertions="6" time="0.038449">
+          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest::test_help_command_displays_banner&#13;
+Output "╔══════════════════════════════════════════════════════════════╗" was not printed.
+&#13;
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:527
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:474
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:675
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php:16</failure>
+        </testcase>
+        <testcase name="test_help_command_shows_command_descriptions" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" line="60" class="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.EasyDevHelpCommandTest" assertions="7" time="0.035941">
+          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest::test_help_command_shows_command_descriptions&#13;
+Output does not contain "Generate complete CRUD (Controller, Requests, Routes)".
+&#13;
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:531
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:474
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:675
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php:68</failure>
+        </testcase>
+        <testcase name="test_help_command_lists_all_commands" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" line="19" class="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.EasyDevHelpCommandTest" assertions="8" time="0.037062">
+          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest::test_help_command_lists_all_commands&#13;
+Output does not contain "easy-dev:api-resource".
+&#13;
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:531
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:474
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:675
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php:28</failure>
+        </testcase>
+        <testcase name="test_help_command_shows_github_link" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" line="53" class="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.EasyDevHelpCommandTest" assertions="3" time="0.039833">
+          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest::test_help_command_shows_github_link&#13;
+Output does not contain "https://github.com/anasnashat/laravel-easy-dev".
+&#13;
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:531
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:474
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:675
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php:57</failure>
+        </testcase>
+        <testcase name="test_help_command_shows_usage_examples" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" line="31" class="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.EasyDevHelpCommandTest" assertions="6" time="0.034553">
+          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest::test_help_command_shows_usage_examples&#13;
+Output does not contain "Usage Examples:".
+&#13;
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:531
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:474
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:675
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php:38</failure>
+        </testcase>
+      </testsuite>
+      <testsuite name="AnasNashat\EasyDev\Tests\Feature\Commands\MakeDtoCommandTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakeDtoCommandTest.php" tests="2" assertions="8" errors="0" failures="0" skipped="0" time="0.072898">
+        <testcase name="test_dto_command_requires_model_argument" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakeDtoCommandTest.php" line="9" class="AnasNashat\EasyDev\Tests\Feature\Commands\MakeDtoCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.MakeDtoCommandTest" assertions="1" time="0.037281"/>
+        <testcase name="test_dto_command_generates_file" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakeDtoCommandTest.php" line="15" class="AnasNashat\EasyDev\Tests\Feature\Commands\MakeDtoCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.MakeDtoCommandTest" assertions="7" time="0.035617"/>
+      </testsuite>
+      <testsuite name="AnasNashat\EasyDev\Tests\Feature\Commands\DebugHelpOutputTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\DebugHelpOutputTest.php" tests="1" assertions="2" errors="0" failures="1" skipped="0" time="0.034042">
+        <testcase name="test_debug_actual_output" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\DebugHelpOutputTest.php" line="10" class="AnasNashat\EasyDev\Tests\Feature\Commands\DebugHelpOutputTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.DebugHelpOutputTest" assertions="2" time="0.034042">
           <failure type="PHPUnit\Framework\ExpectationFailedException">AnasNashat\EasyDev\Tests\Feature\Commands\DebugHelpOutputTest::test_debug_actual_output&#13;
 Failed asserting that '\r\n
 ╭─────────────────────────────────────────────────────────────╮\r\n
@@ -89,119 +158,62 @@ Thank you for using Laravel Easy Dev! 🚀\r\n
 D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\DebugHelpOutputTest.php:22</failure>
         </testcase>
       </testsuite>
-      <testsuite name="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" tests="10" assertions="19" errors="0" failures="2" skipped="0" time="1.242598">
-        <testcase name="test_sync_relations_handles_database_errors_gracefully" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="84" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="1" time="0.105255"/>
-        <testcase name="test_sync_relations_provides_helpful_output" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="77" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="2" time="0.463093"/>
-        <testcase name="test_sync_relations_processes_self_referencing_models" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="70" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="1" time="0.070600"/>
-        <testcase name="test_sync_relations_handles_models_with_no_relations" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="51" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="2" time="0.077148"/>
-        <testcase name="test_sync_relations_for_specific_model" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="12" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="4" time="0.118394"/>
-        <testcase name="test_sync_relations_handles_nonexistent_model" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="30" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="1" time="0.054424">
-          <failure type="PHPUnit\Framework\ExpectationFailedException">AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest::test_sync_relations_handles_nonexistent_model&#13;
-Failed asserting that exception of type "Error" is thrown.</failure>
-        </testcase>
-        <testcase name="test_sync_relations_shows_progress_for_each_model" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="36" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="3" time="0.171940">
-          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest::test_sync_relations_shows_progress_for_each_model&#13;
-Output "No models found." was not printed.
-&#13;
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:505
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:473
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:653
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php:40</failure>
-        </testcase>
-        <testcase name="test_sync_relations_detects_foreign_key_relationships" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="43" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="1" time="0.056933"/>
-        <testcase name="test_sync_relations_skips_existing_relations" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="59" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="2" time="0.057543"/>
-        <testcase name="test_sync_relations_with_all_flag" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="23" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="2" time="0.067269"/>
+      <testsuite name="AnasNashat\EasyDev\Tests\Feature\Commands\MakePolicyCommandTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakePolicyCommandTest.php" tests="2" assertions="11" errors="0" failures="0" skipped="0" time="0.065384">
+        <testcase name="test_policy_command_requires_model_argument" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakePolicyCommandTest.php" line="9" class="AnasNashat\EasyDev\Tests\Feature\Commands\MakePolicyCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.MakePolicyCommandTest" assertions="1" time="0.030728"/>
+        <testcase name="test_policy_command_generates_file" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakePolicyCommandTest.php" line="15" class="AnasNashat\EasyDev\Tests\Feature\Commands\MakePolicyCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.MakePolicyCommandTest" assertions="10" time="0.034656"/>
       </testsuite>
-      <testsuite name="AnasNashat\EasyDev\Tests\Feature\Commands\DebugHelpCommandTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\DebugHelpCommandTest.php" tests="1" assertions="1" errors="0" failures="1" skipped="0" time="0.069598">
-        <testcase name="test_debug_help_output" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\DebugHelpCommandTest.php" line="9" class="AnasNashat\EasyDev\Tests\Feature\Commands\DebugHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.DebugHelpCommandTest" assertions="1" time="0.069598">
+      <testsuite name="AnasNashat\EasyDev\Tests\Feature\Commands\DebugHelpCommandTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\DebugHelpCommandTest.php" tests="1" assertions="1" errors="0" failures="1" skipped="0" time="0.036857">
+        <testcase name="test_debug_help_output" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\DebugHelpCommandTest.php" line="9" class="AnasNashat\EasyDev\Tests\Feature\Commands\DebugHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.DebugHelpCommandTest" assertions="1" time="0.036857">
           <failure type="PHPUnit\Framework\ExpectationFailedException">AnasNashat\EasyDev\Tests\Feature\Commands\DebugHelpCommandTest::test_debug_help_output&#13;
 Failed asserting that false is true.
 &#13;
 D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\DebugHelpCommandTest.php:19</failure>
         </testcase>
       </testsuite>
-      <testsuite name="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" tests="7" assertions="45" errors="0" failures="7" skipped="0" time="0.463285">
-        <testcase name="test_help_command_displays_banner" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" line="9" class="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.EasyDevHelpCommandTest" assertions="6" time="0.069559">
-          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest::test_help_command_displays_banner&#13;
-Output "╔══════════════════════════════════════════════════════════════╗" was not printed.
-&#13;
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:505
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:473
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:653
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php:16</failure>
+      <testsuite name="AnasNashat\EasyDev\Tests\Feature\Commands\MakeCrudCommandTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakeCrudCommandTest.php" tests="10" assertions="25" errors="0" failures="0" skipped="0" time="0.303108">
+        <testcase name="test_dry_run_web_only_does_not_show_api_controller" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakeCrudCommandTest.php" line="109" class="AnasNashat\EasyDev\Tests\Feature\Commands\MakeCrudCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.MakeCrudCommandTest" assertions="2" time="0.028395"/>
+        <testcase name="test_dry_run_shows_policy_file_when_flag_set" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakeCrudCommandTest.php" line="65" class="AnasNashat\EasyDev\Tests\Feature\Commands\MakeCrudCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.MakeCrudCommandTest" assertions="2" time="0.030356"/>
+        <testcase name="test_crud_command_rejects_conflicting_options" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakeCrudCommandTest.php" line="15" class="AnasNashat\EasyDev\Tests\Feature\Commands\MakeCrudCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.MakeCrudCommandTest" assertions="1" time="0.036439"/>
+        <testcase name="test_dry_run_api_only_does_not_show_web_controller" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakeCrudCommandTest.php" line="98" class="AnasNashat\EasyDev\Tests\Feature\Commands\MakeCrudCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.MakeCrudCommandTest" assertions="2" time="0.029800"/>
+        <testcase name="test_crud_command_requires_model_argument" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakeCrudCommandTest.php" line="9" class="AnasNashat\EasyDev\Tests\Feature\Commands\MakeCrudCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.MakeCrudCommandTest" assertions="1" time="0.030004"/>
+        <testcase name="test_dry_run_shows_repository_files_when_flag_set" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakeCrudCommandTest.php" line="41" class="AnasNashat\EasyDev\Tests\Feature\Commands\MakeCrudCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.MakeCrudCommandTest" assertions="3" time="0.029920"/>
+        <testcase name="test_dry_run_does_not_create_files" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakeCrudCommandTest.php" line="24" class="AnasNashat\EasyDev\Tests\Feature\Commands\MakeCrudCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.MakeCrudCommandTest" assertions="7" time="0.029608"/>
+        <testcase name="test_dry_run_shows_observer_file_when_flag_set" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakeCrudCommandTest.php" line="87" class="AnasNashat\EasyDev\Tests\Feature\Commands\MakeCrudCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.MakeCrudCommandTest" assertions="2" time="0.029443"/>
+        <testcase name="test_dry_run_shows_dto_file_when_flag_set" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakeCrudCommandTest.php" line="76" class="AnasNashat\EasyDev\Tests\Feature\Commands\MakeCrudCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.MakeCrudCommandTest" assertions="2" time="0.029999"/>
+        <testcase name="test_dry_run_shows_service_files_when_flag_set" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\MakeCrudCommandTest.php" line="53" class="AnasNashat\EasyDev\Tests\Feature\Commands\MakeCrudCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.MakeCrudCommandTest" assertions="3" time="0.029143"/>
+      </testsuite>
+      <testsuite name="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" tests="10" assertions="19" errors="0" failures="2" skipped="0" time="0.340902">
+        <testcase name="test_sync_relations_with_all_flag" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="23" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="2" time="0.027648"/>
+        <testcase name="test_sync_relations_for_specific_model" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="12" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="4" time="0.032723"/>
+        <testcase name="test_sync_relations_handles_models_with_no_relations" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="51" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="2" time="0.040526"/>
+        <testcase name="test_sync_relations_skips_existing_relations" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="59" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="2" time="0.055201"/>
+        <testcase name="test_sync_relations_processes_self_referencing_models" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="70" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="1" time="0.031498"/>
+        <testcase name="test_sync_relations_provides_helpful_output" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="77" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="2" time="0.029954"/>
+        <testcase name="test_sync_relations_handles_nonexistent_model" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="30" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="1" time="0.028043">
+          <failure type="PHPUnit\Framework\ExpectationFailedException">AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest::test_sync_relations_handles_nonexistent_model&#13;
+Failed asserting that exception of type "Error" is thrown.</failure>
         </testcase>
-        <testcase name="test_help_command_shows_command_options" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" line="71" class="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.EasyDevHelpCommandTest" assertions="7" time="0.077169">
-          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest::test_help_command_shows_command_options&#13;
-Output does not contain "--api, --without-routes".
+        <testcase name="test_sync_relations_handles_database_errors_gracefully" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="84" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="1" time="0.027786"/>
+        <testcase name="test_sync_relations_detects_foreign_key_relationships" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="43" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="1" time="0.033895"/>
+        <testcase name="test_sync_relations_shows_progress_for_each_model" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php" line="36" class="AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.ModelSyncRelationsCommandTest" assertions="3" time="0.033628">
+          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommandTest::test_sync_relations_shows_progress_for_each_model&#13;
+Output "No models found." was not printed.
 &#13;
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:509
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:473
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:653
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php:79</failure>
-        </testcase>
-        <testcase name="test_help_command_shows_github_link" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" line="53" class="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.EasyDevHelpCommandTest" assertions="3" time="0.062504">
-          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest::test_help_command_shows_github_link&#13;
-Output does not contain "https://github.com/anasnashat/laravel-easy-dev".
-&#13;
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:509
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:473
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:653
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php:57</failure>
-        </testcase>
-        <testcase name="test_help_command_shows_tips_section" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" line="41" class="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.EasyDevHelpCommandTest" assertions="8" time="0.062060">
-          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest::test_help_command_shows_tips_section&#13;
-Output does not contain "💡 Tips:".
-&#13;
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:509
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:473
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:653
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php:50</failure>
-        </testcase>
-        <testcase name="test_help_command_lists_all_commands" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" line="19" class="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.EasyDevHelpCommandTest" assertions="8" time="0.067099">
-          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest::test_help_command_lists_all_commands&#13;
-Output does not contain "easy-dev:api-resource".
-&#13;
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:509
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:473
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:653
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php:28</failure>
-        </testcase>
-        <testcase name="test_help_command_shows_usage_examples" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" line="31" class="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.EasyDevHelpCommandTest" assertions="6" time="0.060449">
-          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest::test_help_command_shows_usage_examples&#13;
-Output does not contain "Usage Examples:".
-&#13;
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:509
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:473
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:653
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php:38</failure>
-        </testcase>
-        <testcase name="test_help_command_shows_command_descriptions" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php" line="60" class="AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest" classname="AnasNashat.EasyDev.Tests.Feature.Commands.EasyDevHelpCommandTest" assertions="7" time="0.064445">
-          <failure type="PHPUnit\Framework\AssertionFailedError">AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommandTest::test_help_command_shows_command_descriptions&#13;
-Output does not contain "Generate complete CRUD (Controller, Requests, Routes)".
-&#13;
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:509
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:473
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:653
-D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\EasyDevHelpCommandTest.php:68</failure>
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:527
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:474
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\laravel\framework\src\Illuminate\Testing\PendingCommand.php:675
+D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Feature\Commands\ModelSyncRelationsCommandTest.php:40</failure>
         </testcase>
       </testsuite>
     </testsuite>
-    <testsuite name="Unit" tests="17" assertions="39" errors="3" failures="1" skipped="0" time="0.481913">
-      <testsuite name="AnasNashat\EasyDev\Tests\Unit\Parsers\SqliteSchemaParserTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Parsers\SqliteSchemaParserTest.php" tests="5" assertions="23" errors="0" failures="0" skipped="0" time="0.334664">
-        <testcase name="test_get_table_columns" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Parsers\SqliteSchemaParserTest.php" line="97" class="AnasNashat\EasyDev\Tests\Unit\Parsers\SqliteSchemaParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Parsers.SqliteSchemaParserTest" assertions="6" time="0.112302"/>
-        <testcase name="test_find_pivot_tables_for_table" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Parsers\SqliteSchemaParserTest.php" line="169" class="AnasNashat\EasyDev\Tests\Unit\Parsers\SqliteSchemaParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Parsers.SqliteSchemaParserTest" assertions="7" time="0.055293"/>
-        <testcase name="test_get_foreign_keys_for_table" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Parsers\SqliteSchemaParserTest.php" line="31" class="AnasNashat\EasyDev\Tests\Unit\Parsers\SqliteSchemaParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Parsers.SqliteSchemaParserTest" assertions="7" time="0.056532"/>
-        <testcase name="test_get_polymorphic_columns_for_table" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Parsers\SqliteSchemaParserTest.php" line="145" class="AnasNashat\EasyDev\Tests\Unit\Parsers\SqliteSchemaParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Parsers.SqliteSchemaParserTest" assertions="2" time="0.057700"/>
-        <testcase name="test_get_all_tables" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Parsers\SqliteSchemaParserTest.php" line="76" class="AnasNashat\EasyDev\Tests\Unit\Parsers\SqliteSchemaParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Parsers.SqliteSchemaParserTest" assertions="1" time="0.052836"/>
-      </testsuite>
-      <testsuite name="AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php" tests="6" assertions="10" errors="1" failures="0" skipped="0" time="0.061530">
-        <testcase name="test_get_controller_name_from_model" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php" line="93" class="AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.FileGeneratorTest" assertions="3" time="0.013262"/>
-        <testcase name="test_generate_file_creates_directory_if_not_exists" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php" line="53" class="AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.FileGeneratorTest" assertions="0" time="0.009617"/>
-        <testcase name="test_get_stub_content_throws_exception_for_missing_stub" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php" line="110" class="AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.FileGeneratorTest" assertions="2" time="0.009373"/>
-        <testcase name="test_get_request_names_from_model" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php" line="100" class="AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.FileGeneratorTest" assertions="1" time="0.010387"/>
-        <testcase name="test_get_stub_content_with_replacements" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php" line="23" class="AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.FileGeneratorTest" assertions="0" time="0.010041">
+    <testsuite name="Unit" tests="34" assertions="77" errors="3" failures="1" skipped="0" time="0.474435">
+      <testsuite name="AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php" tests="6" assertions="10" errors="1" failures="0" skipped="0" time="0.072428">
+        <testcase name="test_get_request_names_from_model" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php" line="100" class="AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.FileGeneratorTest" assertions="1" time="0.013948"/>
+        <testcase name="test_get_model_name_from_table" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php" line="85" class="AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.FileGeneratorTest" assertions="4" time="0.011421"/>
+        <testcase name="test_get_stub_content_throws_exception_for_missing_stub" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php" line="110" class="AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.FileGeneratorTest" assertions="2" time="0.011779"/>
+        <testcase name="test_get_stub_content_with_replacements" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php" line="23" class="AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.FileGeneratorTest" assertions="0" time="0.009678">
           <error type="Mockery\Exception\NoMatchingExpectationException">AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest::test_get_stub_content_with_replacements&#13;
-Mockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_4_Illuminate_Filesystem_Filesystem::exists('D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\orchestra\testbench-core\laravel\resources\stubs/vendor/easy-dev/test.stub'). Either the method was unexpected or its arguments matched no expected argument list for this method&#13;
+Mockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_2_Illuminate_Filesystem_Filesystem::exists('D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\orchestra\testbench-core\laravel\resources\stubs/vendor/easy-dev/test.stub'). Either the method was unexpected or its arguments matched no expected argument list for this method&#13;
 &#13;
 
 &#13;
@@ -210,13 +222,42 @@ D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\src\Services\FileGenerator.p
 D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\src\Services\FileGenerator.php:19
 D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php:44</error>
         </testcase>
-        <testcase name="test_get_model_name_from_table" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php" line="85" class="AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.FileGeneratorTest" assertions="4" time="0.008849"/>
+        <testcase name="test_generate_file_creates_directory_if_not_exists" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php" line="53" class="AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.FileGeneratorTest" assertions="0" time="0.011324"/>
+        <testcase name="test_get_controller_name_from_model" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\FileGeneratorTest.php" line="93" class="AnasNashat\EasyDev\Tests\Unit\Services\FileGeneratorTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.FileGeneratorTest" assertions="3" time="0.014277"/>
       </testsuite>
-      <testsuite name="AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php" tests="6" assertions="6" errors="2" failures="1" skipped="0" time="0.085719">
-        <testcase name="test_add_relation_throws_exception_for_missing_file" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php" line="133" class="AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.CodeWriterTest" assertions="2" time="0.010567"/>
-        <testcase name="test_add_use_statement" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php" line="151" class="AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.CodeWriterTest" assertions="0" time="0.010549">
+      <testsuite name="AnasNashat\EasyDev\Tests\Unit\Services\MigrationParserTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\MigrationParserTest.php" tests="6" assertions="18" errors="0" failures="0" skipped="0" time="0.092133">
+        <testcase name="test_generate_validation_rules_for_string_columns" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\MigrationParserTest.php" line="64" class="AnasNashat\EasyDev\Tests\Unit\Services\MigrationParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.MigrationParserTest" assertions="4" time="0.012407"/>
+        <testcase name="test_generate_validation_rules_for_integer_columns" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\MigrationParserTest.php" line="79" class="AnasNashat\EasyDev\Tests\Unit\Services\MigrationParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.MigrationParserTest" assertions="2" time="0.012632"/>
+        <testcase name="test_parse_migration_extracts_columns" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\MigrationParserTest.php" line="18" class="AnasNashat\EasyDev\Tests\Unit\Services\MigrationParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.MigrationParserTest" assertions="7" time="0.037415"/>
+        <testcase name="test_migration_exists_returns_false_for_nonexistent" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\MigrationParserTest.php" line="115" class="AnasNashat\EasyDev\Tests\Unit\Services\MigrationParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.MigrationParserTest" assertions="1" time="0.010788"/>
+        <testcase name="test_generate_validation_rules_for_boolean_columns" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\MigrationParserTest.php" line="91" class="AnasNashat\EasyDev\Tests\Unit\Services\MigrationParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.MigrationParserTest" assertions="2" time="0.009546"/>
+        <testcase name="test_generate_validation_rules_for_nullable_columns" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\MigrationParserTest.php" line="103" class="AnasNashat\EasyDev\Tests\Unit\Services\MigrationParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.MigrationParserTest" assertions="2" time="0.009346"/>
+      </testsuite>
+      <testsuite name="AnasNashat\EasyDev\Tests\Unit\Parsers\SqliteSchemaParserTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Parsers\SqliteSchemaParserTest.php" tests="5" assertions="23" errors="0" failures="0" skipped="0" time="0.147286">
+        <testcase name="test_find_pivot_tables_for_table" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Parsers\SqliteSchemaParserTest.php" line="169" class="AnasNashat\EasyDev\Tests\Unit\Parsers\SqliteSchemaParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Parsers.SqliteSchemaParserTest" assertions="7" time="0.033768"/>
+        <testcase name="test_get_foreign_keys_for_table" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Parsers\SqliteSchemaParserTest.php" line="31" class="AnasNashat\EasyDev\Tests\Unit\Parsers\SqliteSchemaParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Parsers.SqliteSchemaParserTest" assertions="7" time="0.031297"/>
+        <testcase name="test_get_all_tables" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Parsers\SqliteSchemaParserTest.php" line="76" class="AnasNashat\EasyDev\Tests\Unit\Parsers\SqliteSchemaParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Parsers.SqliteSchemaParserTest" assertions="1" time="0.029601"/>
+        <testcase name="test_get_polymorphic_columns_for_table" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Parsers\SqliteSchemaParserTest.php" line="145" class="AnasNashat\EasyDev\Tests\Unit\Parsers\SqliteSchemaParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Parsers.SqliteSchemaParserTest" assertions="2" time="0.027388"/>
+        <testcase name="test_get_table_columns" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Parsers\SqliteSchemaParserTest.php" line="97" class="AnasNashat\EasyDev\Tests\Unit\Parsers\SqliteSchemaParserTest" classname="AnasNashat.EasyDev.Tests.Unit.Parsers.SqliteSchemaParserTest" assertions="6" time="0.025232"/>
+      </testsuite>
+      <testsuite name="AnasNashat\EasyDev\Tests\Unit\Services\GenerationContextTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\GenerationContextTest.php" tests="11" assertions="20" errors="0" failures="0" skipped="0" time="0.103308">
+        <testcase name="test_get_summary_counts" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\GenerationContextTest.php" line="144" class="AnasNashat\EasyDev\Tests\Unit\Services\GenerationContextTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.GenerationContextTest" assertions="3" time="0.009811"/>
+        <testcase name="test_record_modified_file_creates_backup" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\GenerationContextTest.php" line="43" class="AnasNashat\EasyDev\Tests\Unit\Services\GenerationContextTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.GenerationContextTest" assertions="2" time="0.008831"/>
+        <testcase name="test_reset_clears_all_state" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\GenerationContextTest.php" line="158" class="AnasNashat\EasyDev\Tests\Unit\Services\GenerationContextTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.GenerationContextTest" assertions="4" time="0.009399"/>
+        <testcase name="test_get_dry_run_summary" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\GenerationContextTest.php" line="131" class="AnasNashat\EasyDev\Tests\Unit\Services\GenerationContextTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.GenerationContextTest" assertions="3" time="0.009257"/>
+        <testcase name="test_set_dry_run_mode" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\GenerationContextTest.php" line="28" class="AnasNashat\EasyDev\Tests\Unit\Services\GenerationContextTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.GenerationContextTest" assertions="1" time="0.008738"/>
+        <testcase name="test_record_created_file" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\GenerationContextTest.php" line="34" class="AnasNashat\EasyDev\Tests\Unit\Services\GenerationContextTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.GenerationContextTest" assertions="2" time="0.010323"/>
+        <testcase name="test_rollback_deletes_created_files" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\GenerationContextTest.php" line="77" class="AnasNashat\EasyDev\Tests\Unit\Services\GenerationContextTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.GenerationContextTest" assertions="1" time="0.009761"/>
+        <testcase name="test_cleanup_backups_removes_backup_files" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\GenerationContextTest.php" line="171" class="AnasNashat\EasyDev\Tests\Unit\Services\GenerationContextTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.GenerationContextTest" assertions="1" time="0.008820"/>
+        <testcase name="test_rollback_restores_modified_files" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\GenerationContextTest.php" line="98" class="AnasNashat\EasyDev\Tests\Unit\Services\GenerationContextTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.GenerationContextTest" assertions="1" time="0.009680"/>
+        <testcase name="test_dry_run_mode_defaults_to_false" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\GenerationContextTest.php" line="23" class="AnasNashat\EasyDev\Tests\Unit\Services\GenerationContextTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.GenerationContextTest" assertions="1" time="0.009441"/>
+        <testcase name="test_dry_run_does_not_create_backup" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\GenerationContextTest.php" line="65" class="AnasNashat\EasyDev\Tests\Unit\Services\GenerationContextTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.GenerationContextTest" assertions="1" time="0.009246"/>
+      </testsuite>
+      <testsuite name="AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php" tests="6" assertions="6" errors="2" failures="1" skipped="0" time="0.059280">
+        <testcase name="test_add_relation_throws_exception_for_existing_method" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php" line="100" class="AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.CodeWriterTest" assertions="2" time="0.010797"/>
+        <testcase name="test_add_use_statement" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php" line="151" class="AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.CodeWriterTest" assertions="0" time="0.010416">
           <error type="Mockery\Exception\NoMatchingExpectationException">AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest::test_add_use_statement&#13;
-Mockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_4_Illuminate_Filesystem_Filesystem::put('/path/to/Controller.php', '&lt;?php&#13;
+Mockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_2_Illuminate_Filesystem_Filesystem::put('/path/to/Controller.php', '&lt;?php&#13;
 &#13;
 namespace App\Http\Controllers;&#13;
 &#13;
@@ -233,10 +274,10 @@ D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\mockery\mockery\libra
 D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\src\Services\CodeWriter.php:82
 D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php:192</error>
         </testcase>
-        <testcase name="test_add_use_statement_skips_if_already_exists" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php" line="195" class="AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.CodeWriterTest" assertions="0" time="0.008678"/>
-        <testcase name="test_add_relation_successfully" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php" line="27" class="AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.CodeWriterTest" assertions="0" time="0.014999">
+        <testcase name="test_add_use_statement_skips_if_already_exists" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php" line="195" class="AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.CodeWriterTest" assertions="0" time="0.009167"/>
+        <testcase name="test_add_relation_successfully" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php" line="27" class="AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.CodeWriterTest" assertions="0" time="0.009690">
           <error type="Mockery\Exception\NoMatchingExpectationException">AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest::test_add_relation_successfully&#13;
-Mockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_4_Illuminate_Filesystem_Filesystem::put('/path/to/User.php', '&lt;?php&#13;
+Mockery\Exception\NoMatchingExpectationException: No matching handler found for Mockery_2_Illuminate_Filesystem_Filesystem::put('/path/to/User.php', '&lt;?php&#13;
 &#13;
 namespace App\Models;&#13;
 &#13;
@@ -262,13 +303,13 @@ D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\vendor\mockery\mockery\libra
 D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\src\Services\CodeWriter.php:50
 D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php:97</error>
         </testcase>
-        <testcase name="test_method_exists" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php" line="228" class="AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.CodeWriterTest" assertions="2" time="0.011541">
+        <testcase name="test_method_exists" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php" line="228" class="AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.CodeWriterTest" assertions="2" time="0.009943">
           <failure type="PHPUnit\Framework\ExpectationFailedException">AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest::test_method_exists&#13;
 Failed asserting that true is false.
 &#13;
 D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php:261</failure>
         </testcase>
-        <testcase name="test_add_relation_throws_exception_for_existing_method" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php" line="100" class="AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.CodeWriterTest" assertions="2" time="0.029385"/>
+        <testcase name="test_add_relation_throws_exception_for_missing_file" file="D:\Laravel\easy-dev-v2\v2\packages\laravel-easy-dev\tests\Unit\Services\CodeWriterTest.php" line="133" class="AnasNashat\EasyDev\Tests\Unit\Services\CodeWriterTest" classname="AnasNashat.EasyDev.Tests.Unit.Services.CodeWriterTest" assertions="2" time="0.009268"/>
       </testsuite>
     </testsuite>
   </testsuite>

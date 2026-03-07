@@ -29,6 +29,47 @@ File Generator (AnasNashat\EasyDev\Tests\Unit\Services\FileGenerator)
  [x] Get request names from model
  [x] Get stub content throws exception for missing stub
 
+Generation Context (AnasNashat\EasyDev\Tests\Unit\Services\GenerationContext)
+ [x] Dry run mode defaults to false
+ [x] Set dry run mode
+ [x] Record created file
+ [x] Record modified file creates backup
+ [x] Dry run does not create backup
+ [x] Rollback deletes created files
+ [x] Rollback restores modified files
+ [x] Get dry run summary
+ [x] Get summary counts
+ [x] Reset clears all state
+ [x] Cleanup backups removes backup files
+
+Make Crud Command (AnasNashat\EasyDev\Tests\Feature\Commands\MakeCrudCommand)
+ [x] Crud command requires model argument
+ [x] Crud command rejects conflicting options
+ [x] Dry run does not create files
+ [x] Dry run shows repository files when flag set
+ [x] Dry run shows service files when flag set
+ [x] Dry run shows policy file when flag set
+ [x] Dry run shows dto file when flag set
+ [x] Dry run shows observer file when flag set
+ [x] Dry run api only does not show web controller
+ [x] Dry run web only does not show api controller
+
+Make Dto Command (AnasNashat\EasyDev\Tests\Feature\Commands\MakeDtoCommand)
+ [x] Dto command requires model argument
+ [x] Dto command generates file
+
+Make Policy Command (AnasNashat\EasyDev\Tests\Feature\Commands\MakePolicyCommand)
+ [x] Policy command requires model argument
+ [x] Policy command generates file
+
+Migration Parser (AnasNashat\EasyDev\Tests\Unit\Services\MigrationParser)
+ [x] Parse migration extracts columns
+ [x] Generate validation rules for string columns
+ [x] Generate validation rules for integer columns
+ [x] Generate validation rules for boolean columns
+ [x] Generate validation rules for nullable columns
+ [x] Migration exists returns false for nonexistent
+
 Model Sync Relations Command (AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommand)
  [x] Sync relations for specific model
  [x] Sync relations with all flag

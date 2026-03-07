@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Filters;
+
+use Illuminate\Database\Eloquent\Builder;
+
+class {{ FilterName }}
+{
+    protected Builder $builder;
+
+    public function __construct(Builder $builder)
+    {
+        $this->builder = $builder;
+    }
+
+    /**
+     * Apply all filters from the given data.
+     */
+    public static function apply(Builder $query, array $filters): Builder
+    {
+        $instance = new static($query);
+
+        foreach ($filters as $name => $value) {
+            $method = \Illuminate\Support\Str::camel($name);
+
+            if ($value !== null && $value !== '' && method_exists($instance, $method)) {
+                $instance->$method($value);
+            }
+        }
+
+        return $instance->builder;
+    }
+
+    /**
+     * Filter by search term across common text fields.
+     */
+    public function search($value): void
+    {
+        $this->builder->where(function (Builder $query) use ($value) {
+            $query->where('name', 'like', "%{$value}%");
+        });
+    }
+
+{{ filterMethods }}
+}

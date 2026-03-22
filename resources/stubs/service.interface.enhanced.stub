@@ -1,0 +1,40 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ ModelNamespace }}\{{ ModelName }};
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+
+interface {{ ModelName }}ServiceInterface
+{
+    /**
+     * Get all records with optional pagination.
+     */
+    public function getAll(?int $perPage = null): Collection|LengthAwarePaginator;
+
+    /**
+     * Find a record by ID.
+     */
+    public function findById(int $id): ?{{ ModelName }};
+
+    /**
+     * Find a record by ID or fail.
+     */
+    public function findOrFail(int $id): {{ ModelName }};
+
+    /**
+     * Create a new record.
+     */
+    public function create(array $data): {{ ModelName }};
+
+    /**
+     * Update an existing record.
+     */
+    public function update({{ ModelName }} ${{ modelName }}, array $data): {{ ModelName }};
+
+    /**
+     * Delete a record.
+     */
+    public function delete({{ ModelName }} ${{ modelName }}): bool;
+}

@@ -1,0 +1,76 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ ModelNamespace }}\{{ ModelName }};
+use {{ ServiceContractNamespace }}\{{ ModelName }}ServiceInterface;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Pagination\LengthAwarePaginator;
+
+class {{ ModelName }}Service implements {{ ModelName }}ServiceInterface
+{
+    public function __construct(
+        protected {{ ModelName }}RepositoryInterface $repository
+    ) {
+    }
+
+    /**
+     * Get all records with optional pagination.
+     */
+    public function getAll(?int $perPage = null): Collection|LengthAwarePaginator
+    {
+        if ($perPage) {
+            return $this->repository->paginate($perPage);
+        }
+
+        return $this->repository->getAll();
+    }
+
+    /**
+     * Find a record by ID.
+     */
+    public function findById(int $id): ?{{ ModelName }}
+    {
+        return $this->repository->findById($id);
+    }
+
+    /**
+     * Find a record by ID or fail.
+     */
+    public function findOrFail(int $id): {{ ModelName }}
+    {
+        $record = $this->repository->findById($id);
+
+        if (!$record) {
+            throw new \Illuminate\Database\Eloquent\ModelNotFoundException(
+                "{{ ModelName }} with ID {$id} not found."
+            );
+        }
+
+        return $record;
+    }
+
+    /**
+     * Create a new record.
+     */
+    public function create(array $data): {{ ModelName }}
+    {
+        return $this->repository->create($data);
+    }
+
+    /**
+     * Update an existing record.
+     */
+    public function update({{ ModelName }} ${{ modelName }}, array $data): {{ ModelName }}
+    {
+        return $this->repository->update(${{ modelName }}, $data);
+    }
+
+    /**
+     * Delete a record.
+     */
+    public function delete({{ ModelName }} ${{ modelName }}): bool
+    {
+        return $this->repository->delete(${{ modelName }});
+    }
+}

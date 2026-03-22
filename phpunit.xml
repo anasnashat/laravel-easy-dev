@@ -24,9 +24,6 @@
         <include>
             <directory>src</directory>
         </include>
-        <exclude>
-            <directory>src/Commands</directory>
-        </exclude>
     </source>
     <logging>
         <junit outputFile="tests/results/junit.xml"/>

@@ -8,10 +8,16 @@ use AnasNashat\EasyDev\Commands\MakeModelRelationCommand;
 use AnasNashat\EasyDev\Commands\ModelSyncRelationsCommand;
 use AnasNashat\EasyDev\Commands\MakeRepositoryCommand;
 use AnasNashat\EasyDev\Commands\MakeApiResourceCommand;
+use AnasNashat\EasyDev\Commands\MakePolicyCommand;
+use AnasNashat\EasyDev\Commands\MakeDtoCommand;
+use AnasNashat\EasyDev\Commands\MakeObserverCommand;
+use AnasNashat\EasyDev\Commands\MakeFilterCommand;
+use AnasNashat\EasyDev\Commands\MakeEnumCommand;
 use AnasNashat\EasyDev\Commands\EasyDevHelpCommand;
 use AnasNashat\EasyDev\Commands\EnhancedCrudCommand;
 use AnasNashat\EasyDev\Commands\BeautifulHelpCommand;
 use AnasNashat\EasyDev\Commands\DemoUICommand;
+use AnasNashat\EasyDev\Services\GenerationContext;
 use AnasNashat\EasyDev\Services\MigrationParser;
 use AnasNashat\EasyDev\Services\ModelEnhancer;
 use AnasNashat\EasyDev\Services\ServiceProviderManager;
@@ -27,7 +33,7 @@ class EasyDevServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(__DIR__.'/../../config/easy-dev.php', 'easy-dev');
 
-        // Register schema parser
+        // Register schema parser based on database driver
         $this->app->bind(SchemaParser::class, function ($app) {
             $connection = $app->make(DB::class)->connection()->getDriverName();
             
@@ -35,11 +41,12 @@ class EasyDevServiceProvider extends ServiceProvider
                 'mysql' => new MySqlSchemaParser($app->make(DB::class)),
                 'pgsql' => new PostgresSchemaParser($app->make(DB::class)),
                 'sqlite' => new SqliteSchemaParser($app->make(DB::class)),
-                default => new MySqlSchemaParser($app->make(DB::class)), // Default fallback
+                default => new MySqlSchemaParser($app->make(DB::class)),
             };
         });
 
-        // Register new services
+        // Register core services
+        $this->app->singleton(GenerationContext::class);
         $this->app->singleton(MigrationParser::class);
         $this->app->singleton(ModelEnhancer::class);
         $this->app->singleton(ServiceProviderManager::class);
@@ -49,13 +56,25 @@ class EasyDevServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
+                // Core CRUD
                 MakeCrudCommand::class,
-                MakeModelRelationCommand::class,
-                ModelSyncRelationsCommand::class,
+                EnhancedCrudCommand::class,
+
+                // Individual generators
                 MakeRepositoryCommand::class,
                 MakeApiResourceCommand::class,
+                MakeModelRelationCommand::class,
+                ModelSyncRelationsCommand::class,
+
+                // New generators (v2.0)
+                MakePolicyCommand::class,
+                MakeDtoCommand::class,
+                MakeObserverCommand::class,
+                MakeFilterCommand::class,
+                MakeEnumCommand::class,
+
+                // Help & UI
                 EasyDevHelpCommand::class,
-                EnhancedCrudCommand::class,
                 BeautifulHelpCommand::class,
                 DemoUICommand::class,
             ]);

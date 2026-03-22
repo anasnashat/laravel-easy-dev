@@ -1,0 +1,72 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ ModelNamespace }}\{{ ModelName }};
+use {{ ServiceNamespace }}\{{ ModelName }}Service;
+use {{ RequestNamespace }}\Store{{ ModelName }}Request;
+use {{ RequestNamespace }}\Update{{ ModelName }}Request;
+use {{ ResourceNamespace }}\{{ ModelName }}Resource;
+use {{ ResourceNamespace }}\{{ ModelName }}Collection;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+
+class {{ ModelName }}ApiController extends Controller
+{
+    public function __construct(
+        protected {{ ModelName }}Service ${{ modelName }}Service
+    ) {
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    public function index(Request $request): AnonymousResourceCollection
+    {
+        $perPage = $request->input('per_page', 15);
+        ${{ pluralModelName }} = $this->{{ modelName }}Service->getAll(perPage: (int) $perPage);
+
+        return {{ ModelName }}Resource::collection(${{ pluralModelName }});
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Store{{ ModelName }}Request $request): JsonResponse
+    {
+        ${{ modelName }} = $this->{{ modelName }}Service->create($request->validated());
+
+        return (new {{ ModelName }}Resource(${{ modelName }}))
+            ->response()
+            ->setStatusCode(201);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show({{ ModelName }} ${{ modelName }}): {{ ModelName }}Resource
+    {
+        return new {{ ModelName }}Resource(${{ modelName }});
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Update{{ ModelName }}Request $request, {{ ModelName }} ${{ modelName }}): {{ ModelName }}Resource
+    {
+        $this->{{ modelName }}Service->update(${{ modelName }}, $request->validated());
+
+        return new {{ ModelName }}Resource(${{ modelName }}->fresh());
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy({{ ModelName }} ${{ modelName }}): JsonResponse
+    {
+        $this->{{ modelName }}Service->delete(${{ modelName }});
+
+        return response()->json(['message' => '{{ ModelName }} deleted successfully.'], 200);
+    }
+}

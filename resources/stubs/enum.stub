@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Enums;
+
+enum {{ EnumName }}: string
+{
+{{ cases }}
+
+    /**
+     * Get all enum values as an array.
+     */
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
+
+    /**
+     * Get a human-readable label for the enum value.
+     */
+    public function label(): string
+    {
+        return ucfirst(str_replace('_', ' ', strtolower($this->name)));
+    }
+}

@@ -1,0 +1,42 @@
+<?php
+
+namespace App\DTOs;
+
+use App\Models\{{ ModelName }};
+use Illuminate\Http\Request;
+
+class {{ DtoName }}
+{
+    public function __construct(
+{{ properties }}
+    ) {
+    }
+
+    /**
+     * Create a DTO from a validated request.
+     */
+    public static function fromRequest(Request $request): self
+    {
+        return new self(
+{{ fromRequestBody }}
+        );
+    }
+
+    /**
+     * Create a DTO from an existing model instance.
+     */
+    public static function fromModel({{ ModelName }} $model): self
+    {
+        return new self(
+{{ fromModelBody }}
+        );
+    }
+
+    /**
+     * Convert the DTO to an array.
+     */
+    public function toArray(): array
+    {
+        return get_object_vars($this);
+    }
+}

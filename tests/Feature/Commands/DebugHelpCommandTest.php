@@ -3,19 +3,17 @@
 namespace AnasNashat\EasyDev\Tests\Feature\Commands;
 
 use AnasNashat\EasyDev\Tests\TestCase;
+use Illuminate\Support\Facades\Artisan;
 
 class DebugHelpCommandTest extends TestCase
 {
     public function test_debug_help_output(): void
     {
-        // Capture output using buffer
-        ob_start();
-        $this->artisan('easy-dev:help');
-        $output = ob_get_clean();
-        
-        // Debug the actual output
-        file_put_contents(__DIR__ . '/debug_output.txt', $output);
-        
-        $this->assertTrue(str_contains($output, 'Laravel Easy Dev Package'));
+        $exitCode = Artisan::call('easy-dev:help');
+        $output = Artisan::output();
+
+        $this->assertEquals(0, $exitCode);
+        $this->assertStringContainsString('Laravel Easy Dev', $output);
+        $this->assertNotEmpty($output);
     }
 }

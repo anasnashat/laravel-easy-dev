@@ -1,28 +1,28 @@
 Code Writer (AnasNashat\EasyDev\Tests\Unit\Services\CodeWriter)
- [ ] Add relation successfully
+ [x] Add relation successfully
  [x] Add relation throws exception for existing method
  [x] Add relation throws exception for missing file
- [ ] Add use statement
+ [x] Add use statement
  [x] Add use statement skips if already exists
- [ ] Method exists
+ [x] Method exists
 
 Debug Help Command (AnasNashat\EasyDev\Tests\Feature\Commands\DebugHelpCommand)
- [ ] Debug help output
+ [x] Debug help output
 
 Debug Help Output (AnasNashat\EasyDev\Tests\Feature\Commands\DebugHelpOutput)
- [ ] Debug actual output
+ [x] Debug actual output
 
 Easy Dev Help Command (AnasNashat\EasyDev\Tests\Feature\Commands\EasyDevHelpCommand)
- [ ] Help command displays banner
- [ ] Help command lists all commands
- [ ] Help command shows usage examples
- [ ] Help command shows tips section
- [ ] Help command shows github link
- [ ] Help command shows command descriptions
- [ ] Help command shows command options
+ [x] Help command displays banner
+ [x] Help command lists all commands
+ [x] Help command shows usage examples
+ [x] Help command shows tips section
+ [x] Help command shows github link
+ [x] Help command shows command descriptions
+ [x] Help command shows command options
 
 File Generator (AnasNashat\EasyDev\Tests\Unit\Services\FileGenerator)
- [ ] Get stub content with replacements
+ [x] Get stub content with replacements
  [x] Generate file creates directory if not exists
  [x] Get model name from table
  [x] Get controller name from model
@@ -73,8 +73,8 @@ Migration Parser (AnasNashat\EasyDev\Tests\Unit\Services\MigrationParser)
 Model Sync Relations Command (AnasNashat\EasyDev\Tests\Feature\Commands\ModelSyncRelationsCommand)
  [x] Sync relations for specific model
  [x] Sync relations with all flag
- [ ] Sync relations handles nonexistent model
- [ ] Sync relations shows progress for each model
+ [x] Sync relations handles nonexistent model
+ [x] Sync relations shows progress for each model
  [x] Sync relations detects foreign key relationships
  [x] Sync relations handles models with no relations
  [x] Sync relations skips existing relations

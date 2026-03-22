@@ -23,31 +23,25 @@ class FileGeneratorTest extends UnitTestCase
     public function test_get_stub_content_with_replacements(): void
     {
         $stubContent = 'Hello {{ name }}, welcome to {{ app }}!';
-        $stubPath = '/path/to/stub.stub';
+        $stubName = 'test';
         
+        // Mock both potential paths that getStubPath() checks
         $this->filesystem
             ->shouldReceive('exists')
-            ->with($stubPath)
-            ->andReturn(true);
+            ->atLeast()->once()
+            ->andReturn(false, true); // First false for custom, second true for package stub
             
         $this->filesystem
             ->shouldReceive('get')
-            ->with($stubPath)
+            ->once()
             ->andReturn($stubContent);
 
-        // Mock the getStubPath method by using reflection
-        $reflection = new \ReflectionClass($this->fileGenerator);
-        $method = $reflection->getMethod('getStubPath');
-        $method->setAccessible(true);
-        
-        // We'll mock this by directly testing the replacement logic
-        $result = $this->fileGenerator->getStubContent('test', [
+        $result = $this->fileGenerator->getStubContent($stubName, [
             'name' => 'John',
             'app' => 'Laravel',
         ]);
 
-        // Since we can't easily mock the private method, let's test the logic differently
-        $this->assertTrue(true); // Placeholder - we'll implement this properly
+        $this->assertEquals('Hello John, welcome to Laravel!', $result);
     }
 
     public function test_generate_file_creates_directory_if_not_exists(): void
@@ -80,6 +74,7 @@ class FileGeneratorTest extends UnitTestCase
             ->once();
 
         $this->fileGenerator->generateFile($filePath, $stubName, []);
+        $this->assertTrue(true);
     }
 
     public function test_get_model_name_from_table(): void

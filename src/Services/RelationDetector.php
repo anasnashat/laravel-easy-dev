@@ -150,11 +150,51 @@ class RelationDetector
     }
 
     /**
+     * Find a class in the app directory by scanning for {ClassName}.php recursively.
+     */
+    public function findClassInAppDirectory(string $className): ?string
+    {
+        $appPath = app_path();
+        if (!$this->files->isDirectory($appPath)) {
+            return null;
+        }
+
+        $files = $this->files->allFiles($appPath);
+        foreach ($files as $file) {
+            if ($file->getBasename('.php') === $className) {
+                $content = $this->files->get($file->getRealPath());
+                if (preg_match('/namespace\s+([^;]+);/', $content, $matches)) {
+                    $namespace = trim($matches[1]);
+                    $fullyQualified = $namespace . '\\' . $className;
+                    if (class_exists($fullyQualified)) {
+                        return $fullyQualified;
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Get the fully qualified model class name.
      */
-    protected function qualifyModel(string $model): string
+    public function qualifyModel(string $model): string
     {
         $model = Str::studly($model);
+
+        // 1. If it's already a valid class name, return it
+        if (class_exists($model)) {
+            return $model;
+        }
+
+        // 2. Perform Model Autodiscovery search in app directory
+        $autodiscovered = $this->findClassInAppDirectory($model);
+        if ($autodiscovered) {
+            return $autodiscovered;
+        }
+
+        // 3. Fallback to standard config or App\Models
         $rootNamespace = app()->getNamespace();
         $modelClass = config('easy-dev.model_namespace', $rootNamespace . 'Models\\') . $model;
 
@@ -164,12 +204,13 @@ class RelationDetector
     /**
      * Get the file path for a model.
      */
-    protected function getModelPath(string $modelName): string
+    public function getModelPath(string $modelName): string
     {
         $modelClass = $this->qualifyModel($modelName);
         
         // Convert namespace to file path
-        $relativePath = str_replace(['App\\', '\\'], ['', '/'], $modelClass) . '.php';
+        $relativePath = str_replace('\\', '/', $modelClass) . '.php';
+        $relativePath = preg_replace('/^App\//i', '', $relativePath);
         
         return app_path($relativePath);
     }
@@ -179,21 +220,52 @@ class RelationDetector
      */
     public function getAllModels(): array
     {
-        $modelPath = app_path('Models');
-        
-        if (!$this->files->isDirectory($modelPath)) {
-            return [];
+        $scanPaths = [
+            config('easy-dev.paths.models', app_path('Models')),
+        ];
+
+        $modulesPath = app_path('Modules');
+        if ($this->files->isDirectory($modulesPath)) {
+            $scanPaths[] = $modulesPath;
         }
 
         $models = [];
-        $files = $this->files->allFiles($modelPath);
 
-        foreach ($files as $file) {
-            if ($file->getExtension() === 'php') {
-                $models[] = $file->getBasename('.php');
+        foreach ($scanPaths as $path) {
+            if (!$this->files->isDirectory($path)) {
+                continue;
+            }
+
+            $files = $this->files->allFiles($path);
+            foreach ($files as $file) {
+                if ($file->getExtension() !== 'php') {
+                    continue;
+                }
+
+                $content = $this->files->get($file->getRealPath());
+                // Look for classes extending Model
+                if (str_contains($content, 'extends Model') || str_contains($content, 'extends \\Illuminate\\Database\\Eloquent\\Model')) {
+                    $className = $file->getBasename('.php');
+                    if (!in_array($className, $models)) {
+                        $models[] = $className;
+                    }
+                }
             }
         }
 
-        return $models;
+        // If no model found under scanning paths, fallback to original scanning of Models folder
+        if (empty($models)) {
+            $modelPath = config('easy-dev.paths.models', app_path('Models'));
+            if ($this->files->isDirectory($modelPath)) {
+                $files = $this->files->allFiles($modelPath);
+                foreach ($files as $file) {
+                    if ($file->getExtension() === 'php') {
+                        $models[] = $file->getBasename('.php');
+                    }
+                }
+            }
+        }
+
+        return array_values(array_unique($models));
     }
 }

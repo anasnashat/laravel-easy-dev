@@ -3,16 +3,6 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | Laravel Easy Dev Configuration
-    |--------------------------------------------------------------------------
-    |
-    | This file contains the configuration options for Laravel Easy Dev package.
-    | You can customize paths, templates, and default behaviors.
-    |
-    */
-
-    /*
-    |--------------------------------------------------------------------------
     | Model Namespace
     |--------------------------------------------------------------------------
     |
@@ -32,20 +22,26 @@ return [
     |
     */
     'paths' => [
-        'models' => app_path('Models'),
-        'controllers' => app_path('Http/Controllers'),
-        'api_controllers' => app_path('Http/Controllers/Api'),
-        'requests' => app_path('Http/Requests'),
-        'repositories' => app_path('Repositories'),
+        'models'               => app_path('Models'),
+        'controllers'          => app_path('Http/Controllers'),
+        'api_controllers'      => app_path('Http/Controllers/Api'),
+        'requests'             => app_path('Http/Requests'),
+        'repositories'         => app_path('Repositories'),
         'repository_contracts' => app_path('Repositories/Contracts'),
-        'services' => app_path('Services'),
-        'service_contracts' => app_path('Services/Contracts'),
-        'tests' => base_path('tests'),
-        'feature_tests' => base_path('tests/Feature'),
-        'unit_tests' => base_path('tests/Unit'),
-        'factories' => database_path('factories'),
-        'seeders' => database_path('seeders'),
-        'migrations' => database_path('migrations'),
+        'services'             => app_path('Services'),
+        'service_contracts'    => app_path('Services/Contracts'),
+        'policies'             => app_path('Policies'),
+        'dtos'                 => app_path('DTOs'),
+        'observers'            => app_path('Observers'),
+        'filters'              => app_path('Filters'),
+        'enums'                => app_path('Enums'),
+        'resources'            => app_path('Http/Resources'),
+        'tests'                => base_path('tests'),
+        'feature_tests'        => base_path('tests/Feature'),
+        'unit_tests'           => base_path('tests/Unit'),
+        'factories'            => database_path('factories'),
+        'seeders'              => database_path('seeders'),
+        'migrations'           => database_path('migrations'),
     ],
 
     /*
@@ -74,15 +70,52 @@ return [
     |
     */
     'stubs' => [
-        'model' => 'model.enhanced',
-        'controller' => 'controller.enhanced',
-        'api_controller' => 'controller.api.enhanced',
-        'repository' => 'repository.enhanced',
+        'model'                => 'model.enhanced',
+        'controller'           => 'controller.enhanced',
+        'api_controller'       => 'controller.api.enhanced',
+        'repository'           => 'repository.enhanced',
         'repository_interface' => 'repository.interface.enhanced',
-        'service' => 'service.enhanced',
-        'service_interface' => 'service.interface.enhanced',
-        'request' => 'request.enhanced',
-        'test' => 'test.enhanced',
+        'service'              => 'service.enhanced',
+        'service_interface'    => 'service.interface.enhanced',
+        'request'              => 'request.enhanced',
+        'policy'               => 'policy',
+        'dto'                  => 'dto',
+        'observer'             => 'observer',
+        'filter'               => 'filter',
+        'enum'                 => 'enum',
+        'api_resource'         => 'api.resource',
+        'api_collection'       => 'api.collection',
+        'test'                 => 'test.enhanced',
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Modular Architecture Support
+    |--------------------------------------------------------------------------
+    |
+    | Enable modular layouts where files are generated under domain modules
+    | (e.g. app/Modules/Orders). You can customize namespaces and folder structure.
+    |
+    */
+    'modules' => [
+        'enabled' => false,
+        'path' => 'app/Modules', // root directory for domain modules
+        'namespaces' => [
+            'models'               => 'Models',
+            'controllers'          => 'Http/Controllers',
+            'api_controllers'      => 'Http/Controllers/Api',
+            'requests'             => 'Http/Requests',
+            'repositories'         => 'Repositories',
+            'repository_contracts' => 'Repositories/Contracts',
+            'services'             => 'Services',
+            'service_contracts'    => 'Services/Contracts',
+            'policies'             => 'Policies',
+            'dtos'                 => 'DTOs',
+            'observers'            => 'Observers',
+            'filters'              => 'Filters',
+            'enums'                => 'Enums',
+            'resources'            => 'Http/Resources',
+        ],
     ],
 
     /*

@@ -20,6 +20,7 @@ abstract class TestCase extends OrchestraTestCase
         parent::setUp();
         
         $this->filesystem = new Filesystem();
+        $this->cleanUpTestFiles();
         $this->setUpDatabase();
         $this->setUpTestFiles();
     }
@@ -54,6 +55,7 @@ abstract class TestCase extends OrchestraTestCase
 
         $app['config']->set('easy-dev.model_namespace', 'AnasNashat\\EasyDev\\Tests\\Fixtures\\Models\\');
         $app['config']->set('easy-dev.paths', [
+            'models' => __DIR__ . '/Fixtures/Models',
             'controllers' => $this->getTestPath('Controllers'),
             'requests' => $this->getTestPath('Requests'),
             'repositories' => $this->getTestPath('Repositories'),
@@ -160,6 +162,17 @@ abstract class TestCase extends OrchestraTestCase
         $testPath = $this->getTestPath();
         if ($this->filesystem->isDirectory($testPath)) {
             $this->filesystem->deleteDirectory($testPath);
+        }
+
+        // Clean up testbench dynamic migrations
+        $migrationsPath = database_path('migrations');
+        if ($this->filesystem->isDirectory($migrationsPath)) {
+            $files = $this->filesystem->files($migrationsPath);
+            foreach ($files as $file) {
+                if (str_contains($file->getFilename(), 'create_')) {
+                    $this->filesystem->delete($file->getRealPath());
+                }
+            }
         }
     }
 

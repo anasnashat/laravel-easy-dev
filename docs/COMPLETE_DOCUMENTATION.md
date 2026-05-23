@@ -1,4 +1,4 @@
-# Laravel Easy Dev v2 - Complete Documentation
+# Laravel Easy Dev v3 - Complete Documentation
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/anas/easy-dev.svg?style=flat-square)](https://packagist.org/packages/anas/easy-dev)
 [![GitHub Stars](https://img.shields.io/github/stars/anasnashat/laravel-easy-dev.svg?style=flat-square)](https://github.com/anasnashat/laravel-easy-dev)
@@ -7,15 +7,16 @@
 
 ## 🌟 Overview
 
-**Laravel Easy Dev v2** is a powerful, feature-rich package that revolutionizes Laravel development by providing:
+**Laravel Easy Dev v3** is a powerful, feature-rich package that revolutionizes Laravel development by providing:
 
+- 🤖 **AI-Native Operations** with context-mapping audits and silent JSON endpoints
+- 🧱 **Domain-Driven Modular Scaffolding** out-of-the-box
+- 📝 **4-Layer Dynamic Stub Overrides** and custom destination paths
 - 🎯 **Interactive CRUD Generation** with beautiful CLI interfaces
 - 🏗️ **Repository & Service Pattern** implementation
 - 🔄 **Intelligent Relationship Detection** from database schema
 - 🌐 **API & Web Controller** generation
-- 🧪 **Automated Test Generation** 
-- 🎨 **Customizable Templates** for all generated files
-- ⚡ **Performance Optimized** code generation
+- 🧪 **Automated Test Generation**
 - 📚 **Comprehensive Documentation** and help system
 
 ---
@@ -31,11 +32,13 @@
 7. [API Development](#-api-development)
 8. [Testing Features](#-testing-features)
 9. [Configuration](#-configuration)
-10. [Customization](#-customization)
-11. [Examples & Use Cases](#-examples--use-cases)
-12. [Best Practices](#-best-practices)
-13. [Troubleshooting](#-troubleshooting)
-14. [Contributing](#-contributing)
+10. [Customization & Stub Overrides](#-customization--stub-overrides)
+11. [AI-Native Integration](#-ai-native-integration)
+12. [Modular Development](#-modular-development)
+13. [Examples & Use Cases](#-examples--use-cases)
+14. [Best Practices](#-best-practices)
+15. [Troubleshooting](#-troubleshooting)
+16. [Contributing](#-contributing)
 
 ---
 
@@ -978,7 +981,7 @@ EASY_DEV_API_PREFIX="v1"
 
 ---
 
-## 🎨 Customization
+## 🎨 Customization & Stub Overrides
 
 ### Custom Stubs
 
@@ -1155,6 +1158,97 @@ class CustomEasyDevServiceProvider extends ServiceProvider
     }
 }
 ```
+
+---
+
+## 🤖 AI-Native Integration
+
+Laravel Easy Dev v3 is designed from the ground up to be **AI-Native**, providing high-density context interfaces, silent structured data exchanges, and pre-packaged instruction guidelines. This enables AI coding agents (such as Gemini, Claude, Cursor, and Copilot) to seamlessly discover, navigate, and utilize the scaffolding toolkit inside your codebase.
+
+### 1. High-Density AI Context Mapping (`easy-dev:ai-context`)
+Feed this single command's JSON output directly into your AI assistant's system prompt or active context to make it fully project-aware. It aggregates:
+- Configured paths and dynamic folder roots.
+- Domain module configuration state.
+- A comprehensive stubs override map.
+- Complete database schema audit (table names, column types, nullability).
+- Registered Eloquent relationships.
+- Complete commands API reference.
+
+```bash
+php artisan easy-dev:ai-context --pretty
+```
+
+### 2. DB Schema & Models Snapshot (`easy-dev:snapshot`)
+Generate a high-density, token-efficient snapshot of your database structure for quick context injections.
+```bash
+# Display a beautiful visual model map
+php artisan easy-dev:snapshot
+
+# Output raw compact JSON for AI tokens efficiency
+php artisan easy-dev:snapshot --ai
+```
+
+### 3. Deep-Dive Model Audit (`easy-dev:info`)
+Extract database constraints, casts, fillable arrays, hidden variables, and relationships of a specific model in markdown or JSON formats.
+```bash
+# Print markdown audit report
+php artisan easy-dev:info Product
+
+# Output JSON audit report for AI parsing
+php artisan easy-dev:info Product --ai
+```
+
+### 4. Natural Language Entity Scaffolder (`easy-dev:dream`)
+AI agents and developers can scaffold models, migrations, and CRUD fields using plain English natural language.
+```bash
+# Run a dry-run draft representation
+php artisan easy-dev:dream "Create user with email:string unique, role:enum(admin,user)" --dry-run
+```
+
+### 5. Automated AI Skill Initialization (`easy-dev:publish-stubs`)
+When you publish stubs using this command, the package automatically copies a dedicated markdown AI instruction manual called `easy-dev-ai.md` directly into your project's root folder!
+This file teaches any AI coding assistant how to use the Laravel Easy Dev generators, stubs, and conventions perfectly without requiring you to write prompt guidelines manually.
+
+---
+
+## 🧱 Modular Development
+
+In modern Laravel architecture, splitting code by domain boundaries (Domain-Driven Design / Modular Architecture) is a best practice. Laravel Easy Dev v3 offers built-in, first-class support for modular structures.
+
+### The `--module` Flag
+By passing `--module=ModuleName` to any generator, the package completely bypasses default paths and scaffolds all classes inside a self-contained module structure under `app/Modules/ModuleName/`.
+
+```bash
+php artisan easy-dev:crud Order --module=Billing --with-repository --with-service
+```
+
+### Generated Modular Directory Structure
+Files are organized logically within the domain folder:
+```
+app/Modules/Billing/
+├── Models/
+│   └── Order.php
+├── Http/
+│   ├── Controllers/
+│   │   └── OrderController.php
+│   └── Requests/
+│       ├── StoreOrderRequest.php
+│       └── UpdateOrderRequest.php
+├── Repositories/
+│   ├── OrderRepository.php
+│   └── Contracts/
+│       └── OrderRepositoryInterface.php
+├── Services/
+│   ├── OrderService.php
+│   └── Contracts/
+│       └── OrderServiceInterface.php
+```
+
+### Dynamic Namespace & Import Resolution
+The package automatically:
+1. Calculates the correct PSR-4 namespaces dynamically (e.g. `namespace App\Modules\Billing\Models;`).
+2. Tracks class movements to translate and rewrite all imports cleanly (e.g. `use App\Modules\Billing\Models\Order;` is dynamically imported inside the modular repository and controller classes instead of app-level models).
+3. Adapts route definitions and registers namespaces seamlessly.
 
 ---
 

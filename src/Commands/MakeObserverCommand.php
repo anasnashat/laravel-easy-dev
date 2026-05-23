@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use AnasNashat\EasyDev\Services\FileGenerator;
 use Illuminate\Support\Str;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 class MakeObserverCommand extends Command
 {
@@ -20,35 +21,85 @@ class MakeObserverCommand extends Command
     public function handle(): int
     {
         $modelName = Str::studly($this->argument('model'));
+        $isAiMode = $this->option('ai');
+        $preset = $this->option('preset');
+
+        $generatedFiles = [];
 
         try {
             $observerName = "{$modelName}Observer";
-            $observerPath = config('easy-dev.paths.observers', app_path('Observers')) . "/{$observerName}.php";
+            
+            $observerPath = $this->generator->resolveOutputPath(
+                'observers',
+                "{$observerName}.php",
+                $this->option('path'),
+                $this->option('module'),
+                $preset
+            );
 
+            $shouldGenerate = true;
             if (file_exists($observerPath)) {
-                if (!$this->confirm("Observer {$observerName} already exists. Overwrite?")) {
-                    $this->line("  Skipped observer generation.");
-                    return self::SUCCESS;
+                if (!$isAiMode) {
+                    if (!$this->confirm("Observer {$observerName} already exists. Overwrite?")) {
+                        $this->line("  Skipped observer generation.");
+                        $shouldGenerate = false;
+                    }
                 }
             }
 
-            $replacements = [
-                'ModelName' => $modelName,
-                'ObserverName' => $observerName,
-                'modelName' => Str::camel($modelName),
-            ];
+            if ($shouldGenerate) {
+                // Determine namespaces dynamically
+                $observerNamespace = $this->generator->getNamespaceForType('observers', $modelName, $this->option('path'), $this->option('module'), $preset);
+                $modelNamespace = $this->generator->getNamespaceForType('models', $modelName, $this->option('path'), $this->option('module'), $preset);
 
-            $this->generator->generateFile($observerPath, 'observer', $replacements);
-            $this->info("  ✓ Generated observer: {$observerName}");
+                $replacements = [
+                    'ObserverNamespace' => $observerNamespace,
+                    'ModelNamespace' => $modelNamespace,
+                    'ModelName' => $modelName,
+                    'ObserverName' => $observerName,
+                    'modelName' => Str::camel($modelName),
+                ];
 
-            $this->newLine();
-            $this->line('<info>Next Steps:</info>');
-            $this->line("  Register in AppServiceProvider boot():");
-            $this->line("    {$modelName}::observe({$observerName}::class);");
-            $this->line("  Or use the #[ObservedBy] attribute on the model (Laravel 10+).");
+                $this->generator->generateFile($observerPath, 'observer', $replacements, $this->option('stub'), $modelName, $this->option('path'), $this->option('module'), $preset);
+                
+                if (!$isAiMode) {
+                    $this->info("  ✓ Generated observer: {$observerName}");
+                }
+
+                $generatedFiles[] = [
+                    'type' => 'observer',
+                    'name' => $observerName,
+                    'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $observerPath),
+                    'stub_used' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->getStubPath('observer', $this->option('stub'))),
+                ];
+            }
+
+            if ($isAiMode) {
+                $this->output->write(json_encode([
+                    'status' => 'success',
+                    'command' => 'easy-dev:observer',
+                    'generated' => $generatedFiles,
+                ], JSON_PRETTY_PRINT));
+            } else {
+                $this->newLine();
+                $this->line('<info>Next Steps:</info>');
+                $this->line("  Register in AppServiceProvider boot():");
+                $this->line("    {$modelName}::observe({$observerName}::class);");
+                $this->line("  Or use the #[ObservedBy] attribute on the model (Laravel 10+).");
+            }
 
         } catch (\Exception $e) {
-            $this->error("Error generating observer: {$e->getMessage()}");
+            if ($isAiMode) {
+                $this->output->write(json_encode([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                    'suggestions' => [
+                        "Ensure standard directory permissions are properly configured.",
+                    ]
+                ], JSON_PRETTY_PRINT));
+            } else {
+                $this->error("Error generating observer: {$e->getMessage()}");
+            }
             return self::FAILURE;
         }
 
@@ -59,6 +110,17 @@ class MakeObserverCommand extends Command
     {
         return [
             ['model', InputArgument::REQUIRED, 'The model to generate an observer for.'],
+        ];
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            ['stub', null, InputOption::VALUE_OPTIONAL, 'Override stub template name or absolute/relative file path.'],
+            ['path', null, InputOption::VALUE_OPTIONAL, 'Override the output directory path.'],
+            ['module', null, InputOption::VALUE_OPTIONAL, 'Generate inside a domain module directory.'],
+            ['preset', null, InputOption::VALUE_OPTIONAL, 'Use a pre-configured architecture preset (e.g. clean).'],
+            ['ai', null, InputOption::VALUE_NONE, 'Output machine-friendly JSON format for AI integration.'],
         ];
     }
 }

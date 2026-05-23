@@ -32,110 +32,487 @@ class MakeCrudCommand extends Command
     public function handle(): int
     {
         $modelName = $this->argument('model');
-        $withRepository = $this->option('with-repository');
-        $withService = $this->option('with-service');
+        $withRepository = $this->option('with-repository') || config('easy-dev.defaults.with_repository', false);
+        $withService = $this->option('with-service') || config('easy-dev.defaults.with_service', false);
         $withPolicy = $this->option('with-policy');
         $withDto = $this->option('with-dto');
         $withObserver = $this->option('with-observer');
         $apiOnly = $this->option('api-only');
         $webOnly = $this->option('web-only');
-        $withoutInterface = $this->option('without-interface');
+        $withoutInterface = $this->option('without-interface') || !config('easy-dev.defaults.with_interface', true);
         $dryRun = $this->option('dry-run');
         
-        // Validate options
+        $isAiMode = $this->option('ai');
+        $customPath = $this->option('path');
+        $customStub = $this->option('stub');
+        $module = $this->option('module');
+        $preset = $this->option('preset');
+
+        // Validation
         if ($apiOnly && $webOnly) {
-            $this->error('Cannot specify both --api-only and --web-only options.');
+            if ($isAiMode) {
+                $this->output->write(json_encode([
+                    'status' => 'error',
+                    'message' => 'Cannot specify both --api-only and --web-only options.'
+                ]));
+            } else {
+                $this->error('Cannot specify both --api-only and --web-only options.');
+            }
             return self::FAILURE;
         }
 
-        $isApi = $apiOnly || (!$webOnly && $this->option('api'));
-
-        // Configure generation context
+        // Context
         $this->context->reset();
         $this->context->setDryRun($dryRun);
-        
+
+        $generatedFiles = [];
+
         try {
             if ($dryRun) {
-                $this->info("🔍 DRY RUN — Previewing CRUD generation for {$modelName}...");
-                $this->newLine();
+                if (!$isAiMode) {
+                    $this->info("🔍 DRY RUN — Previewing CRUD generation for {$modelName}...");
+                    $this->newLine();
+                }
             } else {
-                $this->info("Generating enhanced CRUD files for {$modelName}...");
+                if (!$isAiMode) {
+                    $this->info("Generating enhanced CRUD files for {$modelName}...");
+                }
             }
 
-            // Check and parse migration
+            // 1. Parse migration data
             $migrationData = $this->parseMigrationData($modelName);
 
             if (!$dryRun) {
-                // Generate or enhance model
-                $this->generateOrEnhanceModel($modelName, $migrationData);
-
-                // Generate migration if not exists
-                if (!$this->migrationParser->migrationExists($modelName)) {
-                    $this->generateMigration($modelName);
+                // 2. Generate or enhance model
+                $modelPath = $this->generator->resolveOutputPath('models', "{$modelName}.php", $customPath, $module, $preset);
+                $shouldGenModel = true;
+                
+                if (file_exists($modelPath)) {
+                    $this->modelEnhancer->enhanceModel($modelName, $migrationData);
+                    if (!$isAiMode) {
+                        $this->line("  ✓ Enhanced existing model: {$modelName}");
+                    }
+                    $shouldGenModel = false;
                 } else {
-                    $this->line("  • Migration for {$modelName} already exists, skipping...");
+                    $replacements = [
+                        'class' => $modelName,
+                        'table' => Str::snake(Str::plural($modelName)),
+                    ];
+                    $this->generator->generateFile($modelPath, 'model', $replacements, $customStub, $modelName, $customPath, $module, $preset);
+                    if (!$isAiMode) {
+                        $this->line("  ✓ Created model: {$modelName}");
+                    }
                 }
 
-                // Generate repository if requested
+                $generatedFiles[] = [
+                    'type' => 'model',
+                    'name' => $modelName,
+                    'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $modelPath),
+                    'stub_used' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->getStubPath('model', $customStub)),
+                ];
+
+                // 3. Generate migration if not exists
+                if (!$this->migrationParser->migrationExists($modelName)) {
+                    $tableName = Str::snake(Str::plural($modelName));
+                    $migrationName = "create_{$tableName}_table";
+                    $exitCode = $this->callSilent('make:migration', [
+                        'name' => $migrationName,
+                        '--create' => $tableName,
+                    ]);
+
+                    if ($exitCode === 0) {
+                        if (!$isAiMode) {
+                            $this->line("  ✓ Created migration: {$migrationName}");
+                        }
+                        
+                        // Try to find the newly created migration file to return its path
+                        $migrationsPath = database_path('migrations');
+                        $migrationFile = '';
+                        if (file_exists($migrationsPath)) {
+                            $files = scandir($migrationsPath);
+                            foreach ($files as $file) {
+                                if (str_contains($file, "create_{$tableName}_table")) {
+                                    $migrationFile = "database/migrations/{$file}";
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        $generatedFiles[] = [
+                            'type' => 'migration',
+                            'name' => $migrationName,
+                            'path' => $migrationFile ?: "database/migrations/*_create_{$tableName}_table.php",
+                            'stub_used' => 'laravel:migration',
+                        ];
+                    }
+                }
+
+                // 4. Generate repository if requested
                 if ($withRepository) {
-                    $this->generateRepository($modelName, !$withoutInterface, $migrationData);
+                    $repoName = "{$modelName}Repository";
+                    $repoPath = $this->generator->resolveOutputPath('repositories', "{$repoName}.php", $customPath, $module, $preset);
+
+                    // Generate Repository Interface
+                    if (!$withoutInterface) {
+                        $interfaceName = "{$modelName}RepositoryInterface";
+                        $interfacePath = $this->generator->resolveOutputPath(
+                            'repository_contracts',
+                            "{$interfaceName}.php",
+                            $customPath ? rtrim($customPath, '/\\') . DIRECTORY_SEPARATOR . 'Contracts' : null,
+                            $module,
+                            $preset
+                        );
+
+                        $replacements = [
+                            'InterfaceName' => $interfaceName,
+                            'ModelName' => $modelName,
+                            'modelName' => Str::camel($modelName),
+                        ];
+
+                        $this->generator->generateFile($interfacePath, 'repository_interface', $replacements, $customStub, $modelName, $customPath, $module, $preset);
+                        
+                        $generatedFiles[] = [
+                            'type' => 'repository_interface',
+                            'name' => $interfaceName,
+                            'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $interfacePath),
+                            'stub_used' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->getStubPath('repository_interface', $customStub)),
+                        ];
+                    }
+
+                    // Generate Repository Implementation
+                    $relationships = array_merge($migrationData['relationships'] ?? [], $this->migrationParser->findReverseRelationships($modelName));
+                    $eagerLoad = $this->generateEagerLoadString($relationships);
+                    $filterLogic = $this->generateFilterLogic($migrationData['fillable'] ?? []);
+
+                    $interfaceNamespace = $this->generator->getNamespaceForType(
+                        'repository_contracts',
+                        $modelName,
+                        $customPath ? rtrim($customPath, '/\\') . DIRECTORY_SEPARATOR . 'Contracts' : null,
+                        $module,
+                        $preset
+                    );
+
+                    $replacements = [
+                        'RepositoryName' => $repoName,
+                        'ModelName' => $modelName,
+                        'modelName' => Str::camel($modelName),
+                        'InterfaceUse' => !$withoutInterface ? "use {$interfaceNamespace}\\{$modelName}RepositoryInterface;\n" : '',
+                        'InterfaceImplements' => !$withoutInterface ? " implements {$modelName}RepositoryInterface" : '',
+                        'eagerLoadRelationships' => $eagerLoad,
+                        'filterLogic' => $filterLogic,
+                    ];
+
+                    $this->generator->generateFile($repoPath, 'repository', $replacements, $customStub, $modelName, $customPath, $module, $preset);
+                    
+                    if (!$isAiMode) {
+                        $this->line("  ✓ Generated repository: {$repoName}");
+                    }
+
+                    $generatedFiles[] = [
+                        'type' => 'repository',
+                        'name' => $repoName,
+                        'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $repoPath),
+                        'stub_used' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->getStubPath('repository', $customStub)),
+                    ];
                 }
 
-                // Generate service if requested
+                // 5. Generate service if requested
                 if ($withService) {
-                    $this->generateService($modelName, $withRepository, !$withoutInterface);
+                    $serviceName = "{$modelName}Service";
+                    $servicePath = $this->generator->resolveOutputPath('services', "{$serviceName}.php", $customPath, $module, $preset);
+
+                    // Generate Service Interface
+                    if (!$withoutInterface) {
+                        $interfaceName = "{$modelName}ServiceInterface";
+                        $interfacePath = $this->generator->resolveOutputPath(
+                            'service_contracts',
+                            "{$interfaceName}.php",
+                            $customPath ? rtrim($customPath, '/\\') . DIRECTORY_SEPARATOR . 'Contracts' : null,
+                            $module,
+                            $preset
+                        );
+
+                        $replacements = [
+                            'ServiceInterfaceName' => $interfaceName,
+                            'ModelName' => $modelName,
+                            'modelName' => Str::camel($modelName),
+                        ];
+
+                        $this->generator->generateFile($interfacePath, 'service_interface', $replacements, $customStub, $modelName, $customPath, $module, $preset);
+                        
+                        $generatedFiles[] = [
+                            'type' => 'service_interface',
+                            'name' => $interfaceName,
+                            'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $interfacePath),
+                            'stub_used' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->getStubPath('service_interface', $customStub)),
+                        ];
+                    }
+
+                    // Generate Service Implementation
+                    $serviceInterfaceNamespace = $this->generator->getNamespaceForType(
+                        'service_contracts',
+                        $modelName,
+                        $customPath ? rtrim($customPath, '/\\') . DIRECTORY_SEPARATOR . 'Contracts' : null,
+                        $module,
+                        $preset
+                    );
+                    $repositoryInterfaceNamespace = $this->generator->getNamespaceForType(
+                        'repository_contracts',
+                        $modelName,
+                        $customPath ? rtrim($customPath, '/\\') . DIRECTORY_SEPARATOR . 'Contracts' : null,
+                        $module,
+                        $preset
+                    );
+
+                    $repositoryInterface = $withRepository ? "{$modelName}RepositoryInterface" : null;
+
+                    $replacements = [
+                        'ServiceName' => $serviceName,
+                        'ModelName' => $modelName,
+                        'modelName' => Str::camel($modelName),
+                        'ServiceInterfaceUse' => !$withoutInterface ? "use {$serviceInterfaceNamespace}\\{$modelName}ServiceInterface;\n" : '',
+                        'ServiceInterfaceImplements' => !$withoutInterface ? " implements {$modelName}ServiceInterface" : '',
+                        'RepositoryInterfaceUse' => $withRepository && !$withoutInterface ? "use {$repositoryInterfaceNamespace}\\{$repositoryInterface};\n" : '',
+                        'RepositoryDependency' => $withRepository ? "protected " . ($withoutInterface ? "{$modelName}Repository" : $repositoryInterface) . " \$repository" : '',
+                    ];
+
+                    $this->generator->generateFile($servicePath, 'service', $replacements, $customStub, $modelName, $customPath, $module, $preset);
+                    
+                    if (!$isAiMode) {
+                        $this->line("  ✓ Generated service: {$serviceName}");
+                    }
+
+                    $generatedFiles[] = [
+                        'type' => 'service',
+                        'name' => $serviceName,
+                        'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $servicePath),
+                        'stub_used' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->getStubPath('service', $customStub)),
+                    ];
                 }
 
-                // Generate controllers
-                $this->generateControllers($modelName, $apiOnly, $webOnly, $withService, $migrationData);
-
-                // Generate API resources for API controllers
+                // 6. Generate controllers
                 if (!$webOnly) {
-                    $this->generateApiResources($modelName);
+                    // API Controller
+                    $controllerName = "{$modelName}ApiController";
+                    $controllerPath = $this->generator->resolveOutputPath('api_controllers', "{$controllerName}.php", $customPath, $module, $preset);
+                    
+                    $stub = $withService ? 'controller.api.service' : 'controller.api';
+                    $namespace = $this->generator->getNamespaceForType('api_controllers', $modelName, $customPath, $module, $preset);
+                    $replacements = $this->getControllerReplacements($modelName, $controllerName, $namespace, $withService, $migrationData, $customPath, $module, $withoutInterface, $preset);
+
+                    $this->generator->generateFile($controllerPath, $stub, $replacements, $customStub, $modelName, $customPath, $module, $preset);
+                    
+                    if (!$isAiMode) {
+                        $this->line("  ✓ Created API controller: {$controllerName}");
+                    }
+
+                    $generatedFiles[] = [
+                        'type' => 'api_controller',
+                        'name' => $controllerName,
+                        'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $controllerPath),
+                        'stub_used' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->getStubPath($stub, $customStub)),
+                    ];
                 }
 
-                // Generate form requests
-                $this->generateFormRequests($modelName, $migrationData);
+                if (!$apiOnly) {
+                    // Web Controller
+                    $controllerName = "{$modelName}Controller";
+                    $controllerPath = $this->generator->resolveOutputPath('controllers', "{$controllerName}.php", $customPath, $module, $preset);
+                    
+                    $stub = $withService ? 'controller.web.service' : 'controller';
+                    $namespace = $this->generator->getNamespaceForType('controllers', $modelName, $customPath, $module, $preset);
+                    $replacements = $this->getControllerReplacements($modelName, $controllerName, $namespace, $withService, $migrationData, $customPath, $module, $withoutInterface, $preset);
 
-                // Generate routes
-                $this->generateRoutes($modelName, $apiOnly, $webOnly);
+                    $this->generator->generateFile($controllerPath, $stub, $replacements, $customStub, $modelName, $customPath, $module, $preset);
+                    
+                    if (!$isAiMode) {
+                        $this->line("  ✓ Created web controller: {$controllerName}");
+                    }
 
-                // Generate policy if requested
+                    $generatedFiles[] = [
+                        'type' => 'controller',
+                        'name' => $controllerName,
+                        'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $controllerPath),
+                        'stub_used' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->getStubPath($stub, $customStub)),
+                    ];
+                }
+
+                // 7. Generate API resources
+                if (!$webOnly) {
+                    $resourceName = "{$modelName}Resource";
+                    $resourcePath = $this->generator->resolveOutputPath('resources', "{$resourceName}.php", $customPath, $module, $preset);
+                    
+                    $replacements = [
+                        'ModelName' => $modelName,
+                        'ResourceName' => $resourceName,
+                        'modelName' => Str::camel($modelName),
+                    ];
+                    $this->generator->generateFile($resourcePath, 'api_resource', $replacements, $customStub, $modelName, $customPath, $module, $preset);
+
+                    $generatedFiles[] = [
+                        'type' => 'api_resource',
+                        'name' => $resourceName,
+                        'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $resourcePath),
+                        'stub_used' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->getStubPath('api_resource', $customStub)),
+                    ];
+
+                    $collectionName = "{$modelName}Collection";
+                    $collectionPath = $this->generator->resolveOutputPath('resources', "{$collectionName}.php", $customPath, $module, $preset);
+                    
+                    $collectionReplacements = [
+                        'ModelName' => $modelName,
+                        'CollectionName' => $collectionName,
+                        'ResourceName' => $resourceName,
+                        'modelName' => Str::camel($modelName),
+                    ];
+                    $this->generator->generateFile($collectionPath, 'api_collection', $collectionReplacements, $customStub, $modelName, $customPath, $module, $preset);
+
+                    $generatedFiles[] = [
+                        'type' => 'api_collection',
+                        'name' => $collectionName,
+                        'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $collectionPath),
+                        'stub_used' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->getStubPath('api_collection', $customStub)),
+                    ];
+                }
+
+                // 8. Generate Form Requests
+                $requestNames = $this->generator->getRequestNamesFromModel($modelName);
+                $requestPath = $this->generator->resolveOutputPath('requests', 'Dummy.php', $customPath, $module, $preset);
+                $requestDir = dirname($requestPath);
+                
+                $validationRules = $this->migrationParser->generateValidationRules($migrationData['columns'] ?? []);
+
+                foreach (['store', 'update'] as $type) {
+                    $requestName = $requestNames[$type];
+                    $requestFilePath = "{$requestDir}/{$requestName}.php";
+
+                    $replacements = [
+                        'class' => $requestName,
+                        'model' => $modelName,
+                        'modelVariable' => Str::camel($modelName),
+                        'type' => $type,
+                        'validationRules' => $this->formatValidationRules($validationRules, $type),
+                        'customMessages' => $this->formatCustomMessages($validationRules),
+                        'customAttributes' => $this->formatCustomAttributes($migrationData['fillable'] ?? []),
+                    ];
+
+                    $stub = !empty($validationRules) ? 'request.enhanced' : "request.{$type}";
+                    $this->generator->generateFile($requestFilePath, $stub, $replacements, $customStub, $modelName, $customPath, $module, $preset);
+                    
+                    if (!$isAiMode) {
+                        $this->line("  ✓ Created form request: {$requestName}");
+                    }
+
+                    $generatedFiles[] = [
+                        'type' => 'request_' . $type,
+                        'name' => $requestName,
+                        'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $requestFilePath),
+                        'stub_used' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->getStubPath($stub, $customStub)),
+                    ];
+                }
+
+                // 9. Generate optional components (Policy, DTO, Observer)
                 if ($withPolicy) {
-                    $this->call('easy-dev:policy', ['model' => $modelName]);
+                    $this->callSilent('easy-dev:policy', [
+                        'model' => $modelName,
+                        '--path' => $customPath,
+                        '--stub' => $customStub,
+                        '--module' => $module,
+                        '--preset' => $preset,
+                        '--ai' => true,
+                    ]);
+                    $generatedFiles[] = [
+                        'type' => 'policy',
+                        'name' => "{$modelName}Policy",
+                        'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->resolveOutputPath('policies', "{$modelName}Policy.php", $customPath, $module, $preset)),
+                        'stub_used' => 'easy-dev:policy',
+                    ];
                 }
 
-                // Generate DTO if requested
                 if ($withDto) {
-                    $this->call('easy-dev:dto', ['model' => $modelName]);
+                    $this->callSilent('easy-dev:dto', [
+                        'model' => $modelName,
+                        '--path' => $customPath,
+                        '--stub' => $customStub,
+                        '--module' => $module,
+                        '--preset' => $preset,
+                        '--ai' => true,
+                    ]);
+                    $generatedFiles[] = [
+                        'type' => 'dto',
+                        'name' => "{$modelName}Data",
+                        'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->resolveOutputPath('dtos', "{$modelName}Data.php", $customPath, $module, $preset)),
+                        'stub_used' => 'easy-dev:dto',
+                    ];
                 }
 
-                // Generate observer if requested
                 if ($withObserver) {
-                    $this->call('easy-dev:observer', ['model' => $modelName]);
+                    $this->callSilent('easy-dev:observer', [
+                        'model' => $modelName,
+                        '--path' => $customPath,
+                        '--stub' => $customStub,
+                        '--module' => $module,
+                        '--preset' => $preset,
+                        '--ai' => true,
+                    ]);
+                    $generatedFiles[] = [
+                        'type' => 'observer',
+                        'name' => "{$modelName}Observer",
+                        'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->resolveOutputPath('observers', "{$modelName}Observer.php", $customPath, $module, $preset)),
+                        'stub_used' => 'easy-dev:observer',
+                    ];
                 }
 
-                // Update service provider bindings
+                // 10. Update bindings if RepositoryServiceProvider exists
                 if ($withRepository || $withService) {
-                    $this->updateServiceProviderBindings($modelName, $withRepository, $withService, !$withoutInterface);
+                    if (!$withoutInterface) {
+                        $this->updateServiceProviderBindings($modelName, $withRepository, $withService, !$withoutInterface);
+                    }
                 }
 
-                // Clean up backups on success
-                $this->context->cleanupBackups();
+                 // Clean backups
+                 $this->context->cleanupBackups();
 
-                $this->showSuccessMessage($modelName, $withRepository, $withService, $apiOnly, $webOnly, $migrationData);
+                 // Clean empty directories under module if using clean preset
+                 if ($module && $preset === 'clean') {
+                     $modulesRoot = config('easy-dev.modules.path', 'app/Modules');
+                     $modulePath = base_path(rtrim($modulesRoot, '/\\') . DIRECTORY_SEPARATOR . Str::studly($module));
+                     $this->scrubEmptyDirectories($modulePath);
+                 }
+
+                if ($isAiMode) {
+                    $this->output->write(json_encode([
+                        'status' => 'success',
+                        'command' => 'easy-dev:crud',
+                        'model' => $modelName,
+                        'generated' => $generatedFiles,
+                    ], JSON_PRETTY_PRINT));
+                } else {
+                    $this->showSuccessMessage($modelName, $withRepository, $withService, $apiOnly, $webOnly, $migrationData);
+                }
             } else {
-                // Dry-run: show what would be generated
+                // Dry run
                 $this->showDryRunSummary($modelName, $withRepository, $withService, $withPolicy, $withDto, $withObserver, $apiOnly, $webOnly);
             }
 
         } catch (\Exception $e) {
-            // Rollback all generated files on failure
             if (!$dryRun) {
                 $this->context->rollback();
-                $this->warn('⚠️  Generation failed — all changes have been rolled back.');
             }
-            $this->error($e->getMessage());
+
+            if ($isAiMode) {
+                $this->output->write(json_encode([
+                    'status' => 'error',
+                    'message' => $e->getMessage(),
+                    'suggestions' => [
+                        "Verify database table permissions and constraints.",
+                        "Check write permissions on target generation directories.",
+                    ]
+                ], JSON_PRETTY_PRINT));
+            } else {
+                $this->warn('⚠️  Generation failed — all changes have been rolled back.');
+                $this->error($e->getMessage());
+            }
             return self::FAILURE;
         }
 
@@ -143,7 +520,7 @@ class MakeCrudCommand extends Command
     }
 
     /**
-     * Show dry-run summary of what would be generated.
+     * Show dry-run summary.
      */
     protected function showDryRunSummary(string $modelName, bool $withRepository, bool $withService, bool $withPolicy, bool $withDto, bool $withObserver, bool $apiOnly, bool $webOnly): void
     {
@@ -188,18 +565,6 @@ class MakeCrudCommand extends Command
         }
 
         $this->newLine();
-        $this->line('<info>Files that would be modified:</info>');
-        if (!$webOnly) {
-            $this->line('  ✏️  routes/api.php');
-        }
-        if (!$apiOnly) {
-            $this->line('  ✏️  routes/web.php');
-        }
-        if ($withRepository || $withService) {
-            $this->line('  ✏️  app/Providers/RepositoryServiceProvider.php');
-        }
-
-        $this->newLine();
         $this->info('No files were created or modified (dry-run mode).');
     }
 
@@ -221,230 +586,19 @@ class MakeCrudCommand extends Command
     }
 
     /**
-     * Generate or enhance model.
-     */
-    protected function generateOrEnhanceModel(string $modelName, array $migrationData): void
-    {
-        $modelPath = app_path("Models/{$modelName}.php");
-        
-        if (file_exists($modelPath)) {
-            // Enhance existing model
-            $this->modelEnhancer->enhanceModel($modelName, $migrationData);
-            $this->line("  ✓ Enhanced existing model: {$modelName}");
-        } else {
-            // Generate new model
-            $this->generateModel($modelName);
-        }
-    }
-
-    /**
-     * Generate repository pattern files.
-     */
-    protected function generateRepository(string $modelName, bool $withInterface, array $migrationData): void
-    {
-        $repositoryName = "{$modelName}Repository";
-        $interfaceName = "{$modelName}RepositoryInterface";
-        
-        // Generate interface
-        if ($withInterface) {
-            $this->generateRepositoryInterface($modelName, $interfaceName, $migrationData);
-        }
-
-        // Generate repository implementation
-        $this->generateRepositoryImplementation($modelName, $repositoryName, $withInterface, $migrationData);
-        
-        $this->line("  ✓ Generated repository pattern for {$modelName}");
-    }
-
-    /**
-     * Generate service layer files.
-     */
-    protected function generateService(string $modelName, bool $withRepository, bool $withInterface): void
-    {
-        $serviceName = "{$modelName}Service";
-        $serviceInterfaceName = "{$modelName}ServiceInterface";
-        
-        // Generate service interface
-        if ($withInterface) {
-            $this->generateServiceInterface($modelName, $serviceInterfaceName);
-        }
-
-        // Generate service implementation
-        $this->generateServiceImplementation($modelName, $serviceName, $withRepository, $withInterface);
-        
-        $this->line("  ✓ Generated service layer for {$modelName}");
-    }
-
-    /**
-     * Generate controllers based on options.
-     */
-    protected function generateControllers(string $modelName, bool $apiOnly, bool $webOnly, bool $withService, array $migrationData): void
-    {
-        if (!$webOnly) {
-            // Generate API controller
-            $this->generateApiController($modelName, $withService, $migrationData);
-        }
-
-        if (!$apiOnly) {
-            // Generate web controller
-            $this->generateWebController($modelName, $withService, $migrationData);
-        }
-    }
-
-    /**
-     * Generate repository interface.
-     */
-    protected function generateRepositoryInterface(string $modelName, string $interfaceName, array $migrationData): void
-    {
-        $interfacePath = config('easy-dev.paths.repositories', app_path('Repositories')) . "/Contracts/{$interfaceName}.php";
-        
-        $replacements = [
-            'InterfaceName' => $interfaceName,
-            'ModelName' => $modelName,
-            'modelName' => Str::camel($modelName),
-        ];
-
-        $this->generator->generateFile($interfacePath, 'repository.interface.enhanced', $replacements);
-    }
-
-    /**
-     * Generate repository implementation.
-     */
-    protected function generateRepositoryImplementation(string $modelName, string $repositoryName, bool $withInterface, array $migrationData): void
-    {
-        $repositoryPath = config('easy-dev.paths.repositories', app_path('Repositories')) . "/{$repositoryName}.php";
-        
-        // Generate relationships for eager loading
-        $relationships = array_merge($migrationData['relationships'] ?? [], $this->migrationParser->findReverseRelationships($modelName));
-        $eagerLoadRelationships = $this->generateEagerLoadString($relationships);
-        $filterLogic = $this->generateFilterLogic($migrationData['fillable'] ?? []);
-
-        $replacements = [
-            'RepositoryName' => $repositoryName,
-            'ModelName' => $modelName,
-            'modelName' => Str::camel($modelName),
-            'InterfaceUse' => $withInterface ? "use App\\Repositories\\Contracts\\{$modelName}RepositoryInterface;\n" : '',
-            'InterfaceImplements' => $withInterface ? " implements {$modelName}RepositoryInterface" : '',
-            'eagerLoadRelationships' => $eagerLoadRelationships,
-            'filterLogic' => $filterLogic,
-        ];
-
-        $this->generator->generateFile($repositoryPath, 'repository.enhanced', $replacements);
-    }
-
-    /**
-     * Generate service interface.
-     */
-    protected function generateServiceInterface(string $modelName, string $serviceInterfaceName): void
-    {
-        $servicePath = config('easy-dev.paths.services', app_path('Services')) . "/Contracts/{$serviceInterfaceName}.php";
-        
-        $replacements = [
-            'ServiceInterfaceName' => $serviceInterfaceName,
-            'ModelName' => $modelName,
-            'modelName' => Str::camel($modelName),
-        ];
-
-        $this->generator->generateFile($servicePath, 'service.interface', $replacements);
-    }
-
-    /**
-     * Generate service implementation.
-     */
-    protected function generateServiceImplementation(string $modelName, string $serviceName, bool $withRepository, bool $withInterface): void
-    {
-        $servicePath = config('easy-dev.paths.services', app_path('Services')) . "/{$serviceName}.php";
-        
-        $repositoryInterface = $withRepository ? "{$modelName}RepositoryInterface" : null;
-
-        $replacements = [
-            'ServiceName' => $serviceName,
-            'ModelName' => $modelName,
-            'modelName' => Str::camel($modelName),
-            'ServiceInterfaceUse' => $withInterface ? "use App\\Services\\Contracts\\{$modelName}ServiceInterface;\n" : '',
-            'ServiceInterfaceImplements' => $withInterface ? " implements {$modelName}ServiceInterface" : '',
-            'RepositoryInterfaceUse' => $withRepository ? "use App\\Repositories\\Contracts\\{$repositoryInterface};\n" : '',
-            'RepositoryDependency' => $withRepository ? "protected {$repositoryInterface} \$repository" : '',
-        ];
-
-        $this->generator->generateFile($servicePath, 'service', $replacements);
-    }
-
-    /**
-     * Generate API controller.
-     */
-    protected function generateApiController(string $modelName, bool $withService, array $migrationData): void
-    {
-        $controllerName = "{$modelName}ApiController";
-        $controllerPath = app_path("Http/Controllers/Api/{$controllerName}.php");
-        
-        $stub = $withService ? 'controller.api.service' : 'controller.api';
-        $replacements = $this->getControllerReplacements($modelName, $controllerName, 'App\\Http\\Controllers\\Api', $withService, $migrationData);
-
-        $this->generator->generateFile($controllerPath, $stub, $replacements);
-        $this->line("  ✓ Created API controller: {$controllerName}");
-    }
-
-    /**
-     * Generate web controller.
-     */
-    protected function generateWebController(string $modelName, bool $withService, array $migrationData): void
-    {
-        $controllerName = "{$modelName}Controller";
-        $controllerPath = app_path("Http/Controllers/{$controllerName}.php");
-        
-        $stub = $withService ? 'controller.web.service' : 'controller';
-        $replacements = $this->getControllerReplacements($modelName, $controllerName, 'App\\Http\\Controllers', $withService, $migrationData);
-
-        $this->generator->generateFile($controllerPath, $stub, $replacements);
-        $this->line("  ✓ Created web controller: {$controllerName}");
-    }
-
-    /**
-     * Generate API resources for the model.
-     */
-    protected function generateApiResources(string $modelName): void
-    {
-        // Generate resource
-        $resourceName = "{$modelName}Resource";
-        $resourcePath = app_path("Http/Resources/{$resourceName}.php");
-        
-        $replacements = [
-            'ModelName' => $modelName,
-            'ResourceName' => $resourceName,
-            'modelName' => Str::camel($modelName),
-        ];
-
-        $this->generator->generateFile($resourcePath, 'api.resource', $replacements);
-        $this->line("  ✓ Created API resource: {$resourceName}");
-
-        // Generate collection
-        $collectionName = "{$modelName}Collection";
-        $collectionPath = app_path("Http/Resources/{$collectionName}.php");
-        
-        $collectionReplacements = [
-            'ModelName' => $modelName,
-            'CollectionName' => $collectionName,
-            'ResourceName' => $resourceName,
-            'modelName' => Str::camel($modelName),
-        ];
-
-        $this->generator->generateFile($collectionPath, 'api.collection', $collectionReplacements);
-        $this->line("  ✓ Created API collection: {$collectionName}");
-    }
-
-    /**
      * Get controller replacements.
      */
-    protected function getControllerReplacements(string $modelName, string $controllerName, string $namespace, bool $withService, array $migrationData): array
+    protected function getControllerReplacements(string $modelName, string $controllerName, string $namespace, bool $withService, array $migrationData, ?string $explicitPath = null, ?string $module = null, bool $withoutInterface = false, ?string $preset = null): array
     {
-        $modelClass = $this->qualifyModel($modelName);
+        $modelClass = $this->generator->getNamespaceForType('models', $modelName, $explicitPath, $module, $preset) . '\\' . $modelName;
         $requestNames = $this->generator->getRequestNamesFromModel($modelName);
         
-        // Generate relationships for with() loading
         $relationships = array_merge($migrationData['relationships'] ?? [], $this->migrationParser->findReverseRelationships($modelName));
         $withRelationships = $this->generateWithRelationshipsString($relationships);
         $filterableFields = $this->generateFilterableFieldsString($migrationData['fillable'] ?? []);
+
+        $storeRequestClass = $this->generator->getNamespaceForType('requests', $modelName, $explicitPath, $module, $preset) . '\\' . $requestNames['store'];
+        $updateRequestClass = $this->generator->getNamespaceForType('requests', $modelName, $explicitPath, $module, $preset) . '\\' . $requestNames['update'];
 
         $replacements = [
             'namespace' => $namespace,
@@ -456,320 +610,22 @@ class MakeCrudCommand extends Command
             'modelVariablePlural' => Str::camel(Str::plural($modelName)),
             'storeRequest' => $requestNames['store'],
             'updateRequest' => $requestNames['update'],
+            'storeRequestClass' => $storeRequestClass,
+            'updateRequestClass' => $updateRequestClass,
             'resourceName' => Str::kebab(Str::plural($modelName)),
             'withRelationships' => $withRelationships,
             'filterableFields' => $filterableFields,
         ];
 
         if ($withService) {
-            $serviceInterface = "{$modelName}ServiceInterface";
-            $replacements['ServiceInterfaceUse'] = "use App\\Services\\Contracts\\{$serviceInterface};\n";
+            $serviceInterface = $withoutInterface ? "{$modelName}Service" : "{$modelName}ServiceInterface";
+            $serviceNamespace = $this->generator->getNamespaceForType($withoutInterface ? 'services' : 'service_contracts', $modelName, $explicitPath, $module, $preset);
+            
+            $replacements['ServiceInterfaceUse'] = "use {$serviceNamespace}\\{$serviceInterface};\n";
             $replacements['ServiceDependency'] = "protected {$serviceInterface} \$service";
         }
 
         return $replacements;
-    }
-    protected function generateController(string $modelName, bool $isApi): void
-    {
-        $controllerName = $this->generator->getControllerNameFromModel($modelName);
-        $namespace = $isApi ? 'App\\Http\\Controllers\\Api' : 'App\\Http\\Controllers';
-        $controllerPath = $isApi 
-            ? app_path("Http/Controllers/Api/{$controllerName}.php")
-            : app_path("Http/Controllers/{$controllerName}.php");
-
-        $stub = $isApi ? 'controller.api' : 'controller';
-        $modelClass = $this->qualifyModel($modelName);
-        $requestNames = $this->generator->getRequestNamesFromModel($modelName);
-
-        $replacements = [
-            'namespace' => $namespace,
-            'class' => $controllerName,
-            'model' => $modelName,
-            'modelClass' => $modelClass,
-            'modelVariable' => Str::camel($modelName),
-            'modelVariablePlural' => Str::camel(Str::plural($modelName)),
-            'storeRequest' => $requestNames['store'],
-            'updateRequest' => $requestNames['update'],
-            'resourceName' => Str::kebab(Str::plural($modelName)),
-        ];
-
-        $this->generator->generateFile($controllerPath, $stub, $replacements);
-        $this->line("  ✓ Created controller: {$controllerName}");
-    }
-
-    /**
-     * Generate the model file.
-     */
-    protected function generateModel(string $modelName): void
-    {
-        $modelPath = app_path("Models/{$modelName}.php");
-        
-        // Check if model already exists
-        if (file_exists($modelPath)) {
-            $this->line("  • Model {$modelName} already exists, skipping...");
-            return;
-        }
-
-        $replacements = [
-            'namespace' => 'App\\Models',
-            'class' => $modelName,
-            'table' => Str::snake(Str::plural($modelName)),
-        ];
-
-        $this->generator->generateFile($modelPath, 'model', $replacements);
-        $this->line("  ✓ Created model: {$modelName}");
-    }
-
-    /**
-     * Generate the migration file.
-     */
-    protected function generateMigration(string $modelName): void
-    {
-        $tableName = Str::snake(Str::plural($modelName));
-        $migrationName = "create_{$tableName}_table";
-        
-        // Use Laravel's built-in migration command
-        $exitCode = $this->call('make:migration', [
-            'name' => $migrationName,
-            '--create' => $tableName,
-        ]);
-
-        if ($exitCode === 0) {
-            $this->line("  ✓ Created migration: {$migrationName}");
-        } else {
-            $this->warn("  • Migration may already exist or failed to create");
-        }
-    }
-
-    /**
-     * Generate form request files.
-     */
-    protected function generateFormRequests(string $modelName, array $migrationData): void
-    {
-        $requestNames = $this->generator->getRequestNamesFromModel($modelName);
-        $requestPath = config('easy-dev.paths.requests', app_path('Http/Requests'));
-
-        // Generate validation rules based on migration
-        $validationRules = $this->migrationParser->generateValidationRules($migrationData['columns'] ?? []);
-
-        foreach (['store', 'update'] as $type) {
-            $requestName = $requestNames[$type];
-            $requestFilePath = "{$requestPath}/{$requestName}.php";
-
-            $replacements = [
-                'namespace' => 'App\\Http\\Requests',
-                'class' => $requestName,
-                'model' => $modelName,
-                'modelVariable' => Str::camel($modelName),
-                'type' => $type,
-                'validationRules' => $this->formatValidationRules($validationRules, $type),
-                'customMessages' => $this->formatCustomMessages($validationRules),
-                'customAttributes' => $this->formatCustomAttributes($migrationData['fillable'] ?? []),
-            ];
-
-            $stub = !empty($validationRules) ? 'request.enhanced' : "request.{$type}";
-            $this->generator->generateFile($requestFilePath, $stub, $replacements);
-            $this->line("  ✓ Created form request: {$requestName}");
-        }
-    }
-
-    /**
-     * Show what files were generated.
-     */
-    protected function showGeneratedFiles(string $modelName, bool $isApi): void
-    {
-        $this->info("\nGenerated files:");
-        
-        $controllerName = $this->generator->getControllerNameFromModel($modelName);
-        $requestNames = $this->generator->getRequestNamesFromModel($modelName);
-        $resourceName = Str::kebab(Str::plural($modelName));
-        $tableName = Str::snake(Str::plural($modelName));
-
-        // Model
-        $this->line("  • app/Models/{$modelName}.php");
-        
-        // Migration
-        $this->line("  • database/migrations/*_create_{$tableName}_table.php");
-
-        // Controller
-        if ($isApi) {
-            $this->line("  • app/Http/Controllers/Api/{$controllerName}.php");
-        } else {
-            $this->line("  • app/Http/Controllers/{$controllerName}.php");
-        }
-
-        // Requests
-        $this->line("  • app/Http/Requests/{$requestNames['store']}.php");
-        $this->line("  • app/Http/Requests/{$requestNames['update']}.php");
-        
-        // Routes
-        $routeFile = $isApi ? 'routes/api.php' : 'routes/web.php';
-        $this->line("  • {$routeFile} (added resource routes)");
-
-        if ($isApi) {
-            $this->info("\nAPI Routes added:");
-            $this->line("  GET    /api/{$resourceName}");
-            $this->line("  POST   /api/{$resourceName}");
-            $this->line("  GET    /api/{$resourceName}/{id}");
-            $this->line("  PUT    /api/{$resourceName}/{id}");
-            $this->line("  DELETE /api/{$resourceName}/{id}");
-        } else {
-            $this->info("\nWeb Routes added:");
-            $this->line("  GET    /{$resourceName}");
-            $this->line("  POST   /{$resourceName}");
-            $this->line("  GET    /{$resourceName}/create");
-            $this->line("  GET    /{$resourceName}/{id}");
-            $this->line("  GET    /{$resourceName}/{id}/edit");
-            $this->line("  PUT    /{$resourceName}/{id}");
-            $this->line("  DELETE /{$resourceName}/{id}");
-        }
-    }
-
-    /**
-     * Get the fully qualified model class name.
-     */
-    protected function qualifyModel(string $model): string
-    {
-        $model = Str::studly($model);
-        $rootNamespace = app()->getNamespace();
-        $modelClass = config('easy-dev.model_namespace', $rootNamespace . 'Models\\') . $model;
-
-        return $modelClass;
-    }
-
-    /**
-     * Generate eager load relationships string.
-     */
-    protected function generateEagerLoadString(array $relationships): string
-    {
-        if (empty($relationships)) {
-            return '';
-        }
-
-        $methods = array_map(function ($rel) {
-            return "'{$rel['method_name']}'";
-        }, $relationships);
-
-        return implode(', ', $methods);
-    }
-
-    /**
-     * Generate with relationships string for loading.
-     */
-    protected function generateWithRelationshipsString(array $relationships): string
-    {
-        if (empty($relationships)) {
-            return '';
-        }
-
-        $methods = array_map(function ($rel) {
-            return "'{$rel['method_name']}'";
-        }, $relationships);
-
-        return '->load([' . implode(', ', $methods) . '])';
-    }
-
-    /**
-     * Generate filterable fields string.
-     */
-    protected function generateFilterableFieldsString(array $fillable): string
-    {
-        if (empty($fillable)) {
-            return "'search'";
-        }
-
-        $fields = array_map(function ($field) {
-            return "'{$field}'";
-        }, array_slice($fillable, 0, 5)); // Limit to first 5 fields
-
-        $fields[] = "'search'";
-        return implode(', ', $fields);
-    }
-
-    /**
-     * Generate filter logic for repository.
-     */
-    protected function generateFilterLogic(array $fillable): string
-    {
-        if (empty($fillable)) {
-            return '// Add custom filters here';
-        }
-
-        $logic = [];
-        foreach (array_slice($fillable, 0, 3) as $field) { // Limit to first 3 fields
-            $logic[] = "        if (!empty(\$filters['{$field}'])) {\n            \$query->where('{$field}', \$filters['{$field}']);\n        }";
-        }
-
-        $logic[] = "        if (!empty(\$filters['search'])) {\n            \$query->where('name', 'like', \"%{\$filters['search']}%\");\n        }";
-
-        return implode("\n\n", $logic);
-    }
-
-    /**
-     * Format validation rules for request.
-     */
-    protected function formatValidationRules(array $rules, string $type): string
-    {
-        if (empty($rules)) {
-            return '';
-        }
-
-        $formatted = [];
-        foreach ($rules as $field => $fieldRules) {
-            // For update requests, modify unique rules to ignore current record
-            if ($type === 'update') {
-                $fieldRules = array_map(function ($rule) use ($field) {
-                    if (str_starts_with($rule, 'unique:')) {
-                        return $rule . ',{$this->route(\'id\')}';
-                    }
-                    return $rule;
-                }, $fieldRules);
-            }
-
-            $rulesString = "['" . implode("', '", $fieldRules) . "']";
-            $formatted[] = "            '{$field}' => {$rulesString}";
-        }
-
-        return implode(",\n", $formatted);
-    }
-
-    /**
-     * Format custom messages for validation.
-     */
-    protected function formatCustomMessages(array $rules): string
-    {
-        if (empty($rules)) {
-            return '';
-        }
-
-        $messages = [];
-        foreach ($rules as $field => $fieldRules) {
-            foreach ($fieldRules as $rule) {
-                $ruleType = explode(':', $rule)[0];
-                $key = "{$field}.{$ruleType}";
-                $messages[] = "            '{$key}' => 'Please provide a valid {$field}.'";
-            }
-        }
-
-        return implode(",\n", array_slice($messages, 0, 5)); // Limit messages
-    }
-
-    /**
-     * Format custom attributes for validation.
-     */
-    protected function formatCustomAttributes(array $fillable): string
-    {
-        if (empty($fillable)) {
-            return '';
-        }
-
-        $attributes = [];
-        foreach (array_slice($fillable, 0, 5) as $field) { // Limit to first 5
-            $label = Str::title(str_replace('_', ' ', $field));
-            $attributes[] = "            '{$field}' => '{$label}'";
-        }
-
-        return implode(",\n", $attributes);
     }
 
     /**
@@ -777,30 +633,25 @@ class MakeCrudCommand extends Command
      */
     protected function updateServiceProviderBindings(string $modelName, bool $withRepository, bool $withService, bool $withInterface): void
     {
-        if ($withRepository && $withInterface) {
-            $this->serviceProviderManager->addRepositoryBinding($modelName);
-        }
+        $module = $this->option('module');
+        $preset = $this->option('preset');
 
-        if ($withService && $withInterface) {
-            $this->serviceProviderManager->addServiceBinding($modelName);
-        }
+        try {
+            // First reorganize existing providers and module.json under DDD module if clean preset is used
+            if ($module && $preset === 'clean') {
+                $this->serviceProviderManager->reorganizeModuleProviders($module, $preset);
+            }
 
-        $this->line("  ✓ Updated service provider bindings");
-    }
+            if ($withRepository && $withInterface) {
+                $this->serviceProviderManager->addRepositoryBinding($modelName, $module, $preset);
+            }
 
-    /**
-     * Generate routes based on options.
-     */
-    protected function generateRoutes(string $modelName, bool $apiOnly, bool $webOnly): void
-    {
-        if (!$webOnly) {
-            $this->routeWriter->addResourceRoutes($modelName, true); // API routes
-            $this->line("  ✓ Added API routes for {$modelName}");
-        }
-
-        if (!$apiOnly) {
-            $this->routeWriter->addResourceRoutes($modelName, false); // Web routes
-            $this->line("  ✓ Added web routes for {$modelName}");
+            if ($withService && $withInterface) {
+                $this->serviceProviderManager->addServiceBinding($modelName, $module, $preset);
+            }
+        } catch (\Exception $e) {
+            // Silence binding errors or alert user, to ensure smooth modular experience
+            $this->line("  ⚠️  Could not automatically update Service Provider bindings: " . $e->getMessage());
         }
     }
 
@@ -813,65 +664,101 @@ class MakeCrudCommand extends Command
         $this->info("✅ CRUD generation completed successfully!");
         
         $this->newLine();
-        $this->line('<info>Generated files:</info>');
-        
-        // Model
-        $this->line("├── app/Models/{$modelName}.php " . (!empty($migrationData['fillable']) ? '(enhanced)' : ''));
-        
-        // Migration
-        if (!$this->migrationParser->migrationExists($modelName)) {
-            $tableName = Str::snake(Str::plural($modelName));
-            $this->line("├── database/migrations/*_create_{$tableName}_table.php");
-        }
-
-        // Repository
-        if ($withRepository) {
-            $this->line("├── app/Repositories/{$modelName}Repository.php");
-            $this->line("├── app/Repositories/Contracts/{$modelName}RepositoryInterface.php");
-        }
-
-        // Service
-        if ($withService) {
-            $this->line("├── app/Services/{$modelName}Service.php");
-            $this->line("├── app/Services/Contracts/{$modelName}ServiceInterface.php");
-        }
-
-        // Controllers
-        if (!$webOnly) {
-            $this->line("├── app/Http/Controllers/Api/{$modelName}ApiController.php");
-        }
-        if (!$apiOnly) {
-            $this->line("├── app/Http/Controllers/{$modelName}Controller.php");
-        }
-
-        // Requests
-        $requestNames = $this->generator->getRequestNamesFromModel($modelName);
-        $this->line("├── app/Http/Requests/{$requestNames['store']}.php");
-        $this->line("└── app/Http/Requests/{$requestNames['update']}.php");
-
-        // Additional info
-        if (!empty($migrationData['relationships'])) {
-            $relationships = array_column($migrationData['relationships'], 'method_name');
-            $this->newLine();
-            $this->line('<info>✅ Detected relationships:</info> ' . implode(', ', $relationships));
-        }
-
-        if (!empty($migrationData['fillable'])) {
-            $this->line('<info>✅ Auto-populated fillable:</info> ' . implode(', ', $migrationData['fillable']));
-        }
-
-        if ($withRepository || $withService) {
-            $this->line('<info>✅ Service provider bindings updated</info>');
-        }
-
-        $this->newLine();
         $this->line('<info>Next steps:</info>');
         $this->line('- Run: <comment>php artisan route:list</comment> to verify routes');
-        if ($withRepository || $withService) {
-            $this->line('- Run: <comment>php artisan config:cache</comment> to cache configuration');
-        }
         $this->line('- Review generated validation rules in request classes');
         $this->line('- Customize business logic in service classes');
+    }
+
+    protected function generateEagerLoadString(array $relationships): string
+    {
+        if (empty($relationships)) {
+            return '';
+        }
+        $methods = array_map(fn($rel) => "'{$rel['method_name']}'", $relationships);
+        return implode(', ', $methods);
+    }
+
+    protected function generateWithRelationshipsString(array $relationships): string
+    {
+        if (empty($relationships)) {
+            return '';
+        }
+        $methods = array_map(fn($rel) => "'{$rel['method_name']}'", $relationships);
+        return '->load([' . implode(', ', $methods) . '])';
+    }
+
+    protected function generateFilterableFieldsString(array $fillable): string
+    {
+        if (empty($fillable)) {
+            return "'search'";
+        }
+        $fields = array_map(fn($field) => "'{$field}'", array_slice($fillable, 0, 5));
+        $fields[] = "'search'";
+        return implode(', ', $fields);
+    }
+
+    protected function generateFilterLogic(array $fillable): string
+    {
+        if (empty($fillable)) {
+            return '// Add custom filters here';
+        }
+        $logic = [];
+        foreach (array_slice($fillable, 0, 3) as $field) {
+            $logic[] = "        if (!empty(\$filters['{$field}'])) {\n            \$query->where('{$field}', \$filters['{$field}']);\n        }";
+        }
+        $logic[] = "        if (!empty(\$filters['search'])) {\n            \$query->where('name', 'like', \"%{\$filters['search']}%\");\n        }";
+        return implode("\n\n", $logic);
+    }
+
+    protected function formatValidationRules(array $rules, string $type): string
+    {
+        if (empty($rules)) {
+            return '';
+        }
+        $formatted = [];
+        foreach ($rules as $field => $fieldRules) {
+            if ($type === 'update') {
+                $fieldRules = array_map(function ($rule) {
+                    if (str_starts_with($rule, 'unique:')) {
+                        return $rule . ',{$this->route(\'id\')}';
+                    }
+                    return $rule;
+                }, $fieldRules);
+            }
+            $rulesString = "['" . implode("', '", $fieldRules) . "']";
+            $formatted[] = "            '{$field}' => {$rulesString}";
+        }
+        return implode(",\n", $formatted);
+    }
+
+    protected function formatCustomMessages(array $rules): string
+    {
+        if (empty($rules)) {
+            return '';
+        }
+        $messages = [];
+        foreach ($rules as $field => $fieldRules) {
+            foreach ($fieldRules as $rule) {
+                $ruleType = explode(':', $rule)[0];
+                $key = "{$field}.{$ruleType}";
+                $messages[] = "            '{$key}' => 'Please provide a valid {$field}.'";
+            }
+        }
+        return implode(",\n", array_slice($messages, 0, 5));
+    }
+
+    protected function formatCustomAttributes(array $fillable): string
+    {
+        if (empty($fillable)) {
+            return '';
+        }
+        $attributes = [];
+        foreach (array_slice($fillable, 0, 5) as $field) {
+            $label = Str::title(str_replace('_', ' ', $field));
+            $attributes[] = "            '{$field}' => '{$label}'";
+        }
+        return implode(",\n", $attributes);
     }
 
     protected function getArguments(): array
@@ -894,6 +781,83 @@ class MakeCrudCommand extends Command
             ['web-only', null, InputOption::VALUE_NONE, 'Generate only web controllers.'],
             ['without-interface', null, InputOption::VALUE_NONE, 'Skip interface generation for repositories and services.'],
             ['dry-run', null, InputOption::VALUE_NONE, 'Preview what files would be generated without creating them.'],
+            ['stub', null, InputOption::VALUE_OPTIONAL, 'Override model stub template or absolute/relative file path.'],
+            ['path', null, InputOption::VALUE_OPTIONAL, 'Override default output directory path.'],
+            ['module', null, InputOption::VALUE_OPTIONAL, 'Nest generated files inside a modular layout.'],
+            ['preset', null, InputOption::VALUE_OPTIONAL, 'Use a pre-configured architecture preset (e.g. clean).'],
+            ['ai', null, InputOption::VALUE_NONE, 'Silent machine-friendly JSON output for AI integration.'],
         ];
+    }
+
+    public function line($string, $style = null, $verbosity = null)
+    {
+        if ($this->option('ai')) return;
+        parent::line($string, $style, $verbosity);
+    }
+
+    public function info($string, $verbosity = null)
+    {
+        if ($this->option('ai')) return;
+        parent::info($string, $verbosity);
+    }
+
+    public function warn($string, $verbosity = null)
+    {
+        if ($this->option('ai')) return;
+        parent::warn($string, $verbosity);
+    }
+
+    public function error($string, $verbosity = null)
+    {
+        if ($this->option('ai')) return;
+        parent::error($string, $verbosity);
+    }
+
+    public function comment($string, $verbosity = null)
+    {
+        if ($this->option('ai')) return;
+        parent::comment($string, $verbosity);
+    }
+
+    public function newLine($count = 1)
+    {
+        if ($this->option('ai')) return;
+        parent::newLine($count);
+    }
+
+    /**
+     * Recursively scrubs empty directories under a given path bottom-up.
+     */
+    protected function scrubEmptyDirectories(string $dir): void
+    {
+        if (!is_dir($dir)) {
+            return;
+        }
+
+        $items = scandir($dir);
+        foreach ($items as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            $path = $dir . DIRECTORY_SEPARATOR . $item;
+            if (is_dir($path)) {
+                $this->scrubEmptyDirectories($path);
+            }
+        }
+
+        // Re-read after potential subfolder cleanups
+        $items = scandir($dir);
+        $empty = true;
+        foreach ($items as $item) {
+            if ($item !== '.' && $item !== '..') {
+                $empty = false;
+                break;
+            }
+        }
+
+        if ($empty) {
+            @rmdir($dir);
+        }
     }
 }

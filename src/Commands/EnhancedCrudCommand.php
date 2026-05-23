@@ -231,6 +231,14 @@ class EnhancedCrudCommand extends Command
             }
         }
 
+        // Module & Preset forwarding
+        if ($this->option('module')) {
+            $options['--module'] = $this->option('module');
+        }
+        if ($this->option('preset')) {
+            $options['--preset'] = $this->option('preset');
+        }
+
         // Simulate progress while calling the real command
         foreach ($this->steps as $step => $message) {
             $progressBar->setMessage($message);
@@ -429,6 +437,8 @@ class EnhancedCrudCommand extends Command
             ['api-only', null, InputOption::VALUE_NONE, 'Generate API controller only'],
             ['web-only', null, InputOption::VALUE_NONE, 'Generate web controller only'],
             ['interactive', 'i', InputOption::VALUE_NONE, 'Run in interactive mode'],
+            ['module', null, InputOption::VALUE_OPTIONAL, 'Nest generated files inside a modular layout'],
+            ['preset', null, InputOption::VALUE_OPTIONAL, 'Use a pre-configured architecture preset (e.g. clean)'],
         ];
     }
 }

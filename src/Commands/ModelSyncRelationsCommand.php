@@ -6,9 +6,14 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use AnasNashat\EasyDev\Services\RelationDetector;
 
 class ModelSyncRelationsCommand extends Command
 {
+    public function __construct(protected RelationDetector $relationDetector)
+    {
+        parent::__construct();
+    }
     /**
      * The name and signature of the console command.
      *
@@ -50,13 +55,37 @@ class ModelSyncRelationsCommand extends Command
         if (! empty($bidirectionalRelationships)) {
             $this->info('🔄 Adding reverse relationships to related models...');
             foreach ($bidirectionalRelationships as $relationData) {
-                $relatedModelName = $relationData['related_model'];
+                // If a reverse_relationship is explicitly defined in relationData, process it
+                if (isset($relationData['reverse_relationship'])) {
+                    $reverseRelationship = $relationData['reverse_relationship'];
+                    $relatedModelName = $relationData['related_model'] ?? '';
+                    
+                    if ($relatedModelName) {
+                        $this->updateModelWithRelationships($relatedModelName, $reverseRelationship);
+                    }
+                    continue;
+                }
+
+                // Only belongsTo relationships have a standard reverse hasMany
+                if (($relationData['relation_type'] ?? '') !== 'belongsTo') {
+                    continue;
+                }
+
+                $relatedModelName = $relationData['related_model'] ?? null;
+                if (!$relatedModelName) {
+                    continue;
+                }
 
                 // Only add reverse relationship if model exists
-                $relatedModelPath = app_path("Models/{$relatedModelName}.php");
+                $relatedModelPath = $this->relationDetector->getModelPath($relatedModelName);
                 if (file_exists($relatedModelPath)) {
                     $reverseRelationship = [
-                        $relationData['reverse_relationship'],
+                        [
+                            'relation_type' => 'hasMany',
+                            'method_name' => Str::camel(Str::plural($modelName)),
+                            'related_model' => $modelName,
+                            'references' => $relationData['field'] ?? 'id',
+                        ]
                     ];
                     $this->updateModelWithRelationships($relatedModelName, $reverseRelationship);
                 } else {
@@ -73,22 +102,18 @@ class ModelSyncRelationsCommand extends Command
      */
     protected function syncAllModels()
     {
-        $modelsPath = app_path('Models');
-        $files = scandir($modelsPath);
+        $models = $this->relationDetector->getAllModels();
         $count = 0;
         $bidirectionalRelationshipsByModel = [];
 
-        foreach ($files as $file) {
-            if (pathinfo($file, PATHINFO_EXTENSION) === 'php') {
-                $modelName = pathinfo($file, PATHINFO_FILENAME);
-                $bidirectionalRelationships = $this->syncModelRelations($modelName, true);
+        foreach ($models as $modelName) {
+            $bidirectionalRelationships = $this->syncModelRelations($modelName, true);
 
-                if (! empty($bidirectionalRelationships)) {
-                    $bidirectionalRelationshipsByModel[$modelName] = $bidirectionalRelationships;
-                }
-
-                $count++;
+            if (! empty($bidirectionalRelationships)) {
+                $bidirectionalRelationshipsByModel[$modelName] = $bidirectionalRelationships;
             }
+
+            $count++;
         }
 
         // After all models have been processed, add reverse relationships
@@ -97,13 +122,37 @@ class ModelSyncRelationsCommand extends Command
 
             foreach ($bidirectionalRelationshipsByModel as $sourceModel => $relationships) {
                 foreach ($relationships as $relationData) {
-                    $relatedModelName = $relationData['related_model'];
+                    // If a reverse_relationship is explicitly defined in relationData, process it
+                    if (isset($relationData['reverse_relationship'])) {
+                        $reverseRelationship = $relationData['reverse_relationship'];
+                        $relatedModelName = $relationData['related_model'] ?? '';
+                        
+                        if ($relatedModelName) {
+                            $this->updateModelWithRelationships($relatedModelName, $reverseRelationship);
+                        }
+                        continue;
+                    }
+
+                    // Only belongsTo relationships have a standard reverse hasMany
+                    if (($relationData['relation_type'] ?? '') !== 'belongsTo') {
+                        continue;
+                    }
+
+                    $relatedModelName = $relationData['related_model'] ?? null;
+                    if (!$relatedModelName) {
+                        continue;
+                    }
 
                     // Only add reverse relationship if model exists
-                    $relatedModelPath = app_path("Models/{$relatedModelName}.php");
+                    $relatedModelPath = $this->relationDetector->getModelPath($relatedModelName);
                     if (file_exists($relatedModelPath)) {
                         $reverseRelationship = [
-                            $relationData['reverse_relationship'],
+                            [
+                                'relation_type' => 'hasMany',
+                                'method_name' => Str::camel(Str::plural($sourceModel)),
+                                'related_model' => $sourceModel,
+                                'references' => $relationData['field'] ?? 'id',
+                            ]
                         ];
                         $this->updateModelWithRelationships($relatedModelName, $reverseRelationship);
                     }
@@ -112,12 +161,13 @@ class ModelSyncRelationsCommand extends Command
         }
 
         $this->info("✅ Synchronized relations for {$count} models");
+        return $count;
     }
 
     /**
      * Sync relations for a specific model.
      */
-    protected function syncModelRelations(string $modelName, bool $showHeader = true): int
+    protected function syncModelRelations(string $modelName, bool $showHeader = true): array
     {
         try {
             if ($showHeader) {
@@ -130,7 +180,7 @@ class ModelSyncRelationsCommand extends Command
             if (empty($relationships)) {
                 $this->line("  No new relations found for {$modelName}.");
 
-                return self::SUCCESS;
+                return [];
             }
 
             // Update the model with relationships
@@ -138,16 +188,16 @@ class ModelSyncRelationsCommand extends Command
 
             $this->info("  Successfully processed relationships for {$modelName}!");
 
-            return self::SUCCESS;
+            return $relationships;
 
         } catch (ModelNotFoundException $e) {
             $this->error("  Model not found: {$e->getMessage()}");
 
-            return self::FAILURE;
+            return [];
         } catch (\Exception $e) {
             $this->error("  Error processing {$modelName}: {$e->getMessage()}");
 
-            return self::FAILURE;
+            return [];
         }
     }
 
@@ -410,7 +460,7 @@ class ModelSyncRelationsCommand extends Command
      */
     protected function getTableName(string $modelName): string
     {
-        $modelClass = "App\\Models\\{$modelName}";
+        $modelClass = $this->relationDetector->qualifyModel($modelName);
         try {
             if (class_exists($modelClass)) {
                 $model = new $modelClass;
@@ -430,7 +480,7 @@ class ModelSyncRelationsCommand extends Command
      */
     protected function updateModelWithRelationships(string $modelName, array $relationships): void
     {
-        $modelPath = app_path("Models/{$modelName}.php");
+        $modelPath = $this->relationDetector->getModelPath($modelName);
 
         if (! file_exists($modelPath)) {
             $this->error("  Model file not found: {$modelPath}");

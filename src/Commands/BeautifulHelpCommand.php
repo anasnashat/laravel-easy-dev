@@ -46,7 +46,7 @@ class BeautifulHelpCommand extends Command
         $commands = [
             [
                 'command' => 'easy-dev:make {model}',
-                'description' => 'Enhanced CRUD generator with interactive UI',
+                'description' => 'Enhanced CRUD generator with interactive UI wizard',
                 'icon' => '🎯',
                 'category' => 'Primary'
             ],
@@ -60,19 +60,97 @@ class BeautifulHelpCommand extends Command
                 'command' => 'easy-dev:repository {model}',
                 'description' => 'Generate repository pattern for existing model',
                 'icon' => '🗄️',
-                'category' => 'Utilities'
+                'category' => 'Dynamic & Patterns'
+            ],
+            [
+                'command' => 'easy-dev:api-resource {model}',
+                'description' => 'Generate API resource and collection classes',
+                'icon' => '🌐',
+                'category' => 'Dynamic & Patterns'
+            ],
+            [
+                'command' => 'easy-dev:policy {model}',
+                'description' => 'Generate custom authorization policy',
+                'icon' => '🛡️',
+                'category' => 'Dynamic & Patterns'
+            ],
+            [
+                'command' => 'easy-dev:dto {model}',
+                'description' => 'Generate Data Transfer Object (DTO) data class',
+                'icon' => '📦',
+                'category' => 'Dynamic & Patterns'
+            ],
+            [
+                'command' => 'easy-dev:observer {model}',
+                'description' => 'Generate database lifecycle observer',
+                'icon' => '👁️',
+                'category' => 'Dynamic & Patterns'
+            ],
+            [
+                'command' => 'easy-dev:filter {model}',
+                'description' => 'Generate query filter class for advanced search filters',
+                'icon' => '🔍',
+                'category' => 'Dynamic & Patterns'
+            ],
+            [
+                'command' => 'easy-dev:enum {name}',
+                'description' => 'Generate schema/status PHP enums',
+                'icon' => '🏷️',
+                'category' => 'Dynamic & Patterns'
+            ],
+            [
+                'command' => 'easy-dev:publish-stubs',
+                'description' => 'Publish package stubs and easy-dev-ai.md skill to your application',
+                'icon' => '📤',
+                'category' => 'AI-Native Integration'
+            ],
+            [
+                'command' => 'easy-dev:ai-context',
+                'description' => 'Extract high-density, token-efficient JSON context map for AI',
+                'icon' => '🤖',
+                'category' => 'AI-Native Integration'
+            ],
+            [
+                'command' => 'easy-dev:snapshot',
+                'description' => 'Print high-density database and models schema snapshot',
+                'icon' => '📸',
+                'category' => 'AI-Native Integration'
+            ],
+            [
+                'command' => 'easy-dev:info {model}',
+                'description' => 'Get a comprehensive audit report of a specific model',
+                'icon' => '📊',
+                'category' => 'AI-Native Integration'
+            ],
+            [
+                'command' => 'easy-dev:dream {prompt}',
+                'description' => 'Scaffold a model, migration, and CRUD using natural language',
+                'icon' => '✨',
+                'category' => 'AI-Native Integration'
             ],
             [
                 'command' => 'easy-dev:sync-relations {model?}',
                 'description' => 'Auto-detect and add relationships to models',
                 'icon' => '🔄',
-                'category' => 'Utilities'
+                'category' => 'Utilities & Relations'
+            ],
+            [
+                'command' => 'easy-dev:add-relation {model} {type} {related}',
+                'description' => 'Manually add a relationship method to existing model',
+                'icon' => '🔗',
+                'category' => 'Utilities & Relations'
+            ],
+            [
+                'command' => 'easy-dev:demo-ui',
+                'description' => 'Demonstrate package\'s beautiful UI capabilities',
+                'icon' => '🎨',
+                'category' => 'Help & Utilities'
             ],
             [
                 'command' => 'easy-dev:help',
                 'description' => 'Show this beautiful help guide',
                 'icon' => '❓',
-                'category' => 'Help'
+                'category' => 'Help & Utilities'
             ]
         ];
 
@@ -81,7 +159,7 @@ class BeautifulHelpCommand extends Command
             if ($currentCategory !== $cmd['category']) {
                 if ($currentCategory !== '') $this->newLine();
                 $this->line("<fg=yellow;options=bold>{$cmd['category']} Commands:</>");
-                $this->line(str_repeat('─', 20));
+                $this->line(str_repeat('─', 25));
                 $currentCategory = $cmd['category'];
             }
             
@@ -133,6 +211,30 @@ class BeautifulHelpCommand extends Command
                 'description' => 'Run in interactive mode with guided setup',
                 'example' => 'Step-by-step configuration wizard',
                 'icon' => '🎮'
+            ],
+            [
+                'option' => '--stub=NAME_OR_PATH',
+                'description' => 'Override default stub name or pass an absolute path to a custom stub',
+                'example' => 'Loads resources/stubs/vendor/easy-dev/NAME.stub or custom path',
+                'icon' => '📝'
+            ],
+            [
+                'option' => '--path=DIRECTORY',
+                'description' => 'Override the target folder directory for the generated file',
+                'example' => 'Outputs file under app/Custom/Path instead of default',
+                'icon' => '📁'
+            ],
+            [
+                'option' => '--module=MODULE',
+                'description' => 'Place all generated files under a Domain Module structure',
+                'example' => 'Structures files inside app/Modules/Billing/',
+                'icon' => '🧱'
+            ],
+            [
+                'option' => '--ai',
+                'description' => 'Silent mode that returns structured JSON instead of interactive output',
+                'example' => 'Suppress interactive text, perfect for AI parsing',
+                'icon' => '🤖'
             ]
         ];
 
@@ -153,34 +255,44 @@ class BeautifulHelpCommand extends Command
 
         $examples = [
             [
-                'title' => 'Basic CRUD Generation',
+                'title' => 'Basic CRUD Scaffolding',
                 'command' => 'php artisan easy-dev:make Product',
                 'description' => 'Creates basic CRUD with interactive wizard'
             ],
             [
-                'title' => 'Full Architecture Pattern',
+                'title' => 'Modular Scaffolding with Repository',
+                'command' => 'php artisan easy-dev:crud Order --module=Billing --with-repository',
+                'description' => 'Generates Billing module domain files with repository layer'
+            ],
+            [
+                'title' => 'Custom Path & Custom Stub',
+                'command' => 'php artisan easy-dev:repository Product --path=app/Custom/Repos --stub=my-repo',
+                'description' => 'Generates Product repository class under custom path using custom stub'
+            ],
+            [
+                'title' => 'Extraction of Context Map for AI Assistant',
+                'command' => 'php artisan easy-dev:ai-context --pretty',
+                'description' => 'Extracts comprehensive schema context for feeding to an AI agent'
+            ],
+            [
+                'title' => 'Natural Language Entity Creation',
+                'command' => 'php artisan easy-dev:dream "Create a post with title:string, body:text connected to users" --dry-run',
+                'description' => 'Dumps compilation blueprint representing natural language entity'
+            ],
+            [
+                'title' => 'Silent Generator in AI Mode',
+                'command' => 'php artisan easy-dev:enum OrderStatus --ai',
+                'description' => 'Creates order status enum and outputs structured JSON'
+            ],
+            [
+                'title' => 'Full Architecture Pattern (Classic)',
                 'command' => 'php artisan easy-dev:crud Order --with-repository --with-service',
                 'description' => 'Generates Repository + Service layers with interfaces'
             ],
             [
-                'title' => 'API-Only Development',
-                'command' => 'php artisan easy-dev:crud User --api-only --with-repository',
-                'description' => 'Creates API-focused CRUD with repository pattern'
-            ],
-            [
-                'title' => 'Quick Repository Addition',
-                'command' => 'php artisan easy-dev:repository Customer',
-                'description' => 'Adds repository pattern to existing model'
-            ],
-            [
-                'title' => 'Relationship Discovery',
-                'command' => 'php artisan easy-dev:sync-relations',
-                'description' => 'Auto-detects and adds all model relationships'
-            ],
-            [
-                'title' => 'Interactive Mode',
-                'command' => 'php artisan easy-dev:make --interactive',
-                'description' => 'Guided setup with beautiful UI'
+                'title' => 'Relationship Discovery & Syncing',
+                'command' => 'php artisan easy-dev:sync-relations --all',
+                'description' => 'Auto-detects and adds all model relationships based on database schema'
             ]
         ];
 
@@ -191,12 +303,12 @@ class BeautifulHelpCommand extends Command
             $this->newLine();
         }
 
-        $this->info('🔥 Pro Tips:');
-        $this->line('─────────────');
-        $this->line('• Use <fg=yellow>--interactive</> for guided setup');
-        $this->line('• Combine <fg=yellow>--with-repository --with-service</> for clean architecture');
-        $this->line('• Run <fg=yellow>easy-dev:sync-relations</> after creating models');
-        $this->line('• Use <fg=yellow>--api-only</> for headless applications');
+        $this->info('🔥 Pro Tips & AI-Native Integration:');
+        $this->line('──────────────────────────────────────');
+        $this->line('• Run <fg=yellow>easy-dev:publish-stubs</> to publish stubs and generate the <fg=cyan>easy-dev-ai.md</> AI agent skill.');
+        $this->line('• Feed the JSON output of <fg=yellow>easy-dev:ai-context</> directly to your AI to make it project-aware.');
+        $this->line('• Use the <fg=yellow>--ai</> flag to bypass interactive CLI dialogs and get structured JSON logs.');
+        $this->line('• Keep your application clean and domain-driven by using the <fg=yellow>--module</> option.');
         $this->newLine();
     }
 protected function displayFooter(): void

@@ -25,7 +25,14 @@ use AnasNashat\EasyDev\Contracts\SchemaParser;
 use AnasNashat\EasyDev\Parsers\MySqlSchemaParser;
 use AnasNashat\EasyDev\Parsers\PostgresSchemaParser;
 use AnasNashat\EasyDev\Parsers\SqliteSchemaParser;
+use AnasNashat\EasyDev\Commands\EasyDevSnapshotCommand;
+use AnasNashat\EasyDev\Commands\EasyDevInfoCommand;
+use AnasNashat\EasyDev\Commands\EasyDevDreamCommand;
+use AnasNashat\EasyDev\Commands\PublishStubsCommand;
+use AnasNashat\EasyDev\Commands\EasyDevAiContextCommand;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Database\ConnectionResolverInterface as DB;
+
 
 class EasyDevServiceProvider extends ServiceProvider
 {
@@ -54,31 +61,38 @@ class EasyDevServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        $this->commands([
+            // Core CRUD
+            MakeCrudCommand::class,
+            EnhancedCrudCommand::class,
+
+            // Individual generators
+            MakeRepositoryCommand::class,
+            MakeApiResourceCommand::class,
+            MakeModelRelationCommand::class,
+            ModelSyncRelationsCommand::class,
+
+            // New generators (v2.0)
+            MakePolicyCommand::class,
+            MakeDtoCommand::class,
+            MakeObserverCommand::class,
+            MakeFilterCommand::class,
+            MakeEnumCommand::class,
+
+            // Help & UI
+            EasyDevHelpCommand::class,
+            BeautifulHelpCommand::class,
+            DemoUICommand::class,
+
+            // AI-Native commands (v3.0)
+            EasyDevSnapshotCommand::class,
+            EasyDevInfoCommand::class,
+            EasyDevDreamCommand::class,
+            PublishStubsCommand::class,
+            EasyDevAiContextCommand::class,
+        ]);
+
         if ($this->app->runningInConsole()) {
-            $this->commands([
-                // Core CRUD
-                MakeCrudCommand::class,
-                EnhancedCrudCommand::class,
-
-                // Individual generators
-                MakeRepositoryCommand::class,
-                MakeApiResourceCommand::class,
-                MakeModelRelationCommand::class,
-                ModelSyncRelationsCommand::class,
-
-                // New generators (v2.0)
-                MakePolicyCommand::class,
-                MakeDtoCommand::class,
-                MakeObserverCommand::class,
-                MakeFilterCommand::class,
-                MakeEnumCommand::class,
-
-                // Help & UI
-                EasyDevHelpCommand::class,
-                BeautifulHelpCommand::class,
-                DemoUICommand::class,
-            ]);
-
             $this->publishes([
                 __DIR__.'/../../config/easy-dev.php' => config_path('easy-dev.php'),
             ], 'easy-dev-config');
@@ -86,6 +100,19 @@ class EasyDevServiceProvider extends ServiceProvider
             $this->publishes([
                 __DIR__.'/../../resources/stubs' => resource_path('stubs/vendor/easy-dev'),
             ], 'easy-dev-stubs');
+        }
+
+        // Register local web dashboard visual hub routes and views
+        if ($this->app->environment('local')) {
+            $this->loadViewsFrom(__DIR__.'/../../resources/views', 'easy-dev');
+
+            Route::middleware(['web'])
+                ->namespace('AnasNashat\EasyDev\Http\Controllers')
+                ->group(function () {
+                    Route::get('/easy-dev', 'DashboardController@index')->name('easy-dev.dashboard');
+                    Route::get('/easy-dev/api/models', 'DashboardController@getModels')->name('easy-dev.api.models');
+                    Route::post('/easy-dev/api/scaffold', 'DashboardController@scaffold')->name('easy-dev.api.scaffold');
+                });
         }
     }
 }

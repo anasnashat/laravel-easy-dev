@@ -10,25 +10,25 @@ interface {{ ServiceInterfaceName }}
     /**
      * Get all {{ modelName }} records with optional filters.
      */
-    public function getAll{{ ModelName }}s(array $filters = []): Collection;
+    public function getAll(array $filters = []): Collection;
 
     /**
      * Find a {{ modelName }} by ID.
      */
-    public function find{{ ModelName }}ById(int $id): ?{{ ModelName }};
+    public function findById(int $id): ?{{ ModelName }};
 
     /**
      * Create a new {{ modelName }}.
      */
-    public function create{{ ModelName }}(array $data): {{ ModelName }};
+    public function create(array $data): {{ ModelName }};
 
     /**
      * Update an existing {{ modelName }}.
      */
-    public function update{{ ModelName }}({{ ModelName }} ${{ modelName }}, array $data): {{ ModelName }};
+    public function update({{ ModelName }} ${{ modelName }}, array $data): {{ ModelName }};
 
     /**
      * Delete a {{ modelName }}.
      */
-    public function delete{{ ModelName }}({{ ModelName }} ${{ modelName }}): bool;
+    public function delete({{ ModelName }} ${{ modelName }}): bool;
 }

@@ -4,8 +4,8 @@ namespace {{ namespace }};
 
 use {{ ModelNamespace }}\{{ ModelName }};
 use {{ ServiceContractNamespace }}\{{ ModelName }}ServiceInterface;
+use {{ RepositoryContractNamespace }}\{{ ModelName }}RepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class {{ ModelName }}Service implements {{ ModelName }}ServiceInterface
 {
@@ -15,15 +15,11 @@ class {{ ModelName }}Service implements {{ ModelName }}ServiceInterface
     }
 
     /**
-     * Get all records with optional pagination.
+     * Get all records with optional filters.
      */
-    public function getAll(?int $perPage = null): Collection|LengthAwarePaginator
+    public function getAll(array $filters = []): Collection
     {
-        if ($perPage) {
-            return $this->repository->paginate($perPage);
-        }
-
-        return $this->repository->getAll();
+        return $this->repository->getAll($filters);
     }
 
     /**

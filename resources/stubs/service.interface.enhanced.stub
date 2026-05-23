@@ -9,9 +9,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
 interface {{ ModelName }}ServiceInterface
 {
     /**
-     * Get all records with optional pagination.
+     * Get all records with optional filters.
      */
-    public function getAll(?int $perPage = null): Collection|LengthAwarePaginator;
+    public function getAll(array $filters = []): Collection;
 
     /**
      * Find a record by ID.

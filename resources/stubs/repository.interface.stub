@@ -10,12 +10,12 @@ interface {{ InterfaceName }}
     /**
      * Get all {{ modelName }} records.
      */
-    public function all(): Collection;
+    public function getAll(array $filters = []): Collection;
 
     /**
      * Find a {{ modelName }} by ID.
      */
-    public function find(int $id): ?{{ ModelName }};
+    public function findById(int $id): ?{{ ModelName }};
 
     /**
      * Create a new {{ modelName }}.
@@ -25,12 +25,12 @@ interface {{ InterfaceName }}
     /**
      * Update a {{ modelName }}.
      */
-    public function update(int $id, array $data): bool;
+    public function update({{ ModelName }} ${{ modelName }}, array $data): {{ ModelName }};
 
     /**
      * Delete a {{ modelName }}.
      */
-    public function delete(int $id): bool;
+    public function delete({{ ModelName }} ${{ modelName }}): bool;
 
     /**
      * Get paginated {{ modelName }} records.

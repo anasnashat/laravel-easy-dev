@@ -24,8 +24,8 @@ class {{ ModelName }}ApiController extends Controller
      */
     public function index(Request $request): AnonymousResourceCollection
     {
-        $perPage = $request->input('per_page', 15);
-        ${{ pluralModelName }} = $this->{{ modelName }}Service->getAll(perPage: (int) $perPage);
+        $filters = $request->all();
+        ${{ pluralModelName }} = $this->{{ modelName }}Service->getAll($filters);
 
         return {{ ModelName }}Resource::collection(${{ pluralModelName }});
     }

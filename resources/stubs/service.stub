@@ -17,7 +17,7 @@ class {{ ServiceName }}{{ ServiceInterfaceImplements }}
     /**
      * Get all {{ modelName }} records with optional filters.
      */
-    public function getAll{{ ModelName }}s(array $filters = []): Collection
+    public function getAll(array $filters = []): Collection
     {
         // Apply business logic here if needed
         return $this->repository->getAll($filters);
@@ -26,7 +26,7 @@ class {{ ServiceName }}{{ ServiceInterfaceImplements }}
     /**
      * Find a {{ modelName }} by ID.
      */
-    public function find{{ ModelName }}ById(int $id): ?{{ ModelName }}
+    public function findById(int $id): ?{{ ModelName }}
     {
         return $this->repository->findById($id);
     }
@@ -34,7 +34,7 @@ class {{ ServiceName }}{{ ServiceInterfaceImplements }}
     /**
      * Create a new {{ modelName }}.
      */
-    public function create{{ ModelName }}(array $data): {{ ModelName }}
+    public function create(array $data): {{ ModelName }}
     {
         // Add business logic validation here
         $validatedData = $this->validateBusinessRules($data);
@@ -45,7 +45,7 @@ class {{ ServiceName }}{{ ServiceInterfaceImplements }}
     /**
      * Update an existing {{ modelName }}.
      */
-    public function update{{ ModelName }}({{ ModelName }} ${{ modelName }}, array $data): {{ ModelName }}
+    public function update({{ ModelName }} ${{ modelName }}, array $data): {{ ModelName }}
     {
         // Add business logic validation here
         $validatedData = $this->validateBusinessRules($data);
@@ -56,7 +56,7 @@ class {{ ServiceName }}{{ ServiceInterfaceImplements }}
     /**
      * Delete a {{ modelName }}.
      */
-    public function delete{{ ModelName }}({{ ModelName }} ${{ modelName }}): bool
+    public function delete({{ ModelName }} ${{ modelName }}): bool
     {
         // Add any business logic before deletion
         return $this->repository->delete(${{ modelName }});

@@ -17,7 +17,7 @@ class {{ RepositoryName }}{{ InterfaceImplements }}
     /**
      * Get all {{ modelName }} records.
      */
-    public function all(): Collection
+    public function getAll(array $filters = []): Collection
     {
         return $this->model->all();
     }
@@ -25,7 +25,7 @@ class {{ RepositoryName }}{{ InterfaceImplements }}
     /**
      * Find a {{ modelName }} by ID.
      */
-    public function find(int $id): ?{{ ModelName }}
+    public function findById(int $id): ?{{ ModelName }}
     {
         return $this->model->find($id);
     }
@@ -39,30 +39,19 @@ class {{ RepositoryName }}{{ InterfaceImplements }}
     }
 
     /**
-     * Update a {{ modelName }}.
+     * Update an existing {{ modelName }}.
      */
-    public function update(int $id, array $data): bool
+    public function update({{ ModelName }} ${{ modelName }}, array $data): {{ ModelName }}
     {
-        ${{ modelName }} = $this->model->find($id);
-        
-        if (!${{ modelName }}) {
-            return false;
-        }
-
-        return ${{ modelName }}->update($data);
+        ${{ modelName }}->update($data);
+        return ${{ modelName }}->fresh();
     }
 
     /**
      * Delete a {{ modelName }}.
      */
-    public function delete(int $id): bool
+    public function delete({{ ModelName }} ${{ modelName }}): bool
     {
-        ${{ modelName }} = $this->model->find($id);
-        
-        if (!${{ modelName }}) {
-            return false;
-        }
-
         return ${{ modelName }}->delete();
     }
 

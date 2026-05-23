@@ -21,7 +21,7 @@ class {{ ModelName }}Controller extends Controller
      */
     public function index(): View
     {
-        ${{ pluralModelName }} = $this->{{ modelName }}Service->getAll(perPage: 15);
+        ${{ pluralModelName }} = $this->{{ modelName }}Service->getAll([]);
 
         return view('{{ pluralModelNameKebab }}.index', compact('{{ pluralModelName }}'));
     }

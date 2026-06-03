@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
-## [3.1.0-rc1] - 2026-06-03
+## [3.1.0-rc3] - 2026-06-03
 
 ### Added
 - Added `easy-dev:test` for feature and unit test starter generation.
@@ -32,10 +32,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Fixed
 - Fixed enhanced controller stubs leaving raw placeholders such as `{{ modelName }}` and `{{ pluralModelNameKebab }}` in generated controllers.
 - Fixed default stub config so basic CRUD uses the normal controller stubs unless a service/enhanced controller is explicitly selected.
+- Fixed GitHub Actions compatibility matrix so EOL Laravel majors can still be tested without failing dependency installation on framework security advisories.
+- Fixed module test generation so tests stay in PSR-4-compatible `tests/Feature` and `tests/Unit` roots unless a custom path is explicitly provided.
 
 ### Verified
 - `composer validate --strict` passes.
-- `composer test` passes with 96 tests and 391 assertions.
+- `composer test` passes with 97 tests and 396 assertions.
 - `composer audit` reports no security vulnerability advisories.
 - Manual compatibility matrix passed for Laravel 9, 10, 11, 12, and 13 on PHP 8.4.11.
 

@@ -428,7 +428,7 @@ composer test
 Current local verification:
 
 ```text
-96 tests, 391 assertions
+97 tests, 396 assertions
 ```
 
 ## Release Status

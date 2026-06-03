@@ -36,6 +36,27 @@ class PublishReadinessCommandTest extends TestCase
         $this->assertFileExists($this->getTestPath('GeneratedTests/Unit/ProductRepositoryTest.php'));
     }
 
+    public function test_module_test_generation_uses_psr4_test_roots(): void
+    {
+        config()->set('easy-dev.paths.feature_tests', $this->getTestPath('GeneratedTests/Feature'));
+        config()->set('easy-dev.paths.unit_tests', $this->getTestPath('GeneratedTests/Unit'));
+
+        $this->artisan('easy-dev:test', [
+            'model' => 'ModuleProduct',
+            '--module' => 'Catalog',
+            '--architecture' => 'ddd',
+            '--feature' => true,
+            '--unit' => true,
+            '--service' => true,
+            '--repository' => true,
+        ])->assertExitCode(0);
+
+        $this->assertFileExists($this->getTestPath('GeneratedTests/Feature/ModuleProductControllerTest.php'));
+        $this->assertFileExists($this->getTestPath('GeneratedTests/Unit/ModuleProductServiceTest.php'));
+        $this->assertFileExists($this->getTestPath('GeneratedTests/Unit/ModuleProductRepositoryTest.php'));
+        $this->assertFileDoesNotExist(base_path('app/Modules/Catalog/Tests/Feature/ModuleProductControllerTest.php'));
+    }
+
     public function test_swagger_command_generates_openapi_json_for_model(): void
     {
         $outputPath = $this->getTestPath('openapi.json');

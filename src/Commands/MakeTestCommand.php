@@ -94,12 +94,18 @@ class MakeTestCommand extends Command
 
     protected function resolveTestPath(string $type, string $filename, ?string $preset): string
     {
+        if (!$this->option('path')) {
+            return rtrim(config("easy-dev.paths.{$type}") ?: base_path($type === 'unit_tests' ? 'tests/Unit' : 'tests/Feature'), '/\\')
+                . DIRECTORY_SEPARATOR
+                . $filename;
+        }
+
         return $this->generator->resolveOutputPath(
             $type,
             $filename,
             $this->option('path'),
-            $this->option('module'),
-            $preset
+            null,
+            null
         );
     }
 

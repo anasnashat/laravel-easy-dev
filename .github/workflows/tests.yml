@@ -18,54 +18,64 @@ jobs:
         include:
           - php: '8.1'
             laravel: '9'
-            illuminate: '^9.0'
-            testbench: '^7.0'
-            phpunit: '^9.5'
+            illuminate: '^9.52.21'
+            testbench: '^7.56'
+            phpunit: '^9.6.34'
+            audit: false
           - php: '8.1'
             laravel: '10'
-            illuminate: '^10.0'
-            testbench: '^8.0'
-            phpunit: '^10.0'
+            illuminate: '^10.50.2'
+            testbench: '^8.37'
+            phpunit: '^10.5.63'
+            audit: false
           - php: '8.2'
             laravel: '10'
-            illuminate: '^10.0'
-            testbench: '^8.0'
-            phpunit: '^10.0'
+            illuminate: '^10.50.2'
+            testbench: '^8.37'
+            phpunit: '^10.5.63'
+            audit: false
           - php: '8.2'
             laravel: '11'
-            illuminate: '^11.0'
-            testbench: '^9.0'
-            phpunit: '^11.0'
+            illuminate: '^11.54'
+            testbench: '^9.17'
+            phpunit: '^11.5.55'
+            audit: false
           - php: '8.2'
             laravel: '12'
-            illuminate: '^12.0'
-            testbench: '^10.0'
-            phpunit: '^11.0'
+            illuminate: '^12.61'
+            testbench: '^10.11'
+            phpunit: '^11.5.55'
+            audit: true
           - php: '8.3'
             laravel: '11'
-            illuminate: '^11.0'
-            testbench: '^9.0'
-            phpunit: '^11.0'
+            illuminate: '^11.54'
+            testbench: '^9.17'
+            phpunit: '^11.5.55'
+            audit: false
           - php: '8.3'
             laravel: '12'
-            illuminate: '^12.0'
-            testbench: '^10.0'
-            phpunit: '^11.0'
+            illuminate: '^12.61'
+            testbench: '^10.11'
+            phpunit: '^11.5.55'
+            audit: true
           - php: '8.3'
             laravel: '13'
-            illuminate: '^13.0'
-            testbench: '^11.0'
-            phpunit: '^11.5'
+            illuminate: '^13.13'
+            testbench: '^11.1'
+            phpunit: '^11.5.55'
+            audit: true
           - php: '8.4'
             laravel: '12'
-            illuminate: '^12.0'
-            testbench: '^10.0'
-            phpunit: '^11.0'
+            illuminate: '^12.61'
+            testbench: '^10.11'
+            phpunit: '^11.5.55'
+            audit: true
           - php: '8.4'
             laravel: '13'
-            illuminate: '^13.0'
-            testbench: '^11.0'
-            phpunit: '^11.5'
+            illuminate: '^13.13'
+            testbench: '^11.1'
+            phpunit: '^11.5.55'
+            audit: true
 
     env:
       COMPOSER_ROOT_VERSION: 3.1.0
@@ -84,6 +94,10 @@ jobs:
       - name: Validate Composer metadata
         run: composer validate --strict
 
+      - name: Allow compatibility installs for EOL Laravel majors
+        if: ${{ matrix.audit == false }}
+        run: composer config audit.block-insecure false
+
       - name: Install matrix dependencies
         run: |
           composer update \
@@ -96,9 +110,11 @@ jobs:
             "phpunit/phpunit:${{ matrix.phpunit }}" \
             --with-all-dependencies \
             --no-interaction \
-            --prefer-dist
+            --prefer-dist \
+            --no-audit
 
       - name: Audit dependencies
+        if: ${{ matrix.audit == true }}
         run: composer audit
 
       - name: Run test suite

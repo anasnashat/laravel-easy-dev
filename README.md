@@ -433,7 +433,7 @@ Current local verification:
 
 ## Release Status
 
-Laravel Easy Dev is ready for release-candidate usage and final feedback. Before a stable release, the next best improvements are:
+Laravel Easy Dev v3.1.0 is stable and ready for Laravel project use. The next best improvements are:
 
 - CI runs across PHP 8.1, 8.2, 8.3, and 8.4
 - field-aware OpenAPI schemas from migrations

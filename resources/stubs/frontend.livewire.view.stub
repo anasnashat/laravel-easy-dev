@@ -1,0 +1,4 @@
+<section>
+    <h2>{{ PluralName }}</h2>
+    <p>{{ resourceName }} list is ready for customization.</p>
+</section>

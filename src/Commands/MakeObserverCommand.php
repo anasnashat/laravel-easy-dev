@@ -22,7 +22,7 @@ class MakeObserverCommand extends Command
     {
         $modelName = Str::studly($this->argument('model'));
         $isAiMode = $this->option('ai');
-        $preset = $this->option('preset');
+        $preset = $this->resolveArchitecturePreset();
 
         $generatedFiles = [];
 
@@ -74,6 +74,27 @@ class MakeObserverCommand extends Command
                 ];
             }
 
+            if ($this->option('register')) {
+                $modelPath = $this->generator->resolveOutputPath(
+                    'models',
+                    "{$modelName}.php",
+                    $this->option('path'),
+                    $this->option('module'),
+                    $preset
+                );
+
+                if (file_exists($modelPath)) {
+                    $this->registerObserverOnModel($modelPath, "{$this->generator->getNamespaceForType('observers', $modelName, $this->option('path'), $this->option('module'), $preset)}\\{$observerName}");
+
+                    $generatedFiles[] = [
+                        'type' => 'observer_registration',
+                        'name' => "{$modelName} observed by {$observerName}",
+                        'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $modelPath),
+                        'stub_used' => 'model_attribute',
+                    ];
+                }
+            }
+
             if ($isAiMode) {
                 $this->output->write(json_encode([
                     'status' => 'success',
@@ -120,7 +141,56 @@ class MakeObserverCommand extends Command
             ['path', null, InputOption::VALUE_OPTIONAL, 'Override the output directory path.'],
             ['module', null, InputOption::VALUE_OPTIONAL, 'Generate inside a domain module directory.'],
             ['preset', null, InputOption::VALUE_OPTIONAL, 'Use a pre-configured architecture preset (e.g. clean).'],
+            ['architecture', null, InputOption::VALUE_OPTIONAL, 'Use an architecture layout: laravel, clean, or ddd. Alias for --preset where applicable.'],
+            ['register', null, InputOption::VALUE_NONE, 'Register the observer on the model with the ObservedBy attribute.'],
             ['ai', null, InputOption::VALUE_NONE, 'Output machine-friendly JSON format for AI integration.'],
         ];
+    }
+
+    protected function registerObserverOnModel(string $modelPath, string $observerClass): void
+    {
+        $content = file_get_contents($modelPath);
+
+        if (str_contains($content, 'ObservedBy') && str_contains($content, $observerClass . '::class')) {
+            return;
+        }
+
+        if (!str_contains($content, 'use Illuminate\\Database\\Eloquent\\Attributes\\ObservedBy;')) {
+            $content = preg_replace(
+                '/(<\?php\s+namespace\s+[^;]+;\s*)/m',
+                "$1\nuse Illuminate\\Database\\Eloquent\\Attributes\\ObservedBy;\n",
+                $content,
+                1
+            );
+        }
+
+        if (!str_contains($content, "use {$observerClass};")) {
+            $content = preg_replace(
+                '/(use Illuminate\\\\Database\\\\Eloquent\\\\Attributes\\\\ObservedBy;\s*)/m',
+                "$1use {$observerClass};\n",
+                $content,
+                1
+            );
+        }
+
+        $shortObserver = class_basename($observerClass);
+        $content = preg_replace('/(\nclass\s+)/', "\n#[ObservedBy([{$shortObserver}::class])]\nclass ", $content, 1);
+
+        file_put_contents($modelPath, $content);
+    }
+
+    protected function resolveArchitecturePreset(): ?string
+    {
+        $architecture = $this->option('architecture');
+
+        if ($architecture === 'laravel') {
+            return null;
+        }
+
+        if ($architecture === 'ddd') {
+            return 'ddd';
+        }
+
+        return $architecture ?: $this->option('preset');
     }
 }

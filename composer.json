@@ -1,6 +1,6 @@
 {
     "name":  "anas/easy-dev",
-    "description":  "🚀 A powerful Laravel package that supercharges development with beautiful UI, interactive CRUD generation, Repository \u0026 Service patterns, and intelligent relationship detection.",
+    "description":  "A Laravel productivity package for CRUD generation, API scaffolding, architecture layers, tests, OpenAPI docs, and AI-ready project context.",
     "type":  "laravel-package",
     "license":  "MIT",
     "keywords":  [
@@ -70,7 +70,7 @@
                                                 ]
                               },
                   "branch-alias":  {
-                                       "dev-main":  "2.0-dev"
+                                       "dev-main":  "3.0-dev"
                                    }
               },
     "scripts":  {

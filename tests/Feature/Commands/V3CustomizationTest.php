@@ -76,32 +76,29 @@ class V3CustomizationTest extends TestCase
 
     public function test_can_run_generators_in_ai_silent_mode(): void
     {
-        \Illuminate\Support\Facades\Artisan::call('easy-dev:enum', [
+        [, $output] = $this->callArtisanWithOutput('easy-dev:enum', [
             'name' => 'OrderStatus',
             '--ai' => true,
         ]);
-        $output = \Illuminate\Support\Facades\Artisan::output();
         $this->assertStringContainsString('"status": "success"', $output);
         $this->assertStringContainsString('"command": "easy-dev:enum"', $output);
     }
 
     public function test_can_run_ai_context_command(): void
     {
-        \Illuminate\Support\Facades\Artisan::call('easy-dev:ai-context', [
+        [, $output] = $this->callArtisanWithOutput('easy-dev:ai-context', [
             '--pretty' => true,
         ]);
-        $output = \Illuminate\Support\Facades\Artisan::output();
         $this->assertStringContainsString('"status": "success"', $output);
         $this->assertStringContainsString('"paths"', $output);
     }
 
     public function test_can_run_publish_stubs_list(): void
     {
-        \Illuminate\Support\Facades\Artisan::call('easy-dev:publish-stubs', [
+        [, $output] = $this->callArtisanWithOutput('easy-dev:publish-stubs', [
             '--list' => true,
             '--ai' => true,
         ]);
-        $output = \Illuminate\Support\Facades\Artisan::output();
         $this->assertStringContainsString('"status": "success"', $output);
         $this->assertStringContainsString('"stubs"', $output);
     }
@@ -288,36 +285,33 @@ JSON;
     {
         // Test article removal from the start of dream command prompts
         // Case 1: "A"
-        \Illuminate\Support\Facades\Artisan::call('easy-dev:dream', [
+        [, $output1] = $this->callArtisanWithOutput('easy-dev:dream', [
             'prompt' => 'A Review model with rating:integer',
             '--ai' => true,
             '--dry-run' => true,
         ]);
-        $output1 = \Illuminate\Support\Facades\Artisan::output();
         $plan1 = json_decode($output1, true);
         
         $this->assertEquals('success', $plan1['status']);
         $this->assertEquals('Review', $plan1['plans']['model']);
 
         // Case 2: "An"
-        \Illuminate\Support\Facades\Artisan::call('easy-dev:dream', [
+        [, $output2] = $this->callArtisanWithOutput('easy-dev:dream', [
             'prompt' => 'an Order model with total:decimal',
             '--ai' => true,
             '--dry-run' => true,
         ]);
-        $output2 = \Illuminate\Support\Facades\Artisan::output();
         $plan2 = json_decode($output2, true);
         
         $this->assertEquals('success', $plan2['status']);
         $this->assertEquals('Order', $plan2['plans']['model']);
 
         // Case 3: "The"
-        \Illuminate\Support\Facades\Artisan::call('easy-dev:dream', [
+        [, $output3] = $this->callArtisanWithOutput('easy-dev:dream', [
             'prompt' => 'The Category model',
             '--ai' => true,
             '--dry-run' => true,
         ]);
-        $output3 = \Illuminate\Support\Facades\Artisan::output();
         $plan3 = json_decode($output3, true);
         
         $this->assertEquals('success', $plan3['status']);
@@ -506,4 +500,3 @@ PHP;
         File::deleteDirectory($modulePath);
     }
 }
-

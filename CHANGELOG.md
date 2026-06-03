@@ -6,6 +6,41 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [3.1.0-rc1] - 2026-06-03
+
+### Added
+- Added `easy-dev:test` for feature and unit test starter generation.
+- Added `easy-dev:swagger` for dependency-light OpenAPI JSON/YAML generation.
+- Added `easy-dev:analyze` for project structure and maintainability checks.
+- Added GitHub Actions CI matrix for PHP and Laravel compatibility checks.
+- Added CRUD flags for `--tests`, `--swagger`, `--inertia`, `--livewire`, `--vue`, and `--react`.
+- Added `--architecture=laravel|clean|ddd` support for publish-facing architecture selection.
+- Added observer auto-registration via `easy-dev:observer --register` and CRUD `--register-observer`.
+- Added frontend starter stubs for Inertia Vue, Vue, React, and Livewire.
+- Added test generation stubs for feature, model, service, and repository tests.
+- Added README GIF demos for CRUD, module architecture, and AI analysis workflows.
+- Added publish-readiness regression tests for the new command surface.
+
+### Changed
+- `easy-dev:crud --api` now behaves as an alias for API-only generation.
+- CRUD generation now writes web/API resource routes through the route writer.
+- Stub publishing now recursively includes nested stubs and supports `--force`.
+- Updated README to answer the package value proposition, installation, quick example, generated files, and advanced features quickly.
+- Updated Composer metadata and branch alias for v3 development.
+- Refreshed development dependencies and lock file to remove security audit advisories.
+
+### Fixed
+- Fixed enhanced controller stubs leaving raw placeholders such as `{{ modelName }}` and `{{ pluralModelNameKebab }}` in generated controllers.
+- Fixed default stub config so basic CRUD uses the normal controller stubs unless a service/enhanced controller is explicitly selected.
+
+### Verified
+- `composer validate --strict` passes.
+- `composer test` passes with 96 tests and 391 assertions.
+- `composer audit` reports no security vulnerability advisories.
+- Manual compatibility matrix passed for Laravel 9, 10, 11, 12, and 13 on PHP 8.4.11.
+
+---
+
 ## [3.0.0] - 2026-05-23
 
 ### Added

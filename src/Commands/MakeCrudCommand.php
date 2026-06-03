@@ -37,8 +37,11 @@ class MakeCrudCommand extends Command
         $withPolicy = $this->option('with-policy');
         $withDto = $this->option('with-dto');
         $withObserver = $this->option('with-observer');
-        $apiOnly = $this->option('api-only');
+        $apiOnly = $this->option('api-only') || $this->option('api');
         $webOnly = $this->option('web-only');
+        $withTests = $this->option('tests') || config('easy-dev.defaults.generate_tests', false);
+        $withSwagger = $this->option('swagger');
+        $frontendStacks = $this->selectedFrontendStacks();
         $withoutInterface = $this->option('without-interface') || !config('easy-dev.defaults.with_interface', true);
         $dryRun = $this->option('dry-run');
         
@@ -46,7 +49,7 @@ class MakeCrudCommand extends Command
         $customPath = $this->option('path');
         $customStub = $this->option('stub');
         $module = $this->option('module');
-        $preset = $this->option('preset');
+        $preset = $this->resolveArchitecturePreset();
 
         // Validation
         if ($apiOnly && $webOnly) {
@@ -312,6 +315,14 @@ class MakeCrudCommand extends Command
                         'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $controllerPath),
                         'stub_used' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->getStubPath($stub, $customStub)),
                     ];
+
+                    $this->routeWriter->addResourceRoutes($modelName, true, "{$namespace}\\{$controllerName}");
+                    $generatedFiles[] = [
+                        'type' => 'api_route',
+                        'name' => Str::kebab(Str::plural($modelName)),
+                        'path' => 'routes/api.php',
+                        'stub_used' => 'route_writer',
+                    ];
                 }
 
                 if (!$apiOnly) {
@@ -334,6 +345,14 @@ class MakeCrudCommand extends Command
                         'name' => $controllerName,
                         'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $controllerPath),
                         'stub_used' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->getStubPath($stub, $customStub)),
+                    ];
+
+                    $this->routeWriter->addResourceRoutes($modelName, false, "{$namespace}\\{$controllerName}");
+                    $generatedFiles[] = [
+                        'type' => 'web_route',
+                        'name' => Str::kebab(Str::plural($modelName)),
+                        'path' => 'routes/web.php',
+                        'stub_used' => 'route_writer',
                     ];
                 }
 
@@ -453,6 +472,7 @@ class MakeCrudCommand extends Command
                         '--stub' => $customStub,
                         '--module' => $module,
                         '--preset' => $preset,
+                        '--register' => $this->option('register-observer'),
                         '--ai' => true,
                     ]);
                     $generatedFiles[] = [
@@ -461,6 +481,49 @@ class MakeCrudCommand extends Command
                         'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->resolveOutputPath('observers', "{$modelName}Observer.php", $customPath, $module, $preset)),
                         'stub_used' => 'easy-dev:observer',
                     ];
+                }
+
+                if ($withTests) {
+                    $this->callSilent('easy-dev:test', [
+                        'model' => $modelName,
+                        '--api' => !$webOnly,
+                        '--feature' => true,
+                        '--unit' => true,
+                        '--service' => $withService,
+                        '--repository' => $withRepository,
+                        '--path' => $customPath,
+                        '--stub' => $customStub,
+                        '--module' => $module,
+                        '--preset' => $preset,
+                        '--ai' => true,
+                    ]);
+
+                    $generatedFiles[] = [
+                        'type' => 'tests',
+                        'name' => "{$modelName} tests",
+                        'path' => 'tests',
+                        'stub_used' => 'easy-dev:test',
+                    ];
+                }
+
+                if ($withSwagger) {
+                    $this->callSilent('easy-dev:swagger', [
+                        'model' => $modelName,
+                        '--ai' => true,
+                    ]);
+
+                    $generatedFiles[] = [
+                        'type' => 'openapi',
+                        'name' => "{$modelName} OpenAPI spec",
+                        'path' => 'storage/app/easy-dev/openapi.json',
+                        'stub_used' => 'easy-dev:swagger',
+                    ];
+                }
+
+                foreach ($frontendStacks as $stack) {
+                    foreach ($this->generateFrontendScaffold($modelName, $stack, $customStub) as $file) {
+                        $generatedFiles[] = $file;
+                    }
                 }
 
                 // 10. Update bindings if RepositoryServiceProvider exists
@@ -492,7 +555,7 @@ class MakeCrudCommand extends Command
                 }
             } else {
                 // Dry run
-                $this->showDryRunSummary($modelName, $withRepository, $withService, $withPolicy, $withDto, $withObserver, $apiOnly, $webOnly);
+                $this->showDryRunSummary($modelName, $withRepository, $withService, $withPolicy, $withDto, $withObserver, $apiOnly, $webOnly, $withTests, $withSwagger, $frontendStacks);
             }
 
         } catch (\Exception $e) {
@@ -522,7 +585,7 @@ class MakeCrudCommand extends Command
     /**
      * Show dry-run summary.
      */
-    protected function showDryRunSummary(string $modelName, bool $withRepository, bool $withService, bool $withPolicy, bool $withDto, bool $withObserver, bool $apiOnly, bool $webOnly): void
+    protected function showDryRunSummary(string $modelName, bool $withRepository, bool $withService, bool $withPolicy, bool $withDto, bool $withObserver, bool $apiOnly, bool $webOnly, bool $withTests = false, bool $withSwagger = false, array $frontendStacks = []): void
     {
         $this->line('<info>Files that would be created:</info>');
         $this->newLine();
@@ -562,6 +625,16 @@ class MakeCrudCommand extends Command
         }
         if ($withObserver) {
             $this->line("  📄 app/Observers/{$modelName}Observer.php");
+        }
+        if ($withTests) {
+            $this->line("  📄 tests/Feature/{$modelName}ControllerTest.php");
+            $this->line("  📄 tests/Unit/{$modelName}ServiceTest.php");
+        }
+        if ($withSwagger) {
+            $this->line("  📄 storage/app/easy-dev/openapi.json");
+        }
+        foreach ($frontendStacks as $stack) {
+            $this->line("  📄 frontend scaffold for {$stack}");
         }
 
         $this->newLine();
@@ -606,6 +679,9 @@ class MakeCrudCommand extends Command
             'model' => $modelName,
             'modelClass' => $modelClass,
             'ModelName' => $modelName,
+            'modelName' => Str::camel($modelName),
+            'pluralModelName' => Str::camel(Str::plural($modelName)),
+            'pluralModelNameKebab' => Str::kebab(Str::plural($modelName)),
             'modelVariable' => Str::camel($modelName),
             'modelVariablePlural' => Str::camel(Str::plural($modelName)),
             'storeRequest' => $requestNames['store'],
@@ -634,7 +710,7 @@ class MakeCrudCommand extends Command
     protected function updateServiceProviderBindings(string $modelName, bool $withRepository, bool $withService, bool $withInterface): void
     {
         $module = $this->option('module');
-        $preset = $this->option('preset');
+        $preset = $this->resolveArchitecturePreset();
 
         try {
             // First reorganize existing providers and module.json under DDD module if clean preset is used
@@ -761,6 +837,73 @@ class MakeCrudCommand extends Command
         return implode(",\n", $attributes);
     }
 
+    protected function selectedFrontendStacks(): array
+    {
+        $stacks = [];
+
+        foreach (['inertia', 'livewire', 'vue', 'react'] as $stack) {
+            if ($this->option($stack)) {
+                $stacks[] = $stack;
+            }
+        }
+
+        return $stacks;
+    }
+
+    protected function generateFrontendScaffold(string $modelName, string $stack, ?string $customStub = null): array
+    {
+        $pluralName = Str::studly(Str::plural($modelName));
+        $resourceName = Str::kebab(Str::plural($modelName));
+        $modelVariable = Str::camel($modelName);
+        $modelVariablePlural = Str::camel(Str::plural($modelName));
+        $generated = [];
+
+        $replacements = [
+            'ModelName' => $modelName,
+            'PluralName' => $pluralName,
+            'modelVariable' => $modelVariable,
+            'modelVariablePlural' => $modelVariablePlural,
+            'resourceName' => $resourceName,
+        ];
+
+        $files = match ($stack) {
+            'inertia' => [
+                [resource_path("js/Pages/{$pluralName}/Index.vue"), 'frontend.inertia.vue'],
+            ],
+            'vue' => [
+                [resource_path("js/components/{$pluralName}Index.vue"), 'frontend.vue'],
+            ],
+            'react' => [
+                [resource_path("js/components/{$pluralName}Index.jsx"), 'frontend.react'],
+            ],
+            'livewire' => [
+                [app_path("Livewire/{$pluralName}/Index.php"), 'frontend.livewire.class'],
+                [resource_path("views/livewire/" . Str::kebab($pluralName) . "/index.blade.php"), 'frontend.livewire.view'],
+            ],
+            default => [],
+        };
+
+        foreach ($files as [$path, $stub]) {
+            $content = $this->generator->getStubContent($stub, $replacements, $customStub);
+            $directory = dirname($path);
+
+            if (!is_dir($directory)) {
+                mkdir($directory, 0755, true);
+            }
+
+            file_put_contents($path, $content);
+
+            $generated[] = [
+                'type' => "frontend_{$stack}",
+                'name' => basename($path),
+                'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $path),
+                'stub_used' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $this->generator->getStubPath($stub, $customStub)),
+            ];
+        }
+
+        return $generated;
+    }
+
     protected function getArguments(): array
     {
         return [
@@ -771,22 +914,46 @@ class MakeCrudCommand extends Command
     protected function getOptions(): array
     {
         return [
-            ['api', null, InputOption::VALUE_NONE, 'Generate API controller instead of web controller.'],
+            ['api', null, InputOption::VALUE_NONE, 'Alias for --api-only.'],
             ['with-repository', null, InputOption::VALUE_NONE, 'Generate repository pattern with interfaces.'],
             ['with-service', null, InputOption::VALUE_NONE, 'Generate service layer with business logic.'],
             ['with-policy', null, InputOption::VALUE_NONE, 'Generate authorization policy for the model.'],
             ['with-dto', null, InputOption::VALUE_NONE, 'Generate Data Transfer Object for the model.'],
             ['with-observer', null, InputOption::VALUE_NONE, 'Generate model observer.'],
+            ['register-observer', null, InputOption::VALUE_NONE, 'Register generated observer on the model when --with-observer is used.'],
+            ['tests', null, InputOption::VALUE_NONE, 'Generate feature and unit tests.'],
+            ['swagger', null, InputOption::VALUE_NONE, 'Generate or update OpenAPI documentation for the model.'],
+            ['inertia', null, InputOption::VALUE_NONE, 'Generate starter Inertia Vue pages.'],
+            ['livewire', null, InputOption::VALUE_NONE, 'Generate starter Livewire component and view.'],
+            ['vue', null, InputOption::VALUE_NONE, 'Generate starter Vue component.'],
+            ['react', null, InputOption::VALUE_NONE, 'Generate starter React component.'],
             ['api-only', null, InputOption::VALUE_NONE, 'Generate only API controllers.'],
             ['web-only', null, InputOption::VALUE_NONE, 'Generate only web controllers.'],
             ['without-interface', null, InputOption::VALUE_NONE, 'Skip interface generation for repositories and services.'],
             ['dry-run', null, InputOption::VALUE_NONE, 'Preview what files would be generated without creating them.'],
+            ['force', null, InputOption::VALUE_NONE, 'Overwrite generated files without prompting where supported.'],
             ['stub', null, InputOption::VALUE_OPTIONAL, 'Override model stub template or absolute/relative file path.'],
             ['path', null, InputOption::VALUE_OPTIONAL, 'Override default output directory path.'],
             ['module', null, InputOption::VALUE_OPTIONAL, 'Nest generated files inside a modular layout.'],
             ['preset', null, InputOption::VALUE_OPTIONAL, 'Use a pre-configured architecture preset (e.g. clean).'],
+            ['architecture', null, InputOption::VALUE_OPTIONAL, 'Use an architecture layout: laravel, clean, or ddd. Alias for --preset where applicable.'],
             ['ai', null, InputOption::VALUE_NONE, 'Silent machine-friendly JSON output for AI integration.'],
         ];
+    }
+
+    protected function resolveArchitecturePreset(): ?string
+    {
+        $architecture = $this->option('architecture');
+
+        if ($architecture === 'laravel') {
+            return null;
+        }
+
+        if ($architecture === 'ddd') {
+            return 'ddd';
+        }
+
+        return $architecture ?: $this->option('preset');
     }
 
     public function line($string, $style = null, $verbosity = null)

@@ -116,4 +116,34 @@ class MakeCrudCommandTest extends TestCase
             ->expectsOutputToContain('TestProductController')
             ->assertExitCode(0);
     }
+
+    public function test_enhanced_controller_stub_replaces_all_placeholders(): void
+    {
+        config()->set('easy-dev.stubs.controller', 'controller.enhanced');
+
+        $controllerPath = $this->getTestPath('Controllers/ProductController.php');
+        $modelPath = __DIR__ . '/../../Fixtures/Models/Product.php';
+
+        if (file_exists($modelPath)) {
+            unlink($modelPath);
+        }
+
+        $this->artisan('easy-dev:crud', [
+            'model' => 'Product',
+            '--web-only' => true,
+        ])->assertExitCode(0);
+
+        $this->assertFileExists($controllerPath);
+        $content = file_get_contents($controllerPath);
+
+        $this->assertStringNotContainsString('{{', $content);
+        $this->assertStringNotContainsString('}}', $content);
+        $this->assertStringContainsString('protected ProductService $productService', $content);
+        $this->assertStringContainsString('$products = $this->productService->getAll([]);', $content);
+        $this->assertStringContainsString("route('products.show', \$product)", $content);
+
+        if (file_exists($modelPath)) {
+            unlink($modelPath);
+        }
+    }
 }

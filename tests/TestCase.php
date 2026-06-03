@@ -3,11 +3,14 @@
 namespace AnasNashat\EasyDev\Tests;
 
 use AnasNashat\EasyDev\Providers\EasyDevServiceProvider;
+use Illuminate\Console\OutputStyle;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 use Illuminate\Filesystem\Filesystem;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 abstract class TestCase extends OrchestraTestCase
 {
@@ -259,6 +262,36 @@ class {$modelName} extends Model
     protected function mockArtisanCommand(string $command, array $parameters = []): \Illuminate\Testing\PendingCommand
     {
         return $this->artisan($command, $parameters);
+    }
+
+    /**
+     * Call an Artisan command and capture output consistently across Testbench versions.
+     *
+     * Older Laravel/Testbench combinations can return an empty string from
+     * Artisan::output() inside package tests, even though CLI output is emitted.
+     */
+    protected function callArtisanWithOutput(string $command, array $parameters = []): array
+    {
+        $shouldMockOutput = property_exists($this, 'mockConsoleOutput')
+            ? $this->mockConsoleOutput
+            : null;
+
+        if (method_exists($this, 'withoutMockingConsoleOutput')) {
+            $this->withoutMockingConsoleOutput();
+        }
+
+        $output = new BufferedOutput();
+
+        try {
+            $exitCode = Artisan::call($command, $parameters, $output);
+
+            return [$exitCode, $output->fetch()];
+        } finally {
+            if ($shouldMockOutput !== null) {
+                $this->mockConsoleOutput = $shouldMockOutput;
+                $this->app->offsetUnset(OutputStyle::class);
+            }
+        }
     }
 
     /**

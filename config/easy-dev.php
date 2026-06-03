@@ -71,8 +71,8 @@ return [
     */
     'stubs' => [
         'model'                => 'model.enhanced',
-        'controller'           => 'controller.enhanced',
-        'api_controller'       => 'controller.api.enhanced',
+        'controller'           => 'controller',
+        'api_controller'       => 'controller.api',
         'repository'           => 'repository.enhanced',
         'repository_interface' => 'repository.interface.enhanced',
         'service'              => 'service.enhanced',

@@ -1,0 +1,12 @@
+export default function {{ PluralName }}Index({ {{ modelVariablePlural }} = [] }) {
+  return (
+    <section>
+      <h2>{{ PluralName }}</h2>
+      <ul>
+        {{{ modelVariablePlural }}.map(({{ modelVariable }}) => (
+          <li key={{{ modelVariable }}.id}>#{ {{ modelVariable }}.id }</li>
+        ))}
+      </ul>
+    </section>
+  );
+}

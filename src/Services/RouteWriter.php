@@ -14,7 +14,7 @@ class RouteWriter
     /**
      * Add resource routes to web.php or api.php.
      */
-    public function addResourceRoutes(string $modelName, bool $isApi = false): void
+    public function addResourceRoutes(string $modelName, bool $isApi = false, ?string $controllerNamespace = null): void
     {
         $routeFile = $isApi ? base_path('routes/api.php') : base_path('routes/web.php');
         
@@ -28,14 +28,16 @@ class RouteWriter
         $resourceName = Str::kebab(Str::plural($modelName));
         
         // Add use statement for controller (always ensure import exists)
-        $controllerNamespace = $isApi 
+        $controllerNamespace = $controllerNamespace ?: ($isApi
             ? "App\\Http\\Controllers\\Api\\{$controllerName}"
-            : "App\\Http\\Controllers\\{$controllerName}";
+            : "App\\Http\\Controllers\\{$controllerName}");
             
         $this->addUseStatement($routeFile, $controllerNamespace);
+        $content = $this->files->get($routeFile);
         
         // Check if route already exists
-        if (str_contains($content, "Route::resource('{$resourceName}'")) {
+        $routeMethod = $isApi ? 'apiResource' : 'resource';
+        if (str_contains($content, "Route::{$routeMethod}('{$resourceName}'")) {
             return; // Route already exists, but import was ensured above
         }
 

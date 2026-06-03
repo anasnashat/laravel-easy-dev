@@ -1,0 +1,13 @@
+<?php
+
+namespace Tests\Unit;
+
+use Tests\TestCase;
+
+class {{ ModelName }}ServiceTest extends TestCase
+{
+    public function test_{{ testName }}_service_can_be_extended_with_business_rules(): void
+    {
+        $this->assertTrue(true);
+    }
+}

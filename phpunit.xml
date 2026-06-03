@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
-         bootstrap="vendor/autoload.php"
+<phpunit bootstrap="vendor/autoload.php"
          colors="true"
          processIsolation="false"
          stopOnFailure="false"
@@ -9,9 +7,7 @@
          failOnWarning="true"
          failOnRisky="true"
          failOnEmptyTestSuite="true"
-         beStrictAboutOutputDuringTests="true"
-         cacheDirectory=".phpunit.cache"
-         backupStaticProperties="false">
+         beStrictAboutOutputDuringTests="true">
     <testsuites>
         <testsuite name="Unit">
             <directory>tests/Unit</directory>
@@ -20,11 +16,6 @@
             <directory>tests/Feature</directory>
         </testsuite>
     </testsuites>
-    <source>
-        <include>
-            <directory>src</directory>
-        </include>
-    </source>
     <logging>
         <junit outputFile="tests/results/junit.xml"/>
         <testdoxHtml outputFile="tests/results/testdox.html"/>

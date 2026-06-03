@@ -3,14 +3,12 @@
 namespace AnasNashat\EasyDev\Tests\Feature\Commands;
 
 use AnasNashat\EasyDev\Tests\TestCase;
-use Illuminate\Support\Facades\Artisan;
 
 class EasyDevHelpCommandTest extends TestCase
 {
     public function test_help_command_displays_banner(): void
     {
-        $exitCode = Artisan::call('easy-dev:help');
-        $output = Artisan::output();
+        [$exitCode, $output] = $this->callArtisanWithOutput('easy-dev:help');
 
         $this->assertEquals(0, $exitCode);
         $this->assertStringContainsString('Laravel Easy Dev', $output);
@@ -18,8 +16,7 @@ class EasyDevHelpCommandTest extends TestCase
 
     public function test_help_command_lists_all_commands(): void
     {
-        Artisan::call('easy-dev:help');
-        $output = Artisan::output();
+        [, $output] = $this->callArtisanWithOutput('easy-dev:help');
 
         $this->assertStringContainsString('Available Commands', $output);
         $this->assertStringContainsString('easy-dev:make', $output);
@@ -30,8 +27,7 @@ class EasyDevHelpCommandTest extends TestCase
 
     public function test_help_command_shows_usage_examples(): void
     {
-        Artisan::call('easy-dev:help', ['--examples' => true]);
-        $output = Artisan::output();
+        [, $output] = $this->callArtisanWithOutput('easy-dev:help', ['--examples' => true]);
 
         $this->assertStringContainsString('Usage Examples', $output);
         $this->assertStringContainsString('easy-dev:make Product', $output);
@@ -41,8 +37,7 @@ class EasyDevHelpCommandTest extends TestCase
 
     public function test_help_command_shows_tips_section(): void
     {
-        Artisan::call('easy-dev:help', ['--examples' => true]);
-        $output = Artisan::output();
+        [, $output] = $this->callArtisanWithOutput('easy-dev:help', ['--examples' => true]);
 
         $this->assertStringContainsString('Pro Tips', $output);
         $this->assertStringContainsString('--interactive', $output);
@@ -51,16 +46,14 @@ class EasyDevHelpCommandTest extends TestCase
 
     public function test_help_command_shows_github_link(): void
     {
-        Artisan::call('easy-dev:help');
-        $output = Artisan::output();
+        [, $output] = $this->callArtisanWithOutput('easy-dev:help');
 
         $this->assertStringContainsString('github.com/anasnashat/laravel-easy-dev', $output);
     }
 
     public function test_help_command_shows_command_descriptions(): void
     {
-        Artisan::call('easy-dev:help');
-        $output = Artisan::output();
+        [, $output] = $this->callArtisanWithOutput('easy-dev:help');
 
         $this->assertStringContainsString('CRUD generator', $output);
         $this->assertStringContainsString('repository', $output);
@@ -69,8 +62,7 @@ class EasyDevHelpCommandTest extends TestCase
 
     public function test_help_command_shows_command_options(): void
     {
-        Artisan::call('easy-dev:help');
-        $output = Artisan::output();
+        [, $output] = $this->callArtisanWithOutput('easy-dev:help');
 
         $this->assertStringContainsString('--with-repository', $output);
         $this->assertStringContainsString('--with-service', $output);

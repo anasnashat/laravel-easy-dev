@@ -238,7 +238,33 @@ class FileGenerator
                 'dtos'                 => 'Application/DTOs',
                 'observers'            => 'Infrastructure/Observers',
                 'filters'              => 'Infrastructure/Filters',
-            ]
+                'tests'                => 'Tests/Feature',
+                'feature_tests'        => 'Tests/Feature',
+                'unit_tests'           => 'Tests/Unit',
+            ],
+            'ddd' => [
+                'models'               => 'Domain/Models',
+                'enums'                => 'Domain/Enums',
+
+                'controllers'          => 'Presentation/Http/Controllers',
+                'api_controllers'      => 'Presentation/Http/Controllers/Api',
+                'requests'             => 'Presentation/Http/Requests',
+                'resources'            => 'Presentation/Http/Resources',
+
+                'repositories'         => 'Infrastructure/Persistence/Repositories',
+                'repository_contracts' => 'Domain/Repositories',
+
+                'services'             => 'Application/Services',
+                'service_contracts'    => 'Application/Contracts',
+
+                'policies'             => 'Application/Policies',
+                'dtos'                 => 'Application/DTOs',
+                'observers'            => 'Infrastructure/Observers',
+                'filters'              => 'Application/Filters',
+                'tests'                => 'Tests/Feature',
+                'feature_tests'        => 'Tests/Feature',
+                'unit_tests'           => 'Tests/Unit',
+            ],
         ];
 
         return $presets[strtolower($preset)][$type] ?? Str::studly($type);

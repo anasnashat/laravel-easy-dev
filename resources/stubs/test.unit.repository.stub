@@ -1,0 +1,13 @@
+<?php
+
+namespace Tests\Unit;
+
+use Tests\TestCase;
+
+class {{ ModelName }}RepositoryTest extends TestCase
+{
+    public function test_{{ testName }}_repository_can_be_extended_with_queries(): void
+    {
+        $this->assertTrue(true);
+    }
+}

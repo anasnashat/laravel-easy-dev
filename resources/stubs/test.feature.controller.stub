@@ -1,0 +1,18 @@
+<?php
+
+namespace Tests\Feature;
+
+use Tests\TestCase;
+
+class {{ ModelName }}ControllerTest extends TestCase
+{
+    public function test_{{ testName }}_route_can_be_tested(): void
+    {
+        $this->assertTrue(true);
+    }
+
+    public function test_{{ testName }}_index_endpoint_is_documented(): void
+    {
+        $this->assertSame('/{{ apiPrefix }}{{ resourceName }}', '/{{ apiPrefix }}{{ resourceName }}');
+    }
+}

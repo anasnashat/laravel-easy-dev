@@ -21,6 +21,7 @@ class PublishStubsCommand extends Command
         $only = $this->option('only');
         $listOnly = $this->option('list');
         $isAiMode = $this->option('ai');
+        $force = $this->option('force');
 
         $stubsDir = __DIR__ . '/../../resources/stubs';
         $targetDir = resource_path('stubs/vendor/easy-dev');
@@ -30,19 +31,19 @@ class PublishStubsCommand extends Command
                 throw new \Exception("Package stubs directory does not exist: {$stubsDir}");
             }
 
-            $allStubs = $this->files->files($stubsDir);
+            $allStubs = $this->files->allFiles($stubsDir);
             $availableStubs = [];
 
             foreach ($allStubs as $file) {
-                $filename = $file->getFilename();
-                $stubName = str_replace('.stub', '', $filename);
+                $relativePath = str_replace('\\', '/', $file->getRelativePathname());
+                $stubName = substr($relativePath, 0, -5);
                 $availableStubs[$stubName] = $file->getRealPath();
             }
 
             // Filter if --only provided
             $toPublish = $availableStubs;
             if (!empty($only)) {
-                $filters = array_map('trim', explode(',', $only));
+                $filters = array_map(fn($value) => str_replace('.', '/', trim($value)), explode(',', $only));
                 $toPublish = array_filter($availableStubs, function ($key) use ($filters) {
                     return in_array($key, $filters);
                 }, ARRAY_FILTER_USE_KEY);
@@ -70,8 +71,24 @@ class PublishStubsCommand extends Command
             }
 
             $published = [];
+            $skipped = [];
             foreach ($toPublish as $name => $path) {
                 $targetFile = "{$targetDir}/{$name}.stub";
+                $targetFolder = dirname($targetFile);
+
+                if (!$this->files->isDirectory($targetFolder)) {
+                    $this->files->makeDirectory($targetFolder, 0755, true);
+                }
+
+                if ($this->files->exists($targetFile) && !$force) {
+                    $skipped[] = [
+                        'name' => $name,
+                        'path' => str_replace(base_path() . DIRECTORY_SEPARATOR, '', $targetFile),
+                        'reason' => 'exists',
+                    ];
+                    continue;
+                }
+
                 $this->files->copy($path, $targetFile);
                 $published[] = [
                     'name' => $name,
@@ -94,6 +111,7 @@ class PublishStubsCommand extends Command
                 $this->line(json_encode([
                     'status' => 'success',
                     'published' => $published,
+                    'skipped' => $skipped,
                 ], JSON_PRETTY_PRINT));
             } else {
                 $this->info("🎉 Stubs published successfully!");
@@ -122,6 +140,7 @@ class PublishStubsCommand extends Command
         return [
             ['only', null, InputOption::VALUE_OPTIONAL, 'Publish only specific stubs (comma-separated, e.g., --only=model,controller).'],
             ['list', null, InputOption::VALUE_NONE, 'List all available stubs without publishing.'],
+            ['force', null, InputOption::VALUE_NONE, 'Overwrite existing published stubs.'],
             ['ai', null, InputOption::VALUE_NONE, 'Output machine-friendly JSON format for AI integration.'],
         ];
     }

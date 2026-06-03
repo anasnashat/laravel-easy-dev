@@ -3,6 +3,7 @@
 namespace {{ namespace }};
 
 use {{ ModelNamespace }}\{{ ModelName }};
+use App\Http\Controllers\Controller;
 use {{ ServiceNamespace }}\{{ ModelName }}Service;
 use {{ RequestNamespace }}\Store{{ ModelName }}Request;
 use {{ RequestNamespace }}\Update{{ ModelName }}Request;
@@ -15,7 +16,7 @@ use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 class {{ ModelName }}ApiController extends Controller
 {
     public function __construct(
-        protected {{ ModelName }}Service ${{ modelName }}Service
+        protected {{ ModelName }}Service ${{ modelVariable }}Service
     ) {
     }
 
@@ -25,9 +26,9 @@ class {{ ModelName }}ApiController extends Controller
     public function index(Request $request): AnonymousResourceCollection
     {
         $filters = $request->all();
-        ${{ pluralModelName }} = $this->{{ modelName }}Service->getAll($filters);
+        ${{ modelVariablePlural }} = $this->{{ modelVariable }}Service->getAll($filters);
 
-        return {{ ModelName }}Resource::collection(${{ pluralModelName }});
+        return {{ ModelName }}Resource::collection(${{ modelVariablePlural }});
     }
 
     /**
@@ -35,9 +36,9 @@ class {{ ModelName }}ApiController extends Controller
      */
     public function store(Store{{ ModelName }}Request $request): JsonResponse
     {
-        ${{ modelName }} = $this->{{ modelName }}Service->create($request->validated());
+        ${{ modelVariable }} = $this->{{ modelVariable }}Service->create($request->validated());
 
-        return (new {{ ModelName }}Resource(${{ modelName }}))
+        return (new {{ ModelName }}Resource(${{ modelVariable }}))
             ->response()
             ->setStatusCode(201);
     }
@@ -45,27 +46,27 @@ class {{ ModelName }}ApiController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show({{ ModelName }} ${{ modelName }}): {{ ModelName }}Resource
+    public function show({{ ModelName }} ${{ modelVariable }}): {{ ModelName }}Resource
     {
-        return new {{ ModelName }}Resource(${{ modelName }});
+        return new {{ ModelName }}Resource(${{ modelVariable }});
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Update{{ ModelName }}Request $request, {{ ModelName }} ${{ modelName }}): {{ ModelName }}Resource
+    public function update(Update{{ ModelName }}Request $request, {{ ModelName }} ${{ modelVariable }}): {{ ModelName }}Resource
     {
-        $this->{{ modelName }}Service->update(${{ modelName }}, $request->validated());
+        $this->{{ modelVariable }}Service->update(${{ modelVariable }}, $request->validated());
 
-        return new {{ ModelName }}Resource(${{ modelName }}->fresh());
+        return new {{ ModelName }}Resource(${{ modelVariable }}->fresh());
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy({{ ModelName }} ${{ modelName }}): JsonResponse
+    public function destroy({{ ModelName }} ${{ modelVariable }}): JsonResponse
     {
-        $this->{{ modelName }}Service->delete(${{ modelName }});
+        $this->{{ modelVariable }}Service->delete(${{ modelVariable }});
 
         return response()->json(['message' => '{{ ModelName }} deleted successfully.'], 200);
     }

@@ -62,9 +62,20 @@ php artisan easy-dev:crud {model} [options]
 #### Options
 - `--with-repository` - Include Repository pattern.
 - `--with-service` - Include Service layer.
+- `--with-policy` - Include authorization policy.
+- `--with-dto` - Include Data Transfer Object.
+- `--with-observer` - Include model observer.
+- `--register-observer` - Register the generated observer when used with `--with-observer`.
 - `--without-interface` - Skip Interface/Contract generation.
+- `--api` - Alias for `--api-only`.
 - `--api-only` - Generate API controller only.
 - `--web-only` - Generate web controller only.
+- `--tests` - Generate starter feature and unit tests.
+- `--swagger` - Generate or update an OpenAPI spec.
+- `--architecture=laravel|clean|ddd` - Select an architecture layout.
+- `--inertia`, `--livewire`, `--vue`, `--react` - Generate starter frontend files.
+- `--dry-run` - Preview generated files without writing them.
+- `--force` - Overwrite generated files where supported.
 - `--stub=NAME` - Specify a custom stub name or absolute file path to use as a template.
 - `--path=DIR` - Specify a custom target folder output directory.
 - `--module=NAME` - Scaffold everything inside a Domain Module (e.g. `app/Modules/Billing`).
@@ -77,6 +88,12 @@ php artisan easy-dev:crud Post
 
 # Full architecture CRUD inside a Domain Module
 php artisan easy-dev:crud Payment --module=Billing --with-repository --with-service
+
+# API-first CRUD with tests and OpenAPI
+php artisan easy-dev:crud Product --api --tests --swagger
+
+# Generate backend plus starter frontend assets
+php artisan easy-dev:crud Product --inertia
 ```
 
 ---
@@ -145,6 +162,28 @@ Generate status/type schema PHP enums.
 ```bash
 # Generate OrderStatus enum
 php artisan easy-dev:enum OrderStatus
+```
+
+### `easy-dev:test`
+Generate starter feature and unit tests for a model.
+
+```bash
+# Generate default feature and unit shells
+php artisan easy-dev:test Product
+
+# Generate API feature, service, and repository tests
+php artisan easy-dev:test Product --api --feature --unit --service --repository
+```
+
+### `easy-dev:swagger`
+Generate a basic OpenAPI specification for API resources.
+
+```bash
+# Generate docs for one model
+php artisan easy-dev:swagger Product
+
+# Generate YAML output
+php artisan easy-dev:swagger Product --format=yaml
 ```
 
 ---
@@ -253,6 +292,20 @@ php artisan easy-dev:snapshot
 
 # Output token-efficient JSON representation for AI
 php artisan easy-dev:snapshot --ai
+```
+
+### `easy-dev:analyze`
+Analyze a Laravel project for missing generated layers and maintainability risks.
+
+```bash
+# Human-readable findings
+php artisan easy-dev:analyze
+
+# Machine-readable findings
+php artisan easy-dev:analyze --json
+
+# Apply conservative safe fixes where available
+php artisan easy-dev:analyze --fix
 ```
 
 ---

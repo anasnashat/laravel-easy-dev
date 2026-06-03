@@ -3,7 +3,6 @@
 namespace AnasNashat\EasyDev\Tests\Feature\Commands;
 
 use AnasNashat\EasyDev\Tests\TestCase;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 
 class EasyDevNewCommandsTest extends TestCase
@@ -13,8 +12,7 @@ class EasyDevNewCommandsTest extends TestCase
      */
     public function test_snapshot_command_displays_visual_banner(): void
     {
-        $exitCode = Artisan::call('easy-dev:snapshot');
-        $output = Artisan::output();
+        [$exitCode, $output] = $this->callArtisanWithOutput('easy-dev:snapshot');
 
         $this->assertEquals(0, $exitCode);
         $this->assertStringContainsString('Laravel Easy Dev v3 - AI-Native Model Snapshot', $output);
@@ -27,8 +25,7 @@ class EasyDevNewCommandsTest extends TestCase
      */
     public function test_snapshot_command_outputs_ai_json(): void
     {
-        $exitCode = Artisan::call('easy-dev:snapshot', ['--ai' => true]);
-        $output = Artisan::output();
+        [$exitCode, $output] = $this->callArtisanWithOutput('easy-dev:snapshot', ['--ai' => true]);
 
         $this->assertEquals(0, $exitCode);
         
@@ -66,8 +63,7 @@ class EasyDevNewCommandsTest extends TestCase
      */
     public function test_info_command_displays_markdown_audit(): void
     {
-        $exitCode = Artisan::call('easy-dev:info', ['model' => 'Post']);
-        $output = Artisan::output();
+        [$exitCode, $output] = $this->callArtisanWithOutput('easy-dev:info', ['model' => 'Post']);
 
         $this->assertEquals(0, $exitCode);
         $this->assertStringContainsString('Laravel Easy Dev v3 - Model Audit for Post', $output);
@@ -81,8 +77,7 @@ class EasyDevNewCommandsTest extends TestCase
      */
     public function test_info_command_outputs_ai_json(): void
     {
-        $exitCode = Artisan::call('easy-dev:info', ['model' => 'Post', '--ai' => true]);
-        $output = Artisan::output();
+        [$exitCode, $output] = $this->callArtisanWithOutput('easy-dev:info', ['model' => 'Post', '--ai' => true]);
 
         $this->assertEquals(0, $exitCode);
 
@@ -102,14 +97,10 @@ class EasyDevNewCommandsTest extends TestCase
      */
     public function test_info_command_handles_nonexistent_model(): void
     {
-        $exitCode = Artisan::call('easy-dev:info', ['model' => 'NonExistentModel']);
-        $output = Artisan::output();
-
         // Since AnasNashat\EasyDev\Tests\Fixtures\Models\NonExistentModel exists but we haven't loaded it or it's not a real class on path:
         // Wait, does it exist? Let's check:
         // In the Fixtures folder there is a NonExistentModel.php but let's see. Let's try inspecting 'FakeModel' instead.
-        $exitCode = Artisan::call('easy-dev:info', ['model' => 'FakeModel']);
-        $output = Artisan::output();
+        [$exitCode, $output] = $this->callArtisanWithOutput('easy-dev:info', ['model' => 'FakeModel']);
         
         $this->assertEquals(1, $exitCode);
         $this->assertStringContainsString('Error: Model class', $output);
@@ -120,11 +111,10 @@ class EasyDevNewCommandsTest extends TestCase
      */
     public function test_dream_command_dry_run_parses_prompt(): void
     {
-        $exitCode = Artisan::call('easy-dev:dream', [
+        [$exitCode, $output] = $this->callArtisanWithOutput('easy-dev:dream', [
             'prompt' => 'Create new product with name:string and price:decimal connected to users',
             '--dry-run' => true
         ]);
-        $output = Artisan::output();
 
         $this->assertEquals(0, $exitCode);
         $this->assertStringContainsString('Compiled Scaffolding Blueprint Plan', $output);
@@ -139,12 +129,11 @@ class EasyDevNewCommandsTest extends TestCase
      */
     public function test_dream_command_ai_dry_run_outputs_json(): void
     {
-        $exitCode = Artisan::call('easy-dev:dream', [
+        [$exitCode, $output] = $this->callArtisanWithOutput('easy-dev:dream', [
             'prompt' => 'Create a post with title:string and body:text connected to users',
             '--dry-run' => true,
             '--ai' => true
         ]);
-        $output = Artisan::output();
 
         $this->assertEquals(0, $exitCode);
 

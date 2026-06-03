@@ -1,0 +1,19 @@
+<script setup>
+defineProps({
+  {{ modelVariablePlural }}: {
+    type: Array,
+    default: () => [],
+  },
+});
+</script>
+
+<template>
+  <section>
+    <h2>{{ PluralName }}</h2>
+    <ul>
+      <li v-for="{{ modelVariable }} in {{ modelVariablePlural }}" :key="{{ modelVariable }}.id">
+        <span>#</span><span v-text="{{ modelVariable }}.id"></span>
+      </li>
+    </ul>
+  </section>
+</template>

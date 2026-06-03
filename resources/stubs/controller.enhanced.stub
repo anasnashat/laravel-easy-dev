@@ -3,6 +3,7 @@
 namespace {{ namespace }};
 
 use {{ ModelNamespace }}\{{ ModelName }};
+use App\Http\Controllers\Controller;
 use {{ ServiceNamespace }}\{{ ModelName }}Service;
 use {{ RequestNamespace }}\Store{{ ModelName }}Request;
 use {{ RequestNamespace }}\Update{{ ModelName }}Request;
@@ -12,7 +13,7 @@ use Illuminate\View\View;
 class {{ ModelName }}Controller extends Controller
 {
     public function __construct(
-        protected {{ ModelName }}Service ${{ modelName }}Service
+        protected {{ ModelName }}Service ${{ modelVariable }}Service
     ) {
     }
 
@@ -21,9 +22,9 @@ class {{ ModelName }}Controller extends Controller
      */
     public function index(): View
     {
-        ${{ pluralModelName }} = $this->{{ modelName }}Service->getAll([]);
+        ${{ modelVariablePlural }} = $this->{{ modelVariable }}Service->getAll([]);
 
-        return view('{{ pluralModelNameKebab }}.index', compact('{{ pluralModelName }}'));
+        return view('{{ resourceName }}.index', compact('{{ modelVariablePlural }}'));
     }
 
     /**
@@ -31,7 +32,7 @@ class {{ ModelName }}Controller extends Controller
      */
     public function create(): View
     {
-        return view('{{ pluralModelNameKebab }}.create');
+        return view('{{ resourceName }}.create');
     }
 
     /**
@@ -39,50 +40,50 @@ class {{ ModelName }}Controller extends Controller
      */
     public function store(Store{{ ModelName }}Request $request): RedirectResponse
     {
-        ${{ modelName }} = $this->{{ modelName }}Service->create($request->validated());
+        ${{ modelVariable }} = $this->{{ modelVariable }}Service->create($request->validated());
 
         return redirect()
-            ->route('{{ pluralModelNameKebab }}.show', ${{ modelName }})
+            ->route('{{ resourceName }}.show', ${{ modelVariable }})
             ->with('success', '{{ ModelName }} created successfully.');
     }
 
     /**
      * Display the specified resource.
      */
-    public function show({{ ModelName }} ${{ modelName }}): View
+    public function show({{ ModelName }} ${{ modelVariable }}): View
     {
-        return view('{{ pluralModelNameKebab }}.show', compact('{{ modelName }}'));
+        return view('{{ resourceName }}.show', compact('{{ modelVariable }}'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit({{ ModelName }} ${{ modelName }}): View
+    public function edit({{ ModelName }} ${{ modelVariable }}): View
     {
-        return view('{{ pluralModelNameKebab }}.edit', compact('{{ modelName }}'));
+        return view('{{ resourceName }}.edit', compact('{{ modelVariable }}'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Update{{ ModelName }}Request $request, {{ ModelName }} ${{ modelName }}): RedirectResponse
+    public function update(Update{{ ModelName }}Request $request, {{ ModelName }} ${{ modelVariable }}): RedirectResponse
     {
-        $this->{{ modelName }}Service->update(${{ modelName }}, $request->validated());
+        $this->{{ modelVariable }}Service->update(${{ modelVariable }}, $request->validated());
 
         return redirect()
-            ->route('{{ pluralModelNameKebab }}.show', ${{ modelName }})
+            ->route('{{ resourceName }}.show', ${{ modelVariable }})
             ->with('success', '{{ ModelName }} updated successfully.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy({{ ModelName }} ${{ modelName }}): RedirectResponse
+    public function destroy({{ ModelName }} ${{ modelVariable }}): RedirectResponse
     {
-        $this->{{ modelName }}Service->delete(${{ modelName }});
+        $this->{{ modelVariable }}Service->delete(${{ modelVariable }});
 
         return redirect()
-            ->route('{{ pluralModelNameKebab }}.index')
+            ->route('{{ resourceName }}.index')
             ->with('success', '{{ ModelName }} deleted successfully.');
     }
 }

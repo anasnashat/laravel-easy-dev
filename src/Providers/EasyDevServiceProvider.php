@@ -13,6 +13,8 @@ use AnasNashat\EasyDev\Commands\MakeDtoCommand;
 use AnasNashat\EasyDev\Commands\MakeObserverCommand;
 use AnasNashat\EasyDev\Commands\MakeFilterCommand;
 use AnasNashat\EasyDev\Commands\MakeEnumCommand;
+use AnasNashat\EasyDev\Commands\MakeTestCommand;
+use AnasNashat\EasyDev\Commands\MakeSwaggerCommand;
 use AnasNashat\EasyDev\Commands\EasyDevHelpCommand;
 use AnasNashat\EasyDev\Commands\EnhancedCrudCommand;
 use AnasNashat\EasyDev\Commands\BeautifulHelpCommand;
@@ -30,6 +32,7 @@ use AnasNashat\EasyDev\Commands\EasyDevInfoCommand;
 use AnasNashat\EasyDev\Commands\EasyDevDreamCommand;
 use AnasNashat\EasyDev\Commands\PublishStubsCommand;
 use AnasNashat\EasyDev\Commands\EasyDevAiContextCommand;
+use AnasNashat\EasyDev\Commands\EasyDevAnalyzeCommand;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Database\ConnectionResolverInterface as DB;
 
@@ -78,6 +81,8 @@ class EasyDevServiceProvider extends ServiceProvider
             MakeObserverCommand::class,
             MakeFilterCommand::class,
             MakeEnumCommand::class,
+            MakeTestCommand::class,
+            MakeSwaggerCommand::class,
 
             // Help & UI
             EasyDevHelpCommand::class,
@@ -90,6 +95,7 @@ class EasyDevServiceProvider extends ServiceProvider
             EasyDevDreamCommand::class,
             PublishStubsCommand::class,
             EasyDevAiContextCommand::class,
+            EasyDevAnalyzeCommand::class,
         ]);
 
         if ($this->app->runningInConsole()) {

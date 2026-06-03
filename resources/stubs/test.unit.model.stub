@@ -1,0 +1,13 @@
+<?php
+
+namespace Tests\Unit;
+
+use Tests\TestCase;
+
+class {{ ModelName }}Test extends TestCase
+{
+    public function test_{{ testName }}_model_test_shell_is_ready(): void
+    {
+        $this->assertTrue(true);
+    }
+}

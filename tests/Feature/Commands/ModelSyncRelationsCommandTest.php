@@ -30,8 +30,7 @@ class ModelSyncRelationsCommandTest extends TestCase
     public function test_sync_relations_handles_nonexistent_model(): void
     {
         // The command catches exceptions gracefully — it analyzes, finds nothing, and returns 0
-        $exitCode = \Illuminate\Support\Facades\Artisan::call('easy-dev:sync-relations', ['model' => 'NonExistentFile']);
-        $output = \Illuminate\Support\Facades\Artisan::output();
+        [$exitCode, $output] = $this->callArtisanWithOutput('easy-dev:sync-relations', ['model' => 'NonExistentFile']);
 
         $this->assertEquals(0, $exitCode);
         $this->assertStringContainsString('Analyzing relations for NonExistentFile', $output);
@@ -39,8 +38,7 @@ class ModelSyncRelationsCommandTest extends TestCase
 
     public function test_sync_relations_shows_progress_for_each_model(): void
     {
-        $exitCode = \Illuminate\Support\Facades\Artisan::call('easy-dev:sync-relations', ['--all' => true]);
-        $output = \Illuminate\Support\Facades\Artisan::output();
+        [$exitCode, $output] = $this->callArtisanWithOutput('easy-dev:sync-relations', ['--all' => true]);
 
         $this->assertEquals(0, $exitCode);
         $this->assertStringContainsString('Synchronized relations for', $output);

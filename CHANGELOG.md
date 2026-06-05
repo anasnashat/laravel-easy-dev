@@ -6,6 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [3.1.1] - 2026-06-05
+
+### Changed
+- Refreshed the README positioning so Laravel Easy Dev is presented as a feature scaffolding toolkit instead of only a CRUD generator.
+- Rebuilt the documentation set for publish readiness with clean v3.1 examples, command references, API docs, configuration docs, advanced usage, examples, and relationship guidance.
+- Added a dedicated AI guide for Codex, Cursor, Claude, and ChatGPT workflows.
+- Added community documentation with Telegram, GitHub Discussions, and GitHub Issues links.
+- Added publishing copy for GitHub About, topics, Packagist description, and release notes.
+- Updated Packagist metadata description and keywords.
+
+### Verified
+- `composer validate --strict` passes.
+- `composer test` passes with 97 tests and 396 assertions.
+
+---
+
 ## [3.1.0] - 2026-06-03
 
 ### Added

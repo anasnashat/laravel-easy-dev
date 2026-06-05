@@ -1,64 +1,96 @@
 # Laravel Easy Dev
 
-Generate production-style Laravel CRUD, API, architecture layers, tests, docs, and AI-ready project context from one command.
+Generate production-style Laravel feature structure from one Artisan command.
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/anas/easy-dev.svg?style=flat-square)](https://packagist.org/packages/anas/easy-dev)
-[![Total Downloads](https://img.shields.io/packagist/dt/anas/easy-dev.svg?style=flat-square)](https://packagist.org/packages/anas/easy-dev)
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE.md)
-[![PHP Version](https://img.shields.io/badge/PHP-8.1%2B-blue.svg?style=flat-square)](https://php.net)
-[![Laravel](https://img.shields.io/badge/Laravel-9.x--13.x-red.svg?style=flat-square)](https://laravel.com)
+Laravel Easy Dev helps Laravel developers reduce repetitive setup around every model or feature by generating CRUD, APIs, Form Requests, Resources, optional Services and Repositories, Policies, DTOs, Tests, OpenAPI docs, Modules, frontend starter stubs, and AI-ready project context.
 
-## Hero Section
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/anas/easy-dev.svg)](https://packagist.org/packages/anas/easy-dev)
+[![Total Downloads](https://img.shields.io/packagist/dt/anas/easy-dev.svg)](https://packagist.org/packages/anas/easy-dev)
+[![PHP Version](https://img.shields.io/packagist/php-v/anas/easy-dev.svg)](https://packagist.org/packages/anas/easy-dev)
+[![License](https://img.shields.io/packagist/l/anas/easy-dev.svg)](LICENSE.md)
+[![Tests](https://github.com/anasnashat/laravel-easy-dev/actions/workflows/tests.yml/badge.svg)](https://github.com/anasnashat/laravel-easy-dev/actions/workflows/tests.yml)
+[![Telegram](https://img.shields.io/badge/Telegram-Community-blue?logo=telegram)](https://t.me/laraveleasydev)
 
-Laravel Easy Dev solves the repetitive work that slows down every Laravel project: controllers, requests, resources, routes, repositories, services, policies, DTOs, observers, tests, OpenAPI docs, and module folders.
+```bash
+composer require anas/easy-dev:^3.1 --dev
+
+php artisan easy-dev:crud Product --api --with-repository --with-service --tests --swagger
+```
+
+> Stable release: v3.1.1
+
+## Stop Repeating Laravel Boilerplate
+
+Every time you start a new Laravel feature, you often repeat the same setup:
+
+- Controller
+- Form Requests
+- API Resource
+- Routes
+- Service
+- Repository
+- Policy
+- DTO
+- Tests
+- Swagger / OpenAPI docs
+
+Laravel Easy Dev helps you generate that structure from one Artisan command, so you can focus on the actual business logic.
 
 Instead of spending 30 to 90 minutes wiring the same structure for every model, run one Artisan command and start from a consistent, team-ready architecture.
 
-```bash
-php artisan easy-dev:crud Product --api --with-repository --with-service --with-policy --with-dto --tests --swagger
-```
+## Demo
 
-What you get:
-
-- Complete CRUD scaffolding for web and API projects
-- Optional Repository and Service layers with interfaces
-- Form Requests, API Resources, routes, policies, DTOs, observers, filters, enums, and tests
-- Clean Architecture and DDD-style module layouts
-- AI-friendly JSON commands for coding agents and project analysis
-- Customizable stubs for your team's conventions
-
-Best fit:
-
-- Laravel APIs
-- Admin panels
-- SaaS dashboards
-- modular monoliths
-- domain-driven Laravel apps
-- teams that want consistent generated code
-
-### Demo GIFs
-
-#### CRUD in seconds
+### CRUD in seconds
 
 ![Laravel Easy Dev quick CRUD demo](docs/assets/gifs/quick-crud.gif)
 
-#### Module and architecture scaffolding
+### Module and architecture scaffolding
 
 ![Laravel Easy Dev module architecture demo](docs/assets/gifs/architecture-module.gif)
 
-#### AI project analysis
+### AI project analysis
 
 ![Laravel Easy Dev AI analysis demo](docs/assets/gifs/ai-analyze.gif)
 
-## Installation
+## AI Guide
 
-Install the package as a development dependency:
+Laravel Easy Dev includes AI-friendly commands for coding agents:
 
 ```bash
-composer require anas/easy-dev --dev
+php artisan easy-dev:ai-context --pretty
+php artisan easy-dev:snapshot --ai
+php artisan easy-dev:analyze --json
+```
+
+See [docs/AI_GUIDE.md](docs/AI_GUIDE.md) for token-saving workflows, safe generation rules, and prompt examples for Codex, Cursor, Claude, and ChatGPT.
+
+## Quick Start
+
+### 1. Install
+
+```bash
+composer require anas/easy-dev:^3.1 --dev
 ```
 
 Laravel package discovery registers the service provider automatically.
+
+### 2. Generate a Feature
+
+```bash
+php artisan easy-dev:crud Product --api --with-repository --with-service --tests --swagger
+```
+
+### 3. Check Routes
+
+```bash
+php artisan route:list --path=products
+```
+
+### 4. Run Tests
+
+```bash
+php artisan test
+```
 
 Publish the config when you want to customize paths, defaults, routes, validation rules, or module settings:
 
@@ -78,52 +110,184 @@ Published stubs are placed in:
 resources/stubs/vendor/easy-dev/
 ```
 
-## Quick Example
+## Before / After
 
-Generate a standard CRUD:
+### Before
 
-```bash
-php artisan easy-dev:crud Product
-```
+For every model or feature, you may manually create:
 
-Run the migration:
+- Controller
+- Store request
+- Update request
+- API resource
+- Routes
+- Service class
+- Repository class
+- Policy
+- DTO
+- Tests
+- Swagger docs
 
-```bash
-php artisan migrate
-```
-
-Check the generated routes:
-
-```bash
-php artisan route:list --path=products
-```
-
-Generate an API-first CRUD with a fuller application structure:
+### After
 
 ```bash
-php artisan easy-dev:crud Product \
-  --api \
-  --with-repository \
-  --with-service \
-  --with-policy \
-  --with-dto \
-  --with-observer \
-  --register-observer \
-  --tests \
-  --swagger
+php artisan easy-dev:crud Product --api --with-repository --with-service --tests --swagger
 ```
 
-Preview without writing files:
+One command gives you a clean starting point that you can customize.
+
+## Example Generated Structure
+
+```text
+app/
+  Http/
+    Controllers/
+      Api/
+        ProductApiController.php
+    Requests/
+      StoreProductRequest.php
+      UpdateProductRequest.php
+    Resources/
+      ProductResource.php
+  Services/
+    ProductService.php
+  Repositories/
+    ProductRepository.php
+  Policies/
+    ProductPolicy.php
+  DTOs/
+    ProductData.php
+
+routes/
+  api.php
+
+tests/
+  Feature/
+    ProductApiTest.php
+
+storage/
+  app/
+    easy-dev/
+      openapi.json
+```
+
+## What It Generates
+
+Laravel Easy Dev can generate:
+
+- Web CRUD controllers and routes
+- API controllers, resources, requests, and routes
+- Optional Service layer
+- Optional Repository layer
+- Policies
+- DTOs
+- Observers
+- Filters
+- Enums
+- Feature and unit tests
+- OpenAPI / Swagger docs
+- Clean Architecture and DDD-style modules
+- Vue, React, Inertia, and Livewire starter stubs
+- AI-friendly JSON commands for project context and analysis
+
+## Common Recipes
+
+### API CRUD Only
 
 ```bash
-php artisan easy-dev:crud Product --with-repository --with-service --dry-run
+php artisan easy-dev:crud Product --api
 ```
 
-Generate from natural language:
+### API CRUD With Tests
 
 ```bash
-php artisan easy-dev:dream "Create product catalog with name:string price:decimal stock:integer connected to categories"
+php artisan easy-dev:crud Product --api --tests
 ```
+
+### API CRUD With Service Layer
+
+```bash
+php artisan easy-dev:crud Product --api --with-service --tests
+```
+
+### Full Structure
+
+```bash
+php artisan easy-dev:crud Product --api --with-repository --with-service --with-policy --with-dto --tests --swagger
+```
+
+### Module Structure
+
+```bash
+php artisan easy-dev:crud Product --module=Catalog --architecture=clean --with-service --with-repository
+```
+
+### Generate OpenAPI Docs
+
+```bash
+php artisan easy-dev:swagger
+```
+
+### Export AI Context
+
+```bash
+php artisan easy-dev:ai-context --pretty
+```
+
+## Command Cheatsheet
+
+| Command | Use It For |
+| --- | --- |
+| `easy-dev:crud` | Generate CRUD and optional layers |
+| `easy-dev:make` | Interactive CRUD wizard |
+| `easy-dev:test` | Generate tests |
+| `easy-dev:swagger` | Generate OpenAPI docs |
+| `easy-dev:analyze` | Analyze missing layers |
+| `easy-dev:ai-context` | Export AI-ready project context |
+| `easy-dev:snapshot` | Generate project snapshot |
+| `easy-dev:publish-stubs` | Publish and customize stubs |
+
+## When Should You Use This?
+
+Laravel Easy Dev is useful when you are building:
+
+- APIs
+- Admin panels
+- SaaS dashboards
+- CRUD-heavy applications
+- Modular Laravel applications
+- Internal tools
+- Teams that want consistent generated structure
+- Projects where you want tests and documentation from the start
+
+It is not meant to replace Laravel or hide the framework.
+
+It gives you a clean starting point that you can customize, edit, or delete.
+
+## Philosophy
+
+Laravel Easy Dev does not force one architecture.
+
+You can generate simple Laravel CRUD, or enable optional layers like:
+
+- Services
+- Repositories
+- DTOs
+- Policies
+- Observers
+- Tests
+- Swagger docs
+- Modules
+
+Use only what fits your project.
+
+The generated code is meant to be:
+
+- Readable
+- Editable
+- Customizable
+- Easy to delete
+- Laravel-friendly
 
 ## Generated Files
 
@@ -162,7 +326,7 @@ Optional flags add:
 | `--inertia` | `resources/js/Pages/Products/Index.vue` |
 | `--livewire` | Livewire class and Blade view |
 
-## Advanced Features
+## Features
 
 ### API-First Mode
 
@@ -172,7 +336,9 @@ Use `--api` or `--api-only` to skip web controllers and focus on API resources.
 php artisan easy-dev:crud Product --api --with-service --tests --swagger
 ```
 
-### Repository and Service Layers
+### Optional Repository and Service Layers
+
+Repository and Service layers are optional. Laravel Easy Dev does not force them. Enable them only when they match your project or team structure.
 
 Generate clean separation between HTTP, business logic, and persistence:
 
@@ -238,7 +404,7 @@ Generate API, service, and repository test shells:
 php artisan easy-dev:test Product --api --feature --unit --service --repository
 ```
 
-### OpenAPI Generation
+### OpenAPI / Swagger
 
 Generate a basic OpenAPI file:
 
@@ -313,7 +479,7 @@ php artisan easy-dev:crud Product --livewire
 
 These files are intentionally starter templates. They give you a consistent first screen to customize for your actual UI stack.
 
-### AI-Native Commands
+### AI Commands
 
 Give AI coding agents structured project context:
 
@@ -431,14 +597,65 @@ Current local verification:
 97 tests, 396 assertions
 ```
 
+## Roadmap
+
+Possible future improvements:
+
+- Better OpenAPI schema generation from migrations
+- More Pest testing support
+- Filament resource generation
+- Better frontend starter templates
+- More module architecture presets
+- More AI-friendly project analysis commands
+- More customization options for generated stubs
+
+## Community
+
+Laravel Easy Dev is actively maintained and continuously improving.
+
+Stay updated with:
+
+- New releases
+- Changelog updates
+- Roadmap announcements
+- Demo videos
+- Laravel Easy Dev tips and examples
+
+### Telegram Community
+
+https://t.me/laraveleasydev
+
+### GitHub Discussions
+
+https://github.com/anasnashat/laravel-easy-dev/discussions
+
+### GitHub Issues
+
+https://github.com/anasnashat/laravel-easy-dev/issues
+
+Feedback, ideas, bug reports, and feature requests are always welcome.
+
+See [docs/COMMUNITY.md](docs/COMMUNITY.md) for the community welcome message.
+
+## Feedback
+
+Laravel Easy Dev is actively improving.
+
+If you use it in a project, feedback is welcome:
+
+- Are the generated defaults useful?
+- What structure should be improved?
+- What Laravel workflows should be supported next?
+
+Open an issue or discussion on GitHub.
+
 ## Release Status
 
-Laravel Easy Dev v3.1.0 is stable and ready for Laravel project use. The next best improvements are:
+Laravel Easy Dev v3.1.1 is stable and ready for Laravel project use. Compatibility is verified across Laravel 9, 10, 11, 12, and 13, with GitHub Actions coverage for PHP 8.1, 8.2, 8.3, and 8.4 where supported.
 
-- CI runs across PHP 8.1, 8.2, 8.3, and 8.4
-- field-aware OpenAPI schemas from migrations
-- richer frontend route and controller integration
-- more precise analyzer rules and safe fixers
+## Contributing
+
+Issues, discussions, pull requests, and real project feedback are welcome.
 
 ## License
 

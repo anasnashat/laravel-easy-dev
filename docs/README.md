@@ -1,10 +1,8 @@
-# Complete Documentation
-
-This file is the publish-ready documentation hub for Laravel Easy Dev v3.1.1.
+# Laravel Easy Dev Documentation
 
 Laravel Easy Dev is a Laravel feature scaffolding toolkit that generates production-style CRUD, APIs, architecture layers, tests, OpenAPI docs, modules, and AI-ready project context from one Artisan command.
 
-## Documentation
+## Start Here
 
 - [Quick Start](QUICK_START.md)
 - [Command Reference](COMMAND_REFERENCE.md)
@@ -14,8 +12,8 @@ Laravel Easy Dev is a Laravel feature scaffolding toolkit that generates product
 - [Advanced Usage](ADVANCED.md)
 - [Examples and Use Cases](EXAMPLES_USE_CASES.md)
 - [Relationship Detection](RELATIONSHIP_DETECTION.md)
-- [CLI Experience](UI-ENHANCEMENTS.md)
 - [Community](COMMUNITY.md)
+- [Publishing Copy](PUBLISHING_COPY.md)
 
 ## Install
 
@@ -23,43 +21,18 @@ Laravel Easy Dev is a Laravel feature scaffolding toolkit that generates product
 composer require anas/easy-dev:^3.1 --dev
 ```
 
-## Quick Start Example
+## First Command
 
 ```bash
 php artisan easy-dev:crud Product --api --with-repository --with-service --tests --swagger
 ```
 
-## What It Generates
+## Stable Release
 
-- Web CRUD controllers and routes
-- API controllers, resources, requests, and routes
-- Optional Service layer
-- Optional Repository layer
-- Policies
-- DTOs
-- Observers
-- Filters
-- Enums
-- Feature and unit tests
-- OpenAPI / Swagger docs
-- Clean Architecture and DDD-style modules
-- Vue, React, Inertia, and Livewire starter stubs
-- AI-friendly JSON commands for project context and analysis
+Laravel Easy Dev v3.1.1 is stable and ready for Laravel project use.
 
 ## Requirements
 
 - PHP 8.1+
 - Laravel 9, 10, 11, 12, or 13
 - MySQL, PostgreSQL, or SQLite for schema analysis features
-
-## Testing
-
-```bash
-composer test
-```
-
-## Community
-
-- Telegram: https://t.me/laraveleasydev
-- Discussions: https://github.com/anasnashat/laravel-easy-dev/discussions
-- Issues: https://github.com/anasnashat/laravel-easy-dev/issues

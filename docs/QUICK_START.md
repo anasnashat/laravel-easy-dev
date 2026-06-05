@@ -1,138 +1,86 @@
-# Quick Start Guide
+# Quick Start
 
-Get up and running with Laravel Easy Dev v2 in under 5 minutes!
+Get Laravel Easy Dev running in a Laravel project in a few minutes.
 
-## 🚀 Installation
+## Install
 
-### 1. Install the Package
 ```bash
-composer require anas/easy-dev
+composer require anas/easy-dev:^3.1 --dev
 ```
 
-### 2. Verify Installation
+Laravel package discovery registers the service provider automatically.
+
+## Generate Your First Feature
+
 ```bash
-php artisan easy-dev:help
+php artisan easy-dev:crud Product --api --with-repository --with-service --tests --swagger
 ```
 
-You should see a beautiful help interface!
+This creates a production-style starting point for a `Product` feature.
 
-## ⚡ Your First CRUD
+## Check The Generated Routes
 
-### 1. Create a Model
 ```bash
-php artisan make:model Product -m
+php artisan route:list --path=products
 ```
 
-### 2. Set Up Migration
+For Laravel 11, 12, and 13 API routes, make sure your application loads `routes/api.php` in `bootstrap/app.php`:
+
 ```php
-// database/migrations/xxxx_create_products_table.php
-public function up()
-{
-    Schema::create('products', function (Blueprint $table) {
-        $table->id();
-        $table->string('name');
-        $table->text('description')->nullable();
-        $table->decimal('price', 8, 2);
-        $table->integer('stock')->default(0);
-        $table->foreignId('category_id')->constrained();
-        $table->boolean('is_active')->default(true);
-        $table->timestamps();
-    });
-}
+return Application::configure(basePath: dirname(__DIR__))
+    ->withRouting(
+        web: __DIR__.'/../routes/web.php',
+        api: __DIR__.'/../routes/api.php',
+        commands: __DIR__.'/../routes/console.php',
+        health: '/up',
+    );
 ```
 
-### 3. Run Migration
-```bash
-php artisan migrate
-```
-
-### 4. Generate Complete CRUD
-```bash
-php artisan easy-dev:make Product --interactive
-```
-
-Follow the interactive prompts to configure your CRUD generation.
-
-### 5. Auto-Detect Relationships
-```bash
-php artisan easy-dev:sync-relations --all
-```
-
-## 🎯 What You Get
-
-After running the commands above, you'll have:
-
-- ✅ **ProductController** with all CRUD methods
-- ✅ **StoreProductRequest** and **UpdateProductRequest** for validation
-- ✅ **ProductRepository** and **ProductRepositoryInterface** (if selected)
-- ✅ **ProductService** and **ProductServiceInterface** (if selected)
-- ✅ **ProductResource** and **ProductCollection** for API responses
-- ✅ **Web and API routes** automatically registered
-- ✅ **Feature and Unit tests** for your controller
-- ✅ **Model relationships** automatically detected and added
-
-## 🎮 Interactive Mode
-
-For a guided experience, use interactive mode:
+## Run Tests
 
 ```bash
-php artisan easy-dev:make Product --interactive
+php artisan test
 ```
 
-This will walk you through:
-1. Selecting generation options
-2. Configuring Repository and Service patterns
-3. Setting up API endpoints
-4. Customizing validation rules
-5. Reviewing generated files
-
-## 🔄 Next Steps
-
-1. **Customize Validation**: Edit the generated Form Request classes
-2. **Add Business Logic**: Implement your business rules in Service classes
-3. **Customize Views**: Create Blade templates for your web routes
-4. **Test Your API**: Use the generated API endpoints
-5. **Add More Models**: Repeat the process for other entities
-
-## 📚 Common Commands
+## Common Commands
 
 ```bash
-# Generate with Repository pattern
-php artisan easy-dev:make Product --with-repository
+# API CRUD only
+php artisan easy-dev:crud Product --api
 
-# Generate with Service layer
-php artisan easy-dev:make Product --with-service
+# API CRUD with tests
+php artisan easy-dev:crud Product --api --tests
 
-# Generate API-only CRUD
-php artisan easy-dev:make Product --api-only
+# Full structure
+php artisan easy-dev:crud Product --api --with-repository --with-service --with-policy --with-dto --tests --swagger
 
-# Generate web-only CRUD
-php artisan easy-dev:make Product --web-only
+# Module structure
+php artisan easy-dev:crud Product --module=Catalog --architecture=clean --with-service --with-repository
 
-# Add a specific relationship
-php artisan easy-dev:add-relation Post belongsTo User
+# Generate tests for an existing model
+php artisan easy-dev:test Product --api --feature --unit --service --repository
 
-# Generate repository for existing model
-php artisan easy-dev:repository Product
+# Generate OpenAPI docs
+php artisan easy-dev:swagger Product
+
+# Export AI-ready context
+php artisan easy-dev:ai-context --pretty
 ```
 
-## 🎨 Beautiful UI
+## Customize Stubs
 
-Laravel Easy Dev v2 features a beautiful command-line interface with:
-- 🌈 Colorful output
-- 📊 Progress bars
-- ✨ Interactive prompts
-- 📋 Summary reports
-
-Try the demo:
 ```bash
-php artisan easy-dev:demo-ui
+php artisan easy-dev:publish-stubs
 ```
 
-## 🛟 Need Help?
+Published stubs are placed in:
 
-- Run `php artisan easy-dev:help` for detailed command information
-- Check the [Complete Documentation](COMPLETE_DOCUMENTATION.md)
-- Visit [GitHub Issues](https://github.com/anasnashat/laravel-easy-dev/issues) for support
+```text
+resources/stubs/vendor/easy-dev/
+```
 
-**Happy Coding! 🚀**
+## Next Steps
+
+- Read the [Command Reference](COMMAND_REFERENCE.md).
+- Review [API Development](API_DEVELOPMENT.md).
+- Customize defaults in [Configuration](CONFIGURATION.md).

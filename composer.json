@@ -1,24 +1,26 @@
 {
     "name":  "anas/easy-dev",
-    "description":  "A Laravel productivity package for CRUD generation, API scaffolding, architecture layers, tests, OpenAPI docs, and AI-ready project context.",
+    "description":  "Generate production-style Laravel feature structure from one Artisan command: CRUD, APIs, services, repositories, tests, OpenAPI docs, modules, and AI-ready project context.",
     "type":  "laravel-package",
     "license":  "MIT",
     "keywords":  [
                      "laravel",
-                     "artisan",
                      "crud",
+                     "scaffolding",
                      "generator",
+                     "artisan",
+                     "openapi",
+                     "swagger",
+                     "testing",
+                     "clean-architecture",
+                     "ddd",
+                     "ai",
+                     "developer-tools",
+                     "composer-package",
                      "repository",
                      "service",
-                     "ui",
-                     "interactive",
-                     "development",
-                     "scaffolding",
                      "relationships",
-                     "commands",
-                     "laravel-package",
-                     "productivity",
-                     "automation"
+                     "laravel-package"
                  ],
     "homepage":  "https://github.com/anasnashat/laravel-easy-dev",
     "readme":  "README.md",
@@ -70,7 +72,7 @@
                                                 ]
                               },
                   "branch-alias":  {
-                                       "dev-main":  "3.0-dev"
+                                       "dev-main":  "3.1-dev"
                                    }
               },
     "scripts":  {
